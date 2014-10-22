@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the DesignsSquare.com: Theme: Espresso: Configurations & Structures feature.
+ */
+
+include_once 'designssquare_com_theme_espresso_configurations_structures.features.inc';

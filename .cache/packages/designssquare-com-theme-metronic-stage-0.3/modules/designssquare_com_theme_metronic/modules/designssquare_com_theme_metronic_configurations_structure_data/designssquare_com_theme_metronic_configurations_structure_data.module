@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the DesignsSquare.com: Theme: Metronci: Configurations & Structure Data feature.
+ */
+
+include_once 'designssquare_com_theme_metronic_configurations_structure_data.features.inc';

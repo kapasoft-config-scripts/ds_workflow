@@ -1,0 +1,1082 @@
+<?php
+function designssquare_com_theme_metronic_ckeditor_css_alter(&$css_scripts, $vars)
+{
+    $type = (isset($vars['node']) && isset($vars['node']->type)) ? $vars['node']->type : 'default';
+    $css_scripts = array_merge($css_scripts, array_map('_strip_path', _default_css_list($type)));
+}
+
+function designssquare_com_theme_metronic_ckeditor_body_class_alter(&$body_classes, $vars)
+{
+    $body_classes[] = 'page-quick-sidebar-over-content';
+}
+
+function designssquare_com_theme_metronic_ckeditor_wrap_alter(&$content_wrap, $vars, $region)
+{
+    $prefix = '';
+    $postfix = '';
+
+    switch ($region) {
+        case 'header':
+            $prefix = '<div class="page-header navbar navbar-fixed-top"><div class="page-header-inner"><div class="top-menu"><ul class="nav navbar-nav pull-right ckeditor-wrapper-end">';
+            $postfix = '</ul></div></div></div>';
+            break;
+        case 'footer':
+            $prefix = '<div class="page-footer"><div class="page-footer-inner ckeditor-wrapper-end" >';
+            $postfix = '</div></div>';
+            break;
+        case 'theme_panel':
+            $prefix = '<div class="page-container"><div class="page-content-wrapper"><div class="page-content"><div class="theme-panel hidden-xs hidden-sm ckeditor-wrapper-end" >';
+            $postfix = '</div></div></div></div>';
+            break;
+        case 'highlighted':
+            $prefix = '<div class="page-container"><div class="page-content-wrapper"><div class="page-content"><div id="highlighted ckeditor-wrapper-end" >';
+            $postfix = '</div></div></div></div>';
+            break;
+        case 'breadcrumbs_sidebar':
+            $prefix = '<div class="page-container"><div class="page-content-wrapper"><div class="page-content"><div class="row"><div class="col-md-12"><ul class="page-breadcrumb breadcrumb ckeditor-wrapper-end" >';
+            $postfix = '</ul></div></div></div></div></div>';
+            break;
+        case 'sidebar':
+            $prefix = '<div class="page-container"><div class="page-sidebar-wrapper"><div class="page-sidebar navbar-collapse collapse" ><ul class="page-sidebar-menu" data-auto-scroll="true" data-slide-speed="200"><li class="sidebar-toggler-wrapper"><div class="sidebar-toggler"></div></li></ul><span class="ckeditor-wrapper-end">';
+            $postfix = '</span></div></div></div>';
+            break;
+        case 'quick_sidebar':
+            $prefix = '<div class="page-container ckeditor-wrapper-end">';
+            $postfix = '</div>';
+            break;
+        case 'main': //main content
+            $prefix = '<div class="page-container"><div class="page-content-wrapper"><div class="page-content ckeditor-wrapper-end">';
+            $postfix = '</div></div></div>';
+            break;
+    }
+    $content_wrap['prefix'] = $prefix;
+    $content_wrap['postfix'] = $postfix;
+}
+
+function designssquare_com_theme_metronic_ckeditor_js_scripts_alter(&$js_scripts, $vars)
+{
+    $type = (isset($vars['node']) && isset($vars['node']->type)) ? $vars['node']->type : 'default';
+
+//    $js_scripts = array_merge($js_scripts, array_map('_strip_path',_default_js_list()));
+//    $js_scripts = array_merge($js_scripts, array_map('_strip_path',_plugin_js_list($type)));
+//    $js_scripts = array_merge($js_scripts, array_map('_strip_path',_init_js_list($type)));
+    $path_to_theme = drupal_get_path('theme', 'metronic');
+
+    $js_scripts[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-1.11.0.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+    $js_scripts[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-migrate-1.2.1.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+    $js_scripts = array_merge($js_scripts, _default_js_list());
+    $js_scripts = array_merge($js_scripts, _plugin_js_list($type));
+}
+
+function designssquare_com_theme_metronic_ckeditor_clean_elements_alter(&$desposable_elements, $vars){
+//    $desposable_elements[] = '#calendar';
+//    $desposable_elements[] = '.vmaps';
+
+    $desposable_elements[] = array('id' => '#calendar', 'remove' => 'content');
+    $desposable_elements[] = array('id' => '.vmaps', 'remove' => 'content');
+    $desposable_elements[] = array('id' => '[class^=slimScroll]', 'remove' => 'element');
+    $desposable_elements[] = array('id' => '.scroller', 'remove' => 'attr', 'attr' =>array('data-initialized'));
+//    $desposable_elements[] = array('id' => '.scroller', 'remove' => 'attr-replace', 'attr' =>array('style' => 'height: 290px;'));
+
+}
+
+function designssquare_com_theme_metronic_ckeditor_js_inline_alter(&$js_scripts, $vars)
+{
+    $type = (isset($vars['node']) && isset($vars['node']->type)) ? $vars['node']->type : 'default';
+    $js_scripts = array_merge($js_scripts, _init_js_list($type));
+}
+
+function _default_js_list()
+{
+    $js_list = array();
+    $path_to_theme = drupal_get_path('theme', 'metronic');
+    //production
+    $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-ui/jquery-ui-1.10.3.custom.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+    $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap/js/bootstrap.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+//    $js_list[] = array('path'=> $path_to_theme . '/assets/global/plugins/bootstrap/js/bootstrap.min.js', 'options' => array('scope'=>'footer', 'type' => 'file'));
+    $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+    $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+    $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery.blockui.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+    $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery.cokie.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+    $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/uniform/jquery.uniform.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+    $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+    return $js_list;
+}
+
+function _default_css_list($plugin_type)
+{
+    $css_list = array();
+    $path_to_theme = drupal_get_path('theme', 'metronic');
+    $css_list[] = array('path' => $path_to_theme . '/assets/drupal/custom_metronic.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME + 4));
+//    drupal_add_css(drupal_get_path('theme', 'metronic') . '/assets/drupal/custom_metronic.css', array('type' => 'file', 'weight' => CSS_THEME + 4));
+
+    //BEGIN GLOBAL MANDATORY STYLES -->
+    $css_list[] = array('path' => $path_to_theme . '/assets/drupal/metronic_fonts.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+    $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/font-awesome/css/font-awesome.min.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+    $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/simple-line-icons/simple-line-icons.min.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+    $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap/css/bootstrap.min.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+    $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/uniform/css/uniform.default.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+    $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+//<!-- END GLOBAL MANDATORY STYLES -->
+
+    array_merge($css_list, _plugin_css_list($plugin_type));
+
+//<!-- BEGIN THEME STYLES -->
+    $css_list[] = array('path' => $path_to_theme . '/assets/global/css/components.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+    $css_list[] = array('path' => $path_to_theme . '/assets/global/css/plugins.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+    $css_list[] = array('path' => $path_to_theme . '/assets/admin/layout/css/layout.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+
+    //determine color
+    module_load_include('inc', 'designssquare_lib_template_api', 'includes/template_api');
+    $theme_tapi = _theme_settings_tapi();
+    $proposed_css = drupal_get_path('theme', 'metronic') . '/assets/admin/layout/css/themes/' . $theme_tapi['color']['value'] . '.css';
+    if (file_exists($proposed_css)) {
+        $final_css = $proposed_css;
+    } else {
+        $final_css = drupal_get_path('theme', 'metronic') . '/assets/admin/layout/css/themes/default.css';
+    }
+    $css_list[] = array('path' => $final_css, 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+    $css_list[] = array('path' => $path_to_theme . '/assets/admin/layout/css/custom.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+    return $css_list;
+}
+
+function _init_js_list($type)
+{
+//    $js_to_add = "jQuery(document).ready(function() {" . "\n";
+    $js_to_add = "Metronic.init();" . "\n";
+    $js_to_add .= "Layout.init();" . "\n";
+    $js_to_add .= "QuickSidebar.init();" . "\n";
+
+    switch ($type) {
+        case 'none':
+        case 'dashboard':
+            $js_to_add .= 'Index.init();' . "\n";
+            $js_to_add .= 'Index.initDashboardDaterange();' . "\n";
+            $js_to_add .= 'Index.initJQVMAP();' . "\n";
+            $js_to_add .= 'Index.initCalendar();' . "\n";
+            $js_to_add .= 'Index.initCharts();' . "\n";
+            $js_to_add .= 'Index.initChat();' . "\n";
+            $js_to_add .= 'Index.initMiniCharts();' . "\n";
+            $js_to_add .= 'Index.initIntro();' . "\n";
+            $js_to_add .= 'Tasks.initDashboardWidget();' . "\n";
+            break;
+        case 'ecommerce_dashboard':
+            $js_to_add .= 'EcommerceIndex.init();' . "\n";
+            break;
+        case 'orders':
+            $js_to_add .= 'EcommerceOrders.init();' . "\n";
+            break;
+        case 'order_view':
+            $js_to_add .= 'EcommerceOrdersView.init();' . "\n";
+            break;
+        case 'products':
+            $js_to_add .= 'EcommerceProducts.init();' . "\n";
+            break;
+        case 'product_edit':
+            $js_to_add .= 'EcommerceProductsEdit.init();' . "\n";
+            break;
+        case 'ui_general':
+            $js_to_add .= 'UIGeneral.init();' . "\n";
+            break;
+        case 'ui_tree':
+            $js_to_add .= 'UITree.init();' . "\n";
+            break;
+        case 'notifica8_notifications':
+            $js_to_add .= 'UINotific8.init();' . "\n";
+            break;
+        case 'toastr_notifications':
+            $js_to_add .= 'UIToastr.init();' . "\n";
+            break;
+        case 'alerts_dialogs':
+            $js_to_add .= 'UIAlertDialogApi.init();' . "\n";
+            break;
+        case 'extended_modals':
+            $js_to_add .= 'UIExtendedModals.init();' . "\n";
+            break;
+        case 'date_paginator':
+            $js_to_add .= 'UIDatepaginator.init();' . "\n";
+            break;
+        case 'nestable_list':
+            $js_to_add .= 'UINestable.init();' . "\n";
+            break;
+        case 'pickers':
+            $js_to_add .= 'ComponentsPickers.init();' . "\n";
+            break;
+        case 'custom_dropdowns':
+            $js_to_add .= 'ComponentsDropdowns.init();' . "\n";
+            break;
+        case 'form_tools':
+            $js_to_add .= 'ComponentsFormTools.init();' . "\n";
+            break;
+        case 'editors':
+            $js_to_add .= 'ComponentsEditors.init();' . "\n";
+            break;
+        case 'ion_range_sliders':
+            $js_to_add .= 'ComponentsIonSliders.init();' . "\n";
+            break;
+        case 'noui_range_sliders':
+            $js_to_add .= 'ComponentsNoUiSliders.init();' . "\n";
+            break;
+        case 'jquery_ui_sliders':
+            $js_to_add .= 'ComponentsjQueryUISliders.init();' . "\n";
+            break;
+        case 'knob_circle_dials':
+            $js_to_add .= 'ComponentsKnobDials.init();' . "\n";
+            break;
+        case 'form_layouts':
+            $js_to_add .= 'FormSamples.init();' . "\n";
+            break;
+        case 'form_x_editable':
+            $js_to_add .= 'FormEditable.init();' . "\n";
+            break;
+        case 'form_wizard':
+            $js_to_add .= 'FormWizard.init();' . "\n";
+            break;
+        case 'form_validation':
+            $js_to_add .= 'FormValidation.init();' . "\n";
+            break;
+        case 'image_crop':
+            $js_to_add .= 'FormImageCrop.init();' . "\n";
+            break;
+        case 'multiple_file_upload':
+            $js_to_add .= 'FormFileUpload.init();' . "\n";
+            break;
+        case 'dropzone_file_upload':
+            $js_to_add .= 'FormDropzone.init();' . "\n";
+            break;
+        case 'managed_datatables':
+            $js_to_add .= 'TableManaged.init();' . "\n";
+            break;
+        case 'editable_datatables':
+            $js_to_add .= 'TableEditable.init();' . "\n";
+            break;
+        case 'advanced_datatables':
+            $js_to_add .= 'TableAdvanced.init();' . "\n";
+            break;
+        case 'ajax_datatables':
+            $js_to_add .= 'TableAjax.init();' . "\n";
+            break;
+        case 'ajax_portlets':
+            $js_to_add .= '//custom portlet reload handler' . "\n";
+            $js_to_add .= "$('#my_portlet .portlet-title a.reload').click(function(e){" . "\n";
+            $js_to_add .= '    e.preventDefault();' . "\n";
+            $js_to_add .= '    e.stopPropagation();' . "\n";
+            $js_to_add .= '    Metronic.alert({' . "\n";
+            $js_to_add .= "    'type': 'danger', " . "\n";
+            $js_to_add .= "    'icon': 'warning'," . "\n";
+            $js_to_add .= "    'message': 'Custom reload handler!'," . "\n";
+            $js_to_add .= "    'container': $('#my_portlet .portlet-body') " . "\n";
+            $js_to_add .= "  });" . "\n";
+            $js_to_add .= '})' . "\n";
+            break;
+        case 'draggable_portlets':
+            $js_to_add .= 'PortletDraggable.init(); // init quick sidebar' . "\n";
+            break;
+        case 'google_maps':
+            $js_to_add .= 'MapsGoogle.init(); // init quick sidebar' . "\n";
+            break;
+        case 'vector_maps':
+            $js_to_add .= 'MapsVector.init(); // init quick sidebar' . "\n";
+            break;
+        case 'visual_charts':
+            $js_to_add .= 'Charts.init();' . "\n";
+            $js_to_add .= 'Charts.initCharts();' . "\n";
+            $js_to_add .= 'Charts.initPieCharts();' . "\n";
+            $js_to_add .= 'Charts.initBarCharts();' . "\n";
+            break;
+        case 'portfolio':
+            $js_to_add .= 'Portfolio.init();' . "\n";
+            break;
+        case 'calendar':
+            $js_to_add .= 'Calendar.init();' . "\n";
+            break;
+        case 'contact_us':
+            $js_to_add .= 'ContactUs.init();' . "\n";
+            break;
+        case 'login':
+            $theme_path = drupal_get_path('theme', 'metronic');
+            $js_to_add .= 'Login.init();' . "\n";
+            $js_to_add .= '$.backstretch([' . "\n";
+            $js_to_add .= '   "' . $theme_path . '/assets/admin/pages/media/bg/1.jpg",' . "\n";
+            $js_to_add .= '    "' . $theme_path . '/assets/admin/pages/media/bg/2.jpg",' . "\n";
+            $js_to_add .= '    "' . $theme_path . '/assets/admin/pages/media/bg/3.jpg",' . "\n";
+            $js_to_add .= '    "' . $theme_path . '/assets/admin/pages/media/bg/4.jpg"' . "\n";
+            $js_to_add .= '], {' . "\n";
+            $js_to_add .= '      fade: 1000,' . "\n";
+            $js_to_add .= '      duration: 8000' . "\n";
+            $js_to_add .= '	}' . "\n";
+            $js_to_add .= ');' . "\n";
+            break;
+        case 'lock_screen':
+            $js_to_add .= 'Lock.init();' . "\n";
+            break;
+        case 'inbox':
+            $js_to_add .= 'Inbox.init();' . "\n";
+            break;
+    }
+//    $js_to_add .= "});";
+//    drupal_add_js($js_to_add, array('scope' => 'footer', 'type' => 'inline', 'weight' => 1000));
+    $init_js = array();
+    $init_js[] = array(
+        'path' => $js_to_add,
+        'options' => array(
+            'scope' => 'footer',
+            'weight' => 1000,
+            'type' => 'inline'
+        ),
+    );
+    if ($type == 'form_tools') {
+        $js_to_add = 'var RecaptchaOptions = {' . "\n";
+        $js_to_add .= "theme : 'custom'," . "\n";
+        $js_to_add .= "custom_theme_widget: 'recaptcha_widget'" . "\n";
+        $js_to_add .= "};" . "\n";
+        $init_js[] = array(
+            'path' => $js_to_add,
+            'options' => array(
+                'scope' => 'footer',
+                'weight' => 1001,
+                'type' => 'inline'
+            ),
+        );
+//        drupal_add_js($js_to_add, array('scope' => 'footer', 'type' => 'inline', 'weight' => 1000));
+    }
+
+    if ($type == 'ui_general') {
+        $js_to_add = "$('.demo-loading-btn')" . "\n";
+        $js_to_add .= '    .click(function () {' . "\n";
+        $js_to_add .= '        var btn = $(this)' . "\n";
+        $js_to_add .= "btn.button('loading')" . "\n";
+        $js_to_add .= 'setTimeout(function () {' . "\n";
+        $js_to_add .= "btn.button('reset')" . "\n";
+        $js_to_add .= "}, 3000)" . "\n";
+        $js_to_add .= '});' . "\n";
+        $init_js[] = array(
+            'path' => $js_to_add,
+            'options' => array(
+                'scope' => 'footer',
+                'weight' => 1002,
+                'type' => 'inline'
+            ),
+        );
+//        drupal_add_js($js_to_add, array('scope' => 'footer', 'type' => 'inline', 'weight' => 1000));
+    }
+
+    return $init_js;
+}
+
+function _plugin_css_list($type)
+{
+    $css_list = array();
+    $path_to_theme = drupal_get_path('theme', 'metronic');
+
+    switch ($type) {
+        case 'none':
+        case 'dashboard':
+            //<!-- BEGIN PAGE LEVEL PLUGIN STYLES -->
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/gritter/css/jquery.gritter.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-daterangepicker/daterangepicker-bs3.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/fullcalendar/fullcalendar/fullcalendar.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jqvmap/jqvmap/jqvmap.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/admin/pages/css/tasks.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'products':
+        case 'orders':
+            //<!-- BEGIN PAGE LEVEL PLUGIN STYLES -->
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datepicker/css/datepicker.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'order_view':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datepicker/css/datepicker.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datetimepicker/css/datetimepicker.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'product_edit':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datepicker/css/datepicker.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datetimepicker/css/datetimepicker.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/fancybox/source/jquery.fancybox.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'ui_tree':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jstree/dist/themes/default/style.min.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'progress_bar':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/pace/themes/pace-theme-flash.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'notifica8_notifications':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-notific8/jquery.notific8.min.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'toastr_notifications':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-toastr/toastr.min.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'extended_modals':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-modal/css/bootstrap-modal-bs3patch.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-modal/css/bootstrap-modal.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'date_paginator':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datepicker/css/datepicker.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'nestable_list':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-nestable/jquery.nestable.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'pickers':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/clockface/css/clockface.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datepicker/css/datepicker3.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-timepicker/css/bootstrap-timepicker.min.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-colorpicker/css/colorpicker.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-daterangepicker/daterangepicker-bs3.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datetimepicker/css/datetimepicker.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'custom_dropdowns':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-select/bootstrap-select.min.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-multi-select/css/multi-select.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'form_tools':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-tags-input/jquery.tagsinput.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-markdown/css/bootstrap-markdown.min.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/typeahead/typeahead.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'editors':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-markdown/css/bootstrap-markdown.min.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-summernote/summernote.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'ion_range_sliders':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/ion.rangeslider/css/ion.rangeSlider.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/ion.rangeslider/css/ion.rangeSlider.Metronic.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'noui_range_sliders':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/nouislider/jquery.nouislider.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'jquery_ui_sliders':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-ui/jquery-ui-1.10.3.custom.min.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'form_wizard':
+        case 'form_layouts':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'form_x_editable':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datepicker/css/datepicker.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-timepicker/css/bootstrap-timepicker.min.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datetimepicker/css/datetimepicker.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-editable/bootstrap-editable/css/bootstrap-editable.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-editable/inputs-ext/address/address.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'form_validation':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-markdown/css/bootstrap-markdown.min.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datepicker/css/datepicker.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'multiple_file_upload':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/blueimp-gallery/blueimp-gallery.min.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/css/jquery.fileupload.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/css/jquery.fileupload-ui.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'dropzone_file_upload':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/dropzone/css/dropzone.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'image_crop':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jcrop/css/jquery.Jcrop.min.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/admin/pages/css/image-crop.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'editable_datatables':
+        case 'managed_datatables':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'advanced_datatables':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/extensions/Scroller/css/dataTables.scroller.min.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/extensions/ColReorder/css/dataTables.colReorder.min.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'ajax_datatables':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datepicker/css/datepicker.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'vector_maps':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jqvmap/jqvmap/jqvmap.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'ajax_portlets':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-notific8/jquery.notific8.min.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-toastr/toastr.min.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'portfolio':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/fancybox/source/jquery.fancybox.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/admin/pages/css/portfolio.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'timeline':
+            $css_list[] = array('path' => $path_to_theme . '/assets/admin/pages/css/timeline.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'blog':
+            $css_list[] = array('path' => $path_to_theme . '/assets/admin/pages/css/blog.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/admin/pages/css/news.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'blog_post':
+            drupal_add_css(drupal_get_path('theme', 'metronic') . '/assets/admin/pages/css/blog.css', array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'news':
+            $css_list[] = array('path' => $path_to_theme . '/assets/admin/pages/css/news.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'about_us':
+            $css_list[] = array('path' => $path_to_theme . '/assets/admin/pages/css/about-us.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'calendar':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/fullcalendar/fullcalendar/fullcalendar.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'user':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/admin/pages/css/profile.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'login':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/admin/pages/css/login-soft.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'lock_screen':
+            $css_list[] = array('path' => $path_to_theme . '/assets/admin/pages/css/lock.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'invoice':
+            $css_list[] = array('path' => $path_to_theme . '/assets/admin/pages/css/invoice.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'pricing_tables':
+            $css_list[] = array('path' => $path_to_theme . '/assets/admin/pages/css/pricing-table.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'error':
+        case 'error_full':
+        case 'error_full2':
+        case 'error_500':
+        case 'error_500_full':
+            $css_list[] = array('path' => $path_to_theme . '/assets/admin/pages/css/error.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+        case 'inbox':
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/fancybox/source/jquery.fancybox.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/blueimp-gallery/blueimp-gallery.min.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/css/jquery.fileupload.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/css/jquery.fileupload-ui.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            $css_list[] = array('path' => $path_to_theme . '/assets/admin/pages/css/inbox.css', 'options' => array('type' => 'file', 'weight' => CSS_THEME, 'preprocess' => FALSE));
+            break;
+    }
+
+    return $css_list;
+}
+
+
+function _plugin_js_list($type)
+{
+    $js_list = array();
+    $path_to_theme = drupal_get_path('theme', 'metronic');
+
+    switch ($type) {
+        case 'none';
+        case 'dashboard':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jqvmap/jqvmap/jquery.vmap.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jqvmap/jqvmap/maps/jquery.vmap.russia.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jqvmap/jqvmap/maps/jquery.vmap.world.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jqvmap/jqvmap/maps/jquery.vmap.europe.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jqvmap/jqvmap/maps/jquery.vmap.germany.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jqvmap/jqvmap/maps/jquery.vmap.usa.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jqvmap/jqvmap/data/jquery.vmap.sampledata.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/flot/jquery.flot.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/flot/jquery.flot.resize.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/flot/jquery.flot.categories.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery.pulsate.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-daterangepicker/moment.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-daterangepicker/daterangepicker.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            // IMPORTANT! fullcalendar depends on jquery-ui-1.10.3.custom.min.js for drag & drop support
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/fullcalendar/fullcalendar/fullcalendar.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-easypiechart/jquery.easypiechart.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery.sparkline.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/gritter/js/jquery.gritter.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/index.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/tasks.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'ecommerce_dashboard':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/flot/jquery.flot.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/flot/jquery.flot.resize.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/flot/jquery.flot.categories.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/ecommerce-index.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'orders':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/media/js/jquery.dataTables.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/scripts/datatable.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/ecommerce-orders.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'order_view':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/media/js/jquery.dataTables.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/scripts/datatable.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/ecommerce-orders-view.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'products':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/media/js/jquery.dataTables.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/scripts/datatable.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/ecommerce-products.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'product_edit':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/media/js/jquery.dataTables.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-touchspin/bootstrap.touchspin.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/fancybox/source/jquery.fancybox.pack.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/plupload/js/plupload.full.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/scripts/datatable.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/ecommerce-products-edit.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'ui_general':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery.pulsate.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-bootpag/jquery.bootpag.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/holder.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/ui-general.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'ui_tree':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jstree/dist/jstree.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/ui-tree.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            break;
+        case 'progress_bar':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jstree/dist/jstree.min.js', 'options' => array('scope' => 'header', 'weight' => JS_THEME - 2, 'type' => 'file'));
+
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            break;
+        case 'notifica8_notifications':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-notific8/jquery.notific8.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/ui-notific8.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            break;
+        case 'toastr_notifications':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-toastr/toastr.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/ui-toastr.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            break;
+        case 'alerts_dialogs':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootbox/bootbox.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/ui-alert-dialog-api.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'extended_modals':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-modal/js/bootstrap-modalmanager.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-modal/js/bootstrap-modal.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/ui-extended-modals.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'date_paginator':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/moment.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datepaginator/bootstrap-datepaginator.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/ui-datepaginator.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'nestable_list':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-nestable/jquery.nestable.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/ui-nestable.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            break;
+        case 'pickers':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/clockface/js/clockface.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-daterangepicker/moment.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-daterangepicker/daterangepicker.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/components-pickers.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'custom_dropdowns':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-select/bootstrap-select.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-multi-select/js/jquery.multi-select.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/components-dropdowns.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'form_tools':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/fuelux/js/spinner.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-inputmask/jquery.inputmask.bundle.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery.input-ip-address-control-1.0.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-pwstrength/pwstrength-bootstrap.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-tags-input/jquery.tagsinput.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-touchspin/bootstrap.touchspin.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/typeahead/handlebars.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/typeahead/typeahead.bundle.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/ckeditor/ckeditor.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/components-form-tools.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => 'https://www.google.com/recaptcha/api/challenge?k=6LcrK9cSAAAAALEcjG9gTRPbeA0yAVsKd8sBpFpR', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'external', 'weight' => 1005,));
+            break;
+        case 'editors':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-wysihtml5/wysihtml5-0.3.0.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-markdown/lib/markdown.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-markdown/js/bootstrap-markdown.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-summernote/summernote.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/components-editors.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'ion_range_sliders':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/ion.rangeslider/js/ion-rangeSlider/ion.rangeSlider.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/components-ion-sliders.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'noui_range_sliders':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/nouislider/jquery.nouislider.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/components-nouisliders.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'jquery_ui_sliders':
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/components-jqueryui-sliders.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/components-nouisliders.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'knob_circle_dials':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-knob/js/jquery.knob.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/components-knob-dials.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'form_layouts':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/form-samples.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'form_x_editable':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-wysihtml5/wysihtml5-0.3.0.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datepicker/js/locales/bootstrap-datepicker.zh-CN.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/moment.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery.mockjax.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-editable/bootstrap-editable/js/bootstrap-editable.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-editable/inputs-ext/address/address.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-editable/inputs-ext/wysihtml5/wysihtml5.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/form-editable.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'form_wizard':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-validation/js/jquery.validate.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-validation/js/additional-methods.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/form-wizard.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'form_validation':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-validation/js/jquery.validate.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-validation/js/additional-methods.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-wysihtml5/wysihtml5-0.3.0.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/ckeditor/ckeditor.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-markdown/js/bootstrap-markdown.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-markdown/lib/markdown.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/form-validation.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'image_crop':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jcrop/js/jquery.color.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jcrop/js/jquery.Jcrop.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/form-image-crop.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'multiple_file_upload':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/fancybox/source/jquery.fancybox.pack.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/js/vendor/jquery.ui.widget.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/js/vendor/tmpl.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/js/vendor/load-image.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/js/vendor/canvas-to-blob.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/blueimp-gallery/jquery.blueimp-gallery.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/js/jquery.iframe-transport.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/js/jquery.fileupload.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-process.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-image.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-audio.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-video.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-validate.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-ui.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+//@ToDo make it work for IE
+//            $jquery_transport = array(
+//                '#tag' => 'script',
+//                '#attributes' => array( // Set up an array of attributes inside the tag
+//                    'src' => drupal_get_path('theme', 'metronic') . '/assets/global/plugins/jquery-file-upload/js/cors/jquery.xdr-transport.js',
+//                ),
+//                '#prefix' => '<!--[if (gte IE 8)&(lt IE 10)]>',
+//                '#value' => '',
+//                '#suffix' => '<![endif]-->',
+//            );
+//            drupal_add_html_head($jquery_transport, 'jquery_transport');
+
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/form-fileupload.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'dropzone_file_upload':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/dropzone/dropzone.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/form-dropzone.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'managed_datatables':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/media/js/jquery.dataTables.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/table-managed.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'editable_datatables':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/media/js/jquery.dataTables.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/table-editable.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'advanced_datatables':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/media/js/jquery.dataTables.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/extensions/TableTools/js/dataTables.tableTools.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/extensions/ColReorder/js/dataTables.colReorder.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/extensions/Scroller/js/dataTables.scroller.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/table-advanced.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'ajax_datatables':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/media/js/jquery.dataTables.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/scripts/datatable.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/table-ajax.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'ajax_portlets':
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-notific8/jquery.notific8.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-toastr/toastr.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            break;
+        case 'google_maps':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-notific8/jquery.notific8.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => 'http://maps.google.com/maps/api/js?sensor=false', 'options' => array('scope' => 'footer', 'type' => 'external'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/gmaps/gmaps.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/maps-google.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'draggable_portlets':
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/portlet-draggable.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'vector_maps':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jqvmap/jqvmap/jquery.vmap.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jqvmap/jqvmap/maps/jquery.vmap.russia.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jqvmap/jqvmap/maps/jquery.vmap.world.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jqvmap/jqvmap/maps/jquery.vmap.europe.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jqvmap/jqvmap/maps/jquery.vmap.germany.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jqvmap/jqvmap/maps/jquery.vmap.usa.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jqvmap/jqvmap/data/jquery.vmap.sampledata.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/maps-vector.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'visual_charts':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/flot/jquery.flot.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/flot/jquery.flot.resize.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/flot/jquery.flot.pie.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/flot/jquery.flot.stack.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/flot/jquery.flot.crosshair.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/flot/jquery.flot.categories.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/charts.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'portfolio':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-mixitup/jquery.mixitup.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/fancybox/source/jquery.fancybox.pack.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/portfolio.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'calendar':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/fullcalendar/fullcalendar/fullcalendar.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/calendar.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'contact_us':
+            $js_list[] = array('path' => 'http://maps.google.com/maps/api/js?sensor=true', 'options' => array('scope' => 'footer', 'type' => 'external'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/gmaps/gmaps.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/contact-us.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'login':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-validation/js/jquery.validate.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/backstretch/jquery.backstretch.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/select2/select2.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/login-soft.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'user':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            break;
+        case 'lock_screen':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/backstretch/jquery.backstretch.min.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/lock.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        case 'inbox':
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/fancybox/source/jquery.fancybox.pack.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-wysihtml5/wysihtml5-0.3.0.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/js/vendor/jquery.ui.widget.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/js/vendor/tmpl.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/js/vendor/load-image.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/js/vendor/canvas-to-blob.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/blueimp-gallery/jquery.blueimp-gallery.min.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/js/jquery.iframe-transport.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/js/jquery.fileupload.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-process.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-audio.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-video.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-validate.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+            $js_list[] = array('path' => $path_to_theme . '/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-ui.js', 'options' => array('scope' => 'footer', 'type' => 'file'));
+
+            //@ToDo: make it work for IE
+//            $jquery_transport = array(
+//                '#tag' => 'script',
+//                '#attributes' => array( // Set up an array of attributes inside the tag
+//                    'src' => drupal_get_path('theme', 'metronic') . '/assets/global/plugins/jquery-file-upload/js/cors/jquery.xdr-transport.js',
+//                ),
+//                '#prefix' => '<!--[if (gte IE 8)&(lt IE 10)]>',
+//                '#value' => '',
+//                '#suffix' => '<![endif]-->',
+//            );
+//            drupal_add_html_head($jquery_transport, 'jquery_transport');
+
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            $js_list[] = array('path' => $path_to_theme . '/assets/admin/pages/scripts/inbox.js', 'options' => array('weight' => JS_THEME + 6, 'scope' => 'footer', 'type' => 'file'));
+            break;
+        default:
+            //BEGIN PAGE LEVEL SCRIPTS
+            $js_list = array_merge($js_list, _shared_page_js_list());
+            break;
+    }
+
+    return $js_list;
+}
+
+function _shared_page_js_list()
+{
+    $js_scripts = array();
+    $path_to_theme = drupal_get_path('theme', 'metronic');
+    //production
+    $js_scripts[] = array('path' => $path_to_theme . '/assets/global/scripts/metronic.js', 'options' => array('scope' => 'footer', 'weight' => JS_THEME + 1, 'type' => 'file'));
+    $js_scripts[] = array('path' => $path_to_theme . '/assets/admin/layout/scripts/layout.js', 'options' => array('scope' => 'footer', 'weight' => JS_THEME + 2, 'type' => 'file'));
+    $js_scripts[] = array('path' => $path_to_theme . '/assets/admin/layout/scripts/quick-sidebar.js', 'options' => array('scope' => 'footer', 'weight' => JS_THEME + 3, 'type' => 'file'));
+    return $js_scripts;
+}
+
+function _strip_path($script)
+{
+    return (isset($script['path'])) ? $script['path'] : '';
+}
+
+//fix $GLOBALS['theme'] referencing wrong theme after cache flashed
+//function designssquare_com_theme_metronic_init(){
+//    variable_set('ds_theme_default', 'metronic');
+//}

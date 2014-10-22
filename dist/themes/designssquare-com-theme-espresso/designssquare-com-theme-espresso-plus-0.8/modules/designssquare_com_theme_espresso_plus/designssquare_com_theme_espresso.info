@@ -1,0 +1,13 @@
+name = DesignsSquare.com Espresso Theme - PLUS
+description = functionality for Drupal Espresso Theme PLUS
+core = 7.x
+version = plus-v0.1.3
+project = designssquare_com_theme_espresso
+package = DesignsSquare.com.theme.espresso
+
+dependencies[] = designssquare_com_theme_espresso_structure
+dependencies[] = designssquare_com_theme_blocks
+dependencies[] = designssquare_lib
+dependencies[] = pathauto
+dependencies[] = jquery_update
+dependencies[] = contact

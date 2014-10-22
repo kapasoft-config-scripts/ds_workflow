@@ -1,0 +1,1024 @@
+<?php
+// Create a variable to store the path to this module
+define('DS_COM_BLOG_PATH', drupal_get_path('module', 'designssquare_com_blog'));
+module_load_include('module', 'designssquare_lib');
+
+//****Create Entry Page(front page) To Store*****/
+function designssquare_com_blog_menu()
+{
+    $items['ds-blog'] = array(
+        'title' => 'Blog',
+        'page callback' => 'blog_display',
+        'access arguments' => array('access content'),
+        'type' => MENU_NORMAL_ITEM,
+        'file' => 'inc/ds-blog.pages.inc',
+    );
+    return $items;
+}
+
+/******Block******/
+function designssquare_com_blog_block_info()
+{
+    $blocks = array();
+
+    $blocks['about_author'] = array(
+        'info' => t('DesignsSquare.com: Blog: About Author'), //admin ui block name
+    );
+
+    return $blocks;
+}
+
+function designssquare_com_blog_block_view($delta = '')
+{
+    $blocks = array();
+    switch ($delta) {
+        case 'about_author':
+        {
+            $blocks['subject'] = t('About Author');
+            $blocks['content'] = variable_get('ds_about_author_title', 'About The Author');
+//            $blocks['content'] = theme_render_template(drupal_get_path('module', 'designssquare_com_blog').'/templates/block--blog-about-author.tpl.php', _config_about_author());
+            break;
+        }
+    }
+    return $blocks;
+}
+
+//function _config_about_author(){
+//    global $user;
+//
+//    if($user){
+//        $content = render(field_view_field('user', $user, 'field_about_author'));
+//        $profile_photo = render(field_view_field('user', $user, 'field_profile_url'));
+//    }else{
+//
+//    }
+//
+//    return array(
+//        'title' => variable_get('ds_about_author_title','About The Author'),
+//        'content' => $content,
+//        'profile_photo' => $profile_photo,
+//    );
+//}
+
+function designssquare_com_blog_block_configure($delta = '')
+{
+    $form = array();
+
+    switch ($delta) {
+        case 'about_author' :
+            $form['ds_about_author_title'] = array(
+                '#type' => 'textfield',
+                '#prefix' => t('Title for the About Author'),
+                '#default_value' => variable_get('ds_about_author_title', 'About The Author'),
+            );
+            break;
+    }
+    return $form;
+}
+
+function designssquare_com_blog_block_save($delta = '', $edit = array())
+{
+    switch ($delta) {
+        case 'twitter_feed' :
+            variable_set('ds_about_author_title', $edit['ds_about_author_title']);
+            break;
+    }
+}
+
+/*********Page Scope*********/
+function designssquare_com_blog_preprocess_page(&$vars)
+{
+    $node = (!empty($vars['node'])) ? $vars['node'] : (object)array('type' => 'default');
+
+    //for single post or list of posts or a post category, lets have one template file in page scope
+    if ($node->type == 'blog' || $node->type == 'blog_posts' || arg(0) == 'taxonomy') {
+//        if($node->type == 'blog_posts' || arg(0) == 'taxonomy'){
+            $vars['blog_index_tapi'] = _blog_index_tapi($node);
+//        }
+        //in blog_posts the posts are rendered from view. there is no need to render the the node itself at the end.
+        if (arg(0) == 'ds-blog') {
+            unset($vars['page']['content']['system_main']['nodes']);
+        }
+        $vars['theme_hook_suggestions'][] = 'page__blog_common';
+    }
+
+    /*****Breadcrumbs *****/
+    $rel_path = $_GET['q'];
+    $breadcrumb = drupal_get_breadcrumb();
+    if ($rel_path == 'blog') {
+        //teaser for posts
+        $node->title = 'All Posts';
+        $breadcrumb[] = $node->title;
+        drupal_set_breadcrumb($breadcrumb);
+    } elseif (($startPos = strpos($rel_path, 'blog/')) !== false) {
+        //post of particular author
+        $userId = substr($rel_path, $startPos + 5);
+        $user = user_load($userId);
+        $node->title = $user->name . "'s Blog";
+        $breadcrumb[] = $node->title;
+        drupal_set_breadcrumb($breadcrumb);
+    } elseif (arg(0) == 'taxonomy' && isset($vars['page']['content']['system_main']['term_heading']) && $vars['page']['content']['system_main']['term_heading']['term']['#bundle'] == 'blog_categories') {
+        //specific blog category
+        $taxonomy_term = $vars['page']['content']['system_main']['term_heading']['term']['#term'];
+        $node->title = $taxonomy_term->description;
+        // @ToDo: add general posts page to breadcrumbs when categories rendered
+//        $breadcrumb[] = '<a href="/blog">'.t('Blog').'</a>';
+        $breadcrumb[] = '<a href="' . $rel_path . '">' . $taxonomy_term->name . '</a>';
+        $breadcrumb[] = $taxonomy_term->description;
+        drupal_set_breadcrumb($breadcrumb);
+    } elseif (arg(0) == 'taxonomy' && isset($vars['page']['content']['system_main']['term_heading']) && $vars['page']['content']['system_main']['term_heading']['term']['#bundle'] == 'tags') {
+        //tag cloud
+        $taxonomy_term = $vars['page']['content']['system_main']['term_heading']['term'];
+        $node->title = 'Posts with Tag: ' . $taxonomy_term['#term']->name;
+        $breadcrumb[] = '<a href="' . $rel_path . '">' . $taxonomy_term['#term']->name . '</a>';
+        $breadcrumb[] = 'Tag: ' . $taxonomy_term['#term']->name;
+        drupal_set_breadcrumb($breadcrumb);
+    }
+
+    $vars['node'] = $node;
+
+    //adding css
+//    $path  = drupal_get_path('module', 'designssquare_com_blog');
+//    drupal_add_css($path.'/css/bootstrap.css', array('group' => CSS_THEME -1, 'type' => 'file', 'preprocess' => FALSE));
+//    drupal_add_css($path.'/css/single-post.css', array('group' => CSS_THEME + 1, 'type' => 'file', 'preprocess' => FALSE));
+}
+
+//@ToDo alter css to add Bootstrap.css if not present
+//function designssquare_com_blog_css_alter(&$css){
+//
+////for removing single file
+//    $path = path_to_theme() . '/node.css';
+//    unset($css[$path]);
+//
+////for removing multiple css files
+//    $exclude = array(
+//        path_to_theme() . '/node.css' =>; FALSE,
+//path_to_theme() . '/node2.css' =>; FALSE,
+//);
+//$css = array_diff_key($css, $exclude);
+//}
+
+function designssquare_com_blog_preprocess_block(&$vars){
+    switch($vars['block_html_id']){
+        case 'block-designssquare-com-blog-about-author':
+        case 'block-views-blog-block-view-recent-ver1':
+        case 'block-views-blog-block-view-recent-ver2':
+        case 'block-views-ds-blog-categories-cat':
+        case 'block-views-ds-blog-content-posts':
+        case 'block-views-ds-blog-tags-tag':
+        case 'block-views-ds-blog-slider-slider':
+        $vars['theme_hook_suggestions'][] = 'block__no_wrapper';
+            break;
+    }
+}
+
+
+function designssquare_com_blog_preprocess_node(&$vars)
+{
+    if (!empty($vars['type']) && $vars['type'] == 'blog') {
+        switch (arg(0)) {
+            case 'node':
+                $post_format = (!empty($vars['field_posts_format']) && !empty($vars['field_posts_format'][0]['taxonomy_term'])) ? $vars['field_posts_format'][0]['taxonomy_term']->name : 'Big';
+                if ($post_format == 'Small') {
+//                    $vars['content']['field_video_file'][0]['#preset'] = 'video_small_preset';
+                    $vars['theme_hook_suggestions'][] = 'node__blog_small';
+                } else {
+//                    $vars['content']['field_video_file'][0]['#preset'] = 'big_video_preset';
+                    $vars['theme_hook_suggestions'][] = 'node__blog_big';
+                }
+
+                $vars['blog_entry'] = _blog_entry_full_tapi($vars['node'], $post_format);
+
+                //removes default form so we can add our own
+//                unset($vars['content']['comments']['comment_form']);
+                break;
+            case 'taxonomy':
+                $node_format_field = field_get_items('node', $vars['node'], 'field_posts_format');
+                $node_format_raw = ($node_format_field) ? field_view_value('node', $vars['node'], 'field_posts_format', $node_format_field[0]) : null;
+                $post_format = (!empty($node_format_raw['#title'])) ? $node_format_raw['#title'] : 'Big';
+
+                if ($post_format == 'Small') {
+//                    $vars['field_video_file'][LANGUAGE_NONE][0]['#preset'] = 'video_small_preset';
+                    $vars['theme_hook_suggestions'][] = 'node__blog_teaser_small';
+                } else {
+//                    $vars['content']['field_video_file'][0]['#preset'] = 'big_video_preset';
+                    $vars['theme_hook_suggestions'][] = 'node__blog_teaser_big';
+                }
+                $vars['blog_entry'] = _blog_entry_tapi($vars['node']);
+
+                //provide contextual links
+                $vars['ds_contextual_links'] = _post_contextual_links($vars['node']);
+
+                break;
+        }
+
+
+
+//        if (arg(0) == 'node' && is_numeric(arg(1))){
+//            //for node/id
+//            $nodeid = arg(1);
+//        }elseif(arg(0) == 'taxonomy' && is_numeric(arg(2))){
+//            //for taxanomy/term/id
+//            $nodeid = arg(2);
+//        }
+
+    }
+}
+
+//preprocesing hook for the custom theme function ds_blog_comments() to
+function designssquare_com_blog_preprocess_ds_blog_comments(&$variables)
+{
+    $comments = array();
+    $filtered_keys = array_flip(array_filter(array_keys($variables['comments']['comments']), 'is_numeric'));
+    $list_of_comments = array_intersect_key($variables['comments']['comments'], $filtered_keys);
+    foreach ($list_of_comments as $comment_id => $comment_ins) {
+        $comment = $comment_ins['#comment'];
+        $comments[$comment_id] = array('comment_tapi' => _blog_comment_tapi($comment));
+    }
+    $variables['ds_blog_comments'] = $comments;
+}
+
+function designssquare_com_blog_preprocess_views_view(&$vars)
+{
+    //provide contextual links
+    $contextual_links = contextual_element_info();
+    $contextual_links['contextual_links']['#contextual_links'] = array(
+             'views' => array('admin/structure/views/view/'.$vars['view']->name, array($vars['view']->current_display)),
+    );
+
+    $vars['ds_contextual_links'] = $contextual_links;
+
+    $tag_list = drupal_explode_tags($vars['view']->tag);
+    $view = $vars['view'];
+    if (in_array('designssquare_blog_slider', $tag_list) && !path_is_admin(current_path())) {
+//        _blog_flex_slider($vars, 'blog_teaser_slider');
+
+//        drupal_add_css(drupal_get_path('module', 'designssquare_com_blog')  .'/flexslider/flexslider.css', array('group' => CSS_THEME + 1,'type' => 'file'));
+//        drupal_add_js(drupal_get_path('module', 'designssquare_com_blog') . '/js/flexslider/jquery.flexslider.js', array('scope' => 'header', 'type' => 'file', 'weight' => 4));
+//        $inline_js = 'jQuery.noConflict()(function ($) {' . "\n";
+//        $inline_js .= '$(window).load(function() {' . "\n";
+//        $inline_js .= '    $(\'.flexslider\').flexslider({animation: "slide", controlNav: false, video: true});' . "\n";
+//        $inline_js .= '});' . "\n";
+//        $inline_js .= '});' . "\n";
+//        drupal_add_js($inline_js, array('scope' => 'footer', 'type' => 'inline', 'weight' => 5));
+
+        $vars['theme_hook_suggestion'] = 'views_view__recent_posts_slider';
+    }
+
+    if (in_array('designssquare_blog_block_categories', $tag_list) && !path_is_admin(current_path())) {
+        $vars['theme_hook_suggestion'] = 'views_view__blog_categories';
+    }
+
+    if (in_array('designssquare_blog_block_tags', $tag_list) && !path_is_admin(current_path())) {
+        $vars['theme_hook_suggestion'] = 'views_view__blog_tags';
+    }
+
+    if (in_array('designssquare_blog_block_recent_posts_ver1', $tag_list) && !path_is_admin(current_path())) {
+        $vars['recent_posts_title'] = _views_title($view);
+        $vars['theme_hook_suggestion'] = 'views_view__recent_posts_ver1';
+    }
+
+    if (in_array('designssquare_blog_block_recent_posts_ver2', $tag_list) && !path_is_admin(current_path())) {
+        $vars['recent_posts_title'] = _views_title($view);
+        $vars['theme_hook_suggestion'] = 'views_view__recent_posts_ver2';
+    }
+
+}
+
+function designssquare_com_blog_preprocess_render_blog(&$vars)
+{
+
+    //retrieve all messages and set to be rendered in template file. it also clears the message queue
+    $messages = theme_status_messages(array('display' => null));
+    $vars['messages'] = ($vars['show_messages'] && isset($messages)) ? $messages : '';
+
+    //retrieve current node being loaded
+//    $current_node = array_slice($vars['page']['content']['system_main']['nodes'],0,1);
+    $current_node = get_node_from_cache();
+
+    if (isset($current_node) && !empty($current_node)) {
+        //prepare for theme_preprocess_page function
+        $vars['node'] = $current_node;
+//        $vars['node'] = array_values($current_node)[0]['#node'];
+//        $vars['basic_tapi'] = _basic_tapi($vars['node']);
+
+        //    //in blog_posts the posts are renedered from view. there is no need to render the the node itself at the end.
+
+    } else {
+        $vars['basic_tapi'] = array(
+            'title' => 'Blog Not Found'
+        );
+        drupal_set_message(t('It appears there is no Blog index created. Please, go to \'Content\'->\'Add Content\'->\'Blog Posts\'. Or enable \'designssquarecom_blog_example_data\' module to import sample data(consult documentation for importing Sample Data)'));
+        $vars['page']['content'] = array(
+//            '#markup' => 'It appears there is no Blog index created. Please, go to \'Content\'->\'Add Content\'->\'Blog Posts\'. Or enable \'designssquarecom_blog_example_data\' module to import sample data(consult documentation for importing Sample Data)' ,
+            '#markup' => '',
+        );
+    }
+
+
+}
+
+function designssquare_com_blog_preprocess_views_view_list(&$vars)
+{
+    $tag_list = drupal_explode_tags($vars['view']->tag);
+    if (in_array('designssquare_blog_block', $tag_list) && !path_is_admin(current_path())) {
+        $posts = array();
+        foreach ($vars['view']->result as $key => $post) {
+            $posts[$key] = _basic_post_tapi($post);
+        }
+        $vars['posts'] = $posts;
+    }
+
+    if (in_array('designssquare_blog_block_categories', $tag_list) && !path_is_admin(current_path())) {
+        $vars['theme_hook_suggestion'] = 'views_view_list__blog_categories';
+    }
+
+    if (in_array('designssquare_blog_block_tags', $tag_list) && !path_is_admin(current_path())) {
+        $vars['theme_hook_suggestion'] = 'views_view_list__blog_tags';
+    }
+
+    if (in_array('designssquare_blog_block_recent_posts_ver1', $tag_list) && !path_is_admin(current_path())) {
+        $vars['theme_hook_suggestion'] = 'views_view_list__recent_posts_ver1';
+    }
+
+    if (in_array('designssquare_blog_block_recent_posts_ver2', $tag_list) && !path_is_admin(current_path())) {
+        $vars['theme_hook_suggestion'] = 'views_view_list__recent_posts_ver2';
+    }
+    /*render different formats for single post or list of posts*/
+    if (in_array('designssquare_blog_content', $tag_list) && !path_is_admin(current_path())) {
+        //generate output
+        foreach ($vars['view']->result as $key => $node_ins) {
+            $post = node_load($node_ins->nid);
+
+            $node_format_field = field_get_items('node', $post, 'field_posts_format');
+            $node_format_raw = ($node_format_field) ? field_view_value('node', $post, 'field_posts_format', $node_format_field[0]) : array();
+            $post_format = (!empty($node_format_raw['#title'])) ? $node_format_raw['#title'] : 'Big';
+
+            $blog_entry = _blog_entry_tapi($post);
+
+            $teaser_big = array(
+                '#theme' => 'ds_blog_entry_big',
+                '#blog_entry' => $blog_entry,
+            );
+            $teaser_small = array(
+                '#theme' => 'ds_blog_entry_small',
+                '#blog_entry' => $blog_entry,
+            );
+            if ($post_format == 'Big') {
+                $node_ins->blog_entry = drupal_render($teaser_big);
+            } else {
+                $node_ins->blog_entry = drupal_render($teaser_small);
+            }
+
+
+        }
+        //render the output
+        $vars['theme_hook_suggestion'] = 'views_view_list__posts';
+    }
+
+    if (in_array('designssquare_blog_slider', $tag_list) && !path_is_admin(current_path())) {
+        /*render blog slider block*/
+                $vars['blog_slider'] = array();
+
+                foreach ($vars['view']->result as $id => $row) {
+                    $entity = $row->_entity_properties['entity object'];
+//                    $vars['blog_slider'][$id]['blog_entry'] = $entity;
+//                    $vars['blog_slider'][$id] = array();
+                    $content = _slider_media($entity);
+
+                    $blog_slider = array(
+                        '#theme' => 'ds_blog_slider',
+//                        '#blog_entry' => $row->_entity_properties['entity object'],
+                        '#blog_entry' => $blog_entry = _blog_entry_tapi($entity),
+                        '#post_media' => $content,
+                    );
+
+                    $row->blog_slide = drupal_render($blog_slider);
+        }
+        _blog_flex_slider($vars, 'blog_teaser_slider');
+        $vars['theme_hook_suggestion'] = 'views_view_list__blog_slider';
+    }
+}
+
+
+/*Alter context to load sidebar specified by user for single post or list of posts*/
+function designssquare_com_blog_context_load_alter(&$context)
+{
+    //list of posts
+    if (($context->name === 'blog_posts' || $context->name === 'blog_entry') && !empty($context->reactions['block'])) {
+        $current_node = get_node_from_cache();
+        $post_sidebar_id = (!empty($current_node->field_blog_sidebar)) ? $current_node->field_blog_sidebar['und'][0]['tid'] : '';
+//        $post_sidebar = taxonomy_term_load($post_sidebar_id);
+        move_blocks_for_sidebars($context, $post_sidebar_id);
+    }
+
+}
+
+
+/**
+ * Implements hook_theme
+ */
+function designssquare_com_blog_theme($existing, $type, $theme, $path)
+{
+//    $path_to_theme_templates = path_to_theme().'/templates';
+//    $path_to_widget_templates = drupal_get_path('module', 'designssquare_com_blog').'/templates';
+    $current_theme = $GLOBALS['theme'];
+    $current_module = basename(__FILE__, '.module');
+    $theme_hooks = array(
+        'template_preprocess',
+        'template_preprocess_page',
+        $current_module . '_preprocess_render_blog',
+        $current_theme . '_preprocess_page',
+    );
+
+    //list of preprocessor functions for blog index
+    $preprocessors  = array_merge($theme_hooks, module_preprocessors('preprocess_page'));
+
+    return array(
+        'ds_blog_entry_small' => array(
+            'template' => 'node--blog-teaser-small',
+            'variables' => array(
+                'blog_entry' => NULL
+            ),
+            'path' => get_template_path('designssquare_com_blog', 'designssquare-com-widget-blog/node--blog-teaser-small').'/designssquare-com-widget-blog', // file_exists(($path_to_theme_templates.'/node--blog-teaser-small.tpl.php')) ? $path_to_theme_templates : $path_to_widget_templates,
+        ),
+        'ds_blog_entry_big' => array(
+            'template' => 'node--blog-teaser-big',
+            'variables' => array(
+                'blog_entry' => NULL
+            ),
+            'path' => get_template_path('designssquare_com_blog', 'designssquare-com-widget-blog/node--blog-teaser-big').'/designssquare-com-widget-blog',
+        ),
+        'ds_blog_slider' => array(
+            'template' => 'node--blog-slide',
+            'variables' => array(
+                'blog_entry' => NULL,
+                'post_media' => NULL
+            ),
+            'path' => get_template_path('designssquare_com_blog', 'designssquare-com-widget-blog/node--blog-slide').'/designssquare-com-widget-blog',
+        ),
+        'ds_blog_comment_form' => array(
+            'template' => 'node--blog-comment-form',
+            'variables' => array(
+                'comment' => Null,
+            ),
+            'path' => get_template_path('designssquare_com_blog', 'designssquare-com-widget-blog/node--blog-comment-form').'/designssquare-com-widget-blog',
+        ),
+        'ds_blog_comments' => array(
+            'template' => 'node--blog-comment',
+            'variables' => array(
+                'comments' => Null,
+            ),
+            'path' => get_template_path('designssquare_com_blog', 'designssquare-com-widget-blog/node--blog-comment').'/designssquare-com-widget-blog',
+        ),
+        'render_blog' => array(
+            'template' => 'page--blog-common',
+            'render element' => 'page',
+            'path' => get_template_path('designssquare_com_blog', 'designssquare-com-widget-blog/page--blog-common').'/designssquare-com-widget-blog',
+            'preprocess functions' => $preprocessors,
+        ),
+    );
+}
+
+function _videojs_settings($post_format)
+{
+    switch ($post_format) {
+        case 'slider':
+            $video_style = image_style_load('ds_blog_video_post_slider');
+            if(empty($video_style)){
+                $width = '570';
+                $height = '330';
+            }else{
+                $thumb_effect = array_shift($video_style['effects']);
+                $width = $thumb_effect['data']['width'];
+                $height = $thumb_effect['data']['height'];
+            }
+            break;
+        case 'Big':
+            $video_style = image_style_load('ds_blog_video_post_big');
+            if(empty($video_style)){
+                $width = '780';
+                $height = '468';
+            }else{
+                $thumb_effect = array_shift($video_style['effects']);
+                $width = $thumb_effect['data']['width'];
+                $height = $thumb_effect['data']['height'];
+            }
+            break;
+        case 'Small':
+            $video_style = image_style_load('ds_blog_video_post_small');
+            if(empty($video_style)){
+                $width = '370';
+                $height = '222';
+            }else{
+                $thumb_effect = array_shift($video_style['effects']);
+                $width = $thumb_effect['data']['width'];
+                $height = $thumb_effect['data']['height'];
+            }
+            break;
+        default:
+            $width = '200';
+            $height = '200';
+    }
+
+    return array(
+        'width' => $width,
+        'height' => $height,
+        'posterimage_field' => NULL,
+        'posterimage_style' => NULL,
+    );
+}
+
+function _post_vimeo_settings($post_format)
+{
+    switch ($post_format) {
+        case 'slider':
+            $vimeo_style = image_style_load('ds_blog_vimeo_post_slider');
+            if(empty($vimeo_style)){
+                $width = '320';
+                $height = '240';
+            }else{
+                $thumb_effect = array_shift($vimeo_style['effects']);
+                $width = $thumb_effect['data']['width'];
+                $height = $thumb_effect['data']['height'];
+            }
+            break;
+        case 'Big':
+            $vimeo_style = image_style_load('ds_blog_vimeo_post_big');
+            if(empty($vimeo_style)){
+                $width = '624';
+                $height = '468';
+            }else{
+                $thumb_effect = array_shift($vimeo_style['effects']);
+                $width = $thumb_effect['data']['width'];
+                $height = $thumb_effect['data']['height'];
+            }
+            break;
+        case 'Small':
+            $vimeo_style = image_style_load('ds_blog_vimeo_post_small');
+            if(empty($vimeo_style)){
+                $width = '200';
+                $height = '150';
+            }else{
+                $thumb_effect = array_shift($vimeo_style['effects']);
+                $width = $thumb_effect['data']['width'];
+                $height = $thumb_effect['data']['height'];
+            }
+            break;
+        default:
+            $width = '100%';
+            $height = '200';
+    }
+
+    return array(
+        'width' => $width,
+        'height' => $height,
+    );
+}
+
+function _post_image_settings($post_format)
+{
+    switch ($post_format) {
+        case 'slider':
+            $image_style = image_style_load('ds_blog_img_post_slider');
+            if(empty($image_style)){
+                $width = '570';
+                $height = '330';
+            }else{
+                $thumb_effect = array_shift($image_style['effects']);
+                $width = $thumb_effect['data']['width'];
+                $height = $thumb_effect['data']['height'];
+            }
+            break;
+        case 'Big':
+            $image_style = image_style_load('ds_blog_img_post_big');
+            if(empty($image_style)){
+                $width = '780';
+                $height = '468';
+            }else{
+                $thumb_effect = array_shift($image_style['effects']);
+                $width = $thumb_effect['data']['width'];
+                $height = $thumb_effect['data']['height'];
+            }
+            break;
+        case 'Small':
+            $image_style = image_style_load('ds_blog_img_post_small');
+            if(empty($image_style)){
+                $width = '370';
+                $height = '222';
+            }else{
+                $thumb_effect = array_shift($image_style['effects']);
+                $width = $thumb_effect['data']['width'];
+                $height = $thumb_effect['data']['height'];
+            }
+            break;
+        default:
+            $width = '200';
+            $height = '200';
+    }
+
+    return array(
+        'width' => $width,
+        'height' => $height,
+    );
+}
+
+function _basic_post_tapi($post)
+{
+    $node = node_load($post->nid);
+    $basic_post = array();
+    $basic_post['author'] = array();
+
+    if ($node) {
+        $basic_post['url'] = base_path() . drupal_get_path_alias('node/' . $node->nid);
+        $basic_post['title'] = $node->title;
+
+        $author = user_load($node->uid);
+        $basic_post['author']['name'] = $author->name;
+        $basic_post['author']['url'] = base_path() . 'user/' . $author->uid;
+    } else {
+        $basic_post['url'] = '/';
+        $basic_post['title'] = 'Without Title';
+        $basic_post['author']['name'] = 'anonymous';
+        $basic_post['author']['url'] = '/';
+    }
+
+    return $basic_post;
+}
+
+function _get_sidebar_pos($taxanomy_value)
+{
+    $sidebar = array();
+    switch ($taxanomy_value) {
+        case 'right':
+            $sidebar['from'] = 'sidebar_first';
+            $sidebar['to'] = 'sidebar_second';
+            break;
+        case 'left':
+            $sidebar['from'] = 'sidebar_second';
+            $sidebar['to'] = 'sidebar_first';
+            break;
+        default:
+            $sidebar['from'] = 'sidebar_first';
+            $sidebar['to'] = 'sidebar_second';
+    }
+    return $sidebar;
+}
+
+/*************Templates API*********/
+function _blog_comment_tapi($comment_ins)
+{
+    $comment = _comment_tapi($comment_ins);
+//    $comment['author'] = array();
+    if ($comment_ins->picture != "0") {
+        //avatar photo is set
+        $avatar_picture = file_load($comment_ins->picture);
+        $comment['author']['avatar_url'] = image_style_url("medium", $avatar_picture->uri);
+    } else {
+        //avatar photo is not set, lets use default
+        $comment['author']['avatar_url'] = base_path() . drupal_get_path('module', 'designssquare_com_blog') . '/images/author.png';
+    }
+    $comment['author']['name'] = $comment_ins->name;
+    $comment['date'] = format_date($comment_ins->created, 'medium', 'd M Y');
+    $comment['content'] = $comment_ins->comment_body[LANGUAGE_NONE][0]['safe_value'];
+    return $comment;
+}
+
+/*
+ * TAPI for Blog Index type blog_index
+ */
+function _blog_index_tapi($node){
+    $blog_index = array();
+    $node_field = field_get_items('node', $node, 'field_description');
+    $node_field_raw = ($node_field) ? field_view_value('node', $node, 'field_description', $node_field[0]) : '';
+    $blog_index['intro'] = (!empty($node_field_raw)) ? html_entity_decode(render($node_field_raw)) : '';
+
+    $node_field = field_get_items('node', $node, 'field_blog_sidebar');
+    $node_field_raw = ($node_field) ? field_view_value('node', $node, 'field_blog_sidebar', $node_field[0]) : array();
+    $blog_index['position'] = array('left' => false, 'right' => false, 'none' => false);
+    $position = (!empty($node_field_raw['#title'])) ? $node_field_raw['#title'] : 'right';
+
+    $blog_index['position'][strtolower($position)] = true;
+    if($position == 'none'){
+        $blog_index['position']['left'] = false;
+        $blog_index['position']['right'] = false;
+    }
+
+    return $blog_index;
+}
+
+function _blog_entry_tapi($node)
+{
+    $blog_entry = array();
+    $node_format_field = field_get_items('node', $node, 'field_posts_format');
+    $node_format_raw = ($node_format_field) ? field_view_value('node', $node, 'field_posts_format', $node_format_field[0]) : array();
+    $post_format = (!empty($node_format_raw['#title'])) ? $node_format_raw['#title'] : 'Big';
+
+    $blog_entry['title'] = $node->title;
+    $blog_entry['path_alias'] = base_path() . drupal_get_path_alias('node/' . $node->nid);
+    $blog_entry['date'] = array();
+    $blog_entry['date']['full'] = format_date($node->created, 'medium', 'd M Y');
+    $blog_entry['date']['day'] = format_date($node->created, 'medium', 'j');
+    $blog_entry['date']['month'] = format_date($node->created, 'medium', 'M');
+    $blog_entry['date']['year'] = format_date($node->created, 'medium', 'Y');
+    $blog_entry['author'] = $node->name;
+    $blog_entry['path_to_author'] = base_path() . 'user/' . $node->uid;
+    $blog_entry['comment_count'] = $node->comment_count;
+
+    //post with picture
+    $blog_entry['has_picture'] = false;
+    if (!empty($node->field_blog_img[LANGUAGE_NONE][0]['uri']) && (empty($node->field_blog_img[LANGUAGE_NONE][0]['is_default']) || !$node->field_blog_img[LANGUAGE_NONE][0]['is_default'])) {
+        $blog_entry['has_picture'] = true;
+        $blog_entry['picture'] = array();
+        $blog_entry['picture']['url'] = url('sites/default/files/' . file_uri_target($node->field_blog_img[LANGUAGE_NONE][0]['uri']), array('absolute' => true));
+        $blog_entry['picture']['alt'] = $node->field_blog_img[LANGUAGE_NONE][0]['alt'];
+        $blog_entry['picture']['title'] = $node->field_blog_img[LANGUAGE_NONE][0]['title'];
+        $img_post_size = _post_image_settings($post_format);
+        if($img_post_size['width'] == 1 || $img_post_size['height'] == 1){
+            $blog_entry['picture']['content'] = '<img src="'.$blog_entry['picture']['url'].'"  alt="'.$blog_entry['picture']['alt'].'" />';
+        }else{
+            $blog_entry['picture']['content'] = '<img src="'.$blog_entry['picture']['url'].'" width="'.$img_post_size['width'].'px" height="'.$img_post_size['height'].'px"  alt="'.$blog_entry['picture']['alt'].'" />';
+        }
+    }
+
+    //post with video
+    $blog_entry['has_video'] = false;
+    if (!empty($node->field_video_id[LANGUAGE_NONE][0]['value']) || !empty($node->field_video_file['und'][0])) {
+        $blog_entry['has_video'] = true;
+        $blog_entry['video'] = array();
+
+        if (!empty($node->field_video_id[LANGUAGE_NONE][0]['value'])) {
+            //vimeo video
+            $vimeo_frame_size = _post_vimeo_settings($post_format);
+            if($vimeo_frame_size['width'] == 1 || $vimeo_frame_size['height'] == 1){
+                $blog_entry['video']['content'] = '<iframe src="http://player.vimeo.com/video/' . $node->field_video_id[LANGUAGE_NONE][0]['value'] . '?badge=0" width="100%" height="100%" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
+            }else{
+                $blog_entry['video']['content'] = '<iframe src="http://player.vimeo.com/video/' . $node->field_video_id[LANGUAGE_NONE][0]['value'] . '?badge=0" width="'.$vimeo_frame_size['width'].'px" height="'.$vimeo_frame_size['height'].'px" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
+            }
+        } else {
+            $video_settings = _videojs_settings($post_format);
+            //video file
+            $video_render_array = field_view_field(
+                'node',
+                $node,
+                'field_video_file',
+                array(
+                    'type' => 'videojs',
+                    'label' => 'hidden',
+                    'settings' => $video_settings,
+                )
+            );
+
+            if($video_settings['width'] == 1){
+                $video_render_array[0]['#attributes']['width'] = '100%';
+            }
+
+            $blog_entry['video']['content'] = render($video_render_array);
+        }
+    }
+
+    //post with audio
+    $blog_entry['has_audio'] = false;
+    if (!empty($node->field_audio)) {
+        $blog_entry['has_audio'] = true;
+        $blog_entry['audio'] = array();
+        $audio_render_array = field_view_field(
+            'node',
+            $node,
+            'field_audio',
+            array(
+                'type' => 'audiofield_embedded',
+                'label' => 'hidden',
+                'field types' => array('file'),
+                'description' => t('Displays an audio player and optional download link.'),
+            )
+        );
+        $blog_entry['audio']['content'] = render($audio_render_array);
+    }
+
+    //*******Retrieving Categories&Tags*********/
+    $blog_entry['category'] = array();
+    $blog_categories = field_get_items('node', $node, 'field_category');
+    if($blog_categories){
+        foreach($blog_categories as $category){
+            $blog_entry['category'][] = ($blog_categories) ? field_view_value('node', $node, 'field_category', $category) : '';
+        }
+    }
+
+    $blog_entry['tag'] = array();
+    $blog_tags = field_get_items('node', $node, 'field_blog_entry_tag');
+    if($blog_tags){
+        foreach($blog_tags as $tag){
+            $blog_entry['tag'][] = ($blog_tags) ? field_view_value('node', $node, 'field_blog_entry_tag', $tag) : '';
+        }
+    }
+
+    //general content
+    $node_body_item = field_get_items('node', $node, 'body');
+    $node_body_summary_value  = ($node_body_item) ? field_view_value('node', $node, 'body', $node_body_item[0], 'teaser') : '';
+    $blog_entry['summary'] = render($node_body_summary_value);
+    $node_body_value  = ($node_body_item) ? field_view_value('node', $node, 'body', $node_body_item[0]) : '';
+    $blog_entry['body']  = render($node_body_value);
+    $blog_entry['botton_label'] = 'Read more';
+    //provide contextual links
+    $blog_entry += _post_contextual_links($node);
+
+    drupal_alter('blog_entry_tapi', $blog_entry);
+
+    return $blog_entry;
+}
+
+function _blog_entry_full_tapi($node, $post_format = 'Big')
+{
+    $teaser_blog_entry = _blog_entry_tapi($node);
+    $blog_entry = array();
+    $blog_entry['about_author'] = array();
+
+    //****Retrieve About_Author block*******/
+    $author = user_load($node->uid);
+    $about_author_field = field_get_items('user', $author, 'field_about_author');
+    $about_author_content = ($about_author_field) ? field_view_value('user', $author, 'field_about_author', $about_author_field[0]) : '';
+    $blog_entry['about_author']['content'] = render($about_author_content);
+    $blog_entry['about_author']['avatar'] = (!empty($author->picture->uri)) ? image_style_url("medium", $author->picture->uri) : file_create_url('public://designssquare_com_module_blog/img/author.png');
+
+    $block_about_author_raw = block_load('designssquare_com_blog', 'about_author');
+    $block_about_author = _block_get_renderable_array(_block_render_blocks(array($block_about_author_raw)));
+    $blog_entry['about_author']['title'] = render($block_about_author);
+
+    return array_merge($teaser_blog_entry, $blog_entry);
+}
+
+
+/**altering Theme registry to look up template files in our module folder***/
+/**
+ * Implements hook_theme_registry_alter().
+ */
+function designssquare_com_blog_theme_registry_alter(&$theme_registry)
+{
+    $path = drupal_get_path('module', 'designssquare_com_blog').'/templates/designssquare-com-widget-blog';
+    $registry_entries = drupal_find_theme_templates($theme_registry, '.tpl.php', $path);
+
+    //to avoid error message adding 'type'
+    foreach ($registry_entries as $key => $entry) {
+        $registry_entries[$key]['type'] = 'module';
+        $registry_entries[$key]['theme path'] = $path;
+    }
+    $theme_registry += $registry_entries;
+
+//    $path  = drupal_get_path('module', 'designssquare_com_blog');
+//    $theme_registry += drupal_find_theme_templates($theme_registry, '.tpl.php', $path);
+}
+
+
+function _views_title($view)
+{
+    $title = '';
+    if (isset($view->display[$view->current_display]->display_options['title'])) {
+        $title = $view->display[$view->current_display]->display_options['title'];
+    } elseif (isset($view->display[$view->current_display]->handler->default_display->options['title'])) {
+        $title = $view->display[$view->current_display]->handler->default_display->options['title'];
+    }
+    return $title;
+}
+
+//generates contextual link for the node
+function _post_contextual_links($node){
+    $contextual_links = contextual_element_info();
+    $contextual_links['contextual_links']['#contextual_links'] = array(
+        'node' => array('node', array((isset($node->nid)) ? $node->nid : '')),
+    );
+
+    return $contextual_links;
+}
+
+
+//takes node of blog entry and creates rendered media content either of video, image, audio
+function _slider_media($entity){
+    $content = '';
+
+    if (!empty($entity->field_blog_img)) {
+        $img_size = _post_image_settings('slider');
+        $img_url = url('sites/default/files/' . file_uri_target($entity->field_blog_img[LANGUAGE_NONE][0]['uri']), array('absolute' => true));
+        if($img_size['width'] == 1 || $img_size['height'] == 1){
+            $content = '<img src="' . $img_url . ' " />';
+        }else{
+            $content = '<img src="' . $img_url . '" width="' . $img_size['width'] . '" height="' . $img_size['height'] . '"/>';
+        }
+    } elseif (!empty($entity->field_video_id)) {
+        $vimeo_frame_size = _post_vimeo_settings('slider');
+
+        if($vimeo_frame_size['width'] == 1 || $vimeo_frame_size['height'] == 1){
+            $content = '<iframe src="http://player.vimeo.com/video/' . $entity->field_video_id[LANGUAGE_NONE][0]['value'] . '?badge=0" width="100%" height="100%" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
+        }else{
+            $content = '<iframe src="http://player.vimeo.com/video/' . $entity->field_video_id[LANGUAGE_NONE][0]['value'] . '?badge=0" width="' . $vimeo_frame_size['width'] . '" height="' . $vimeo_frame_size['height'] . '" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
+        }
+    } elseif (!empty($entity->field_video_file)) {
+        $video_settings = _videojs_settings('slider');
+
+        $video_render_array = field_view_field(
+            'node',
+            $entity,
+            'field_video_file',
+            array(
+                'type' => 'videojs',
+                'label' => 'hidden',
+                'settings' => $video_settings,
+            )
+        );
+
+        if($video_settings['width'] == 1){
+            $video_render_array[0]['#attributes']['width'] = '100%';
+        }
+
+        $content = render($video_render_array);
+
+    } elseif (!empty($entity->field_audio)) {
+//                    $entity = node_load('105');
+        $audio_render_array = field_view_field(
+            'node',
+            $entity,
+            'field_audio',
+            array(
+                'type' => 'audiofield_embedded',
+                'label' => 'hidden',
+                'field types' => array('file'),
+                'description' => t('Displays an audio player and optional download link.'),
+            )
+        );
+        $audio_render_array['#object']->entity_view_prepared = true;
+        $content = '<div class="blog-audio-entry-slider">' . render($audio_render_array) . '</div>';
+    } else {
+        $img_size = _post_image_settings('slider');
+        if($img_size['width'] == 1 || $img_size['height'] == 1){
+            $content = '<img src="' . base_path() . path_to_theme() . '/images/gallery/Anchor_v1_preview2-880x461.png" />';
+        }else{
+            //default image
+            $content = '<img src="' . base_path() . path_to_theme() . '/images/gallery/Anchor_v1_preview2-880x461.png" width="' . $img_size['width'] . '" height="' . $img_size['height'] . '"/>';
+        }
+    }
+
+    return $content;
+}
+
+function designssquare_com_blog_node_presave($node)
+{
+    //fix  for loam sample data import where 'display' is striped away for field_broshure causing db syntax error at node_save
+    if ($field_instance = field_get_items('node', $node, 'field_video_file')) {
+        foreach ($field_instance as $key => $field_ins) {
+            $node->field_video_file['und'][$key]['display'] = 1;
+        }
+    }
+
+    if ($field_instance = field_get_items('node', $node, 'field_audio')) {
+        foreach ($field_instance as $key => $field_ins) {
+            $node->field_audio['und'][$key]['display'] = 1;
+        }
+    }
+}
+
+function designssquare_com_blog_css_alter(&$css)
+{
+    if (path_is_admin($_GET['q'])) {
+        $css_admin_path = drupal_get_path('module', 'designssquare_com_blog') . '/css/admin_style.css';
+        $css[$css_admin_path] = array(
+            'data' => $css_admin_path,
+            'type' => 'file',
+            'every_page' => TRUE,
+            'media' => 'all',
+            'preprocess' => TRUE,
+            'group' => CSS_THEME,
+            'browsers' => array('IE' => TRUE, '!IE' => TRUE),
+            'weight' => 1,
+        );
+    }
+}
+
+//configure and add flex slider to service widget
+/*
+ * make sure to add
+ * <ul class="ds-blog-direction-nav">
+        <li><a href="#" class="ds-blog-flex-prev"></a></li>
+        <li><a href="#" class="ds-blog-flex-next"></a></li>
+    </ul>
+ */
+function _blog_flex_slider(&$vars, $id){
+    $options = array(
+        'slider_id' => $id,
+        'animation' => 'slide',
+        'controlNav' => "false",
+        'directionNav' => "false",
+//        'itemWidth' => 0,
+//        'itemMargin' => 0,
+//        'minItems' => 0,
+//        'maxItems' => 0,
+        'slideshow' => "true",
+        'animationLoop' => "true",
+    );
+    $options['nav_left_top'] = '85%';
+    $options['nav_left_offset'] = '20px';
+    $options['nav_right_top'] = '85%';
+    $options['nav_right_offset'] = '20px ';
+    import_flex_slider($vars, $options);
+    drupal_add_css(drupal_get_path('module','designssquare_com_blog').'/css/flex-blog-slider.css', array('type' => 'file', 'weight' => CSS_THEME));
+    drupal_add_js(drupal_get_path('module','designssquare_com_blog').'/js/blog-flex-custom.js', array('scope' =>'footer', 'type' => 'file', 'weight' => JS_THEME + 1));
+}

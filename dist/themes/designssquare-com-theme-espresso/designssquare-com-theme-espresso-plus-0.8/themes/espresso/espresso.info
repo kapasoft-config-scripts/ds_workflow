@@ -1,0 +1,50 @@
+name = Espresso
+description = Drupal theme - Espresso 1.3
+version = v0.7
+core = 7.x
+base theme = bootstrap
+
+;;;;;;;;;;;;;;;;;;;;;
+;; Regions
+;;;;;;;;;;;;;;;;;;;;;
+
+regions[navigation]     = 'Navigation'
+regions[header]         = 'Top Bar'
+regions[page_header]    = 'Page Top Bar'
+regions[highlighted]    = 'Highlighted'
+regions[help]           = 'Help'
+regions[content]        = 'Content'
+regions[sidebar_first]  = 'Primary'
+regions[sidebar_second] = 'Secondary'
+regions[footer]         = 'Footer'
+regions[page_top]       = 'Page Top'
+regions[page_bottom]    = 'Page Bottom'
+;;;;;;;;;;;;;;;;;;;;;
+;; Regions Specific Espresso
+;;;;;;;;;;;;;;;;;;;;;
+regions[row_one]         = 'Row One'
+regions[row_two]       = 'Row Two'
+regions[row_three]    = 'Row Three'
+regions[footer_navigation]    = 'Footer Navigation'
+;;;;;;;;;;;;;;;;;;;;;
+;; Stylesheets
+;;;;;;;;;;;;;;;;;;;;;
+
+stylesheets[all][] = assets/css/bootstrap.min.css
+stylesheets[all][] = assets/css/style.css
+;;stylesheets[all][] = assets/css/custom.css
+;;;;;;;;;;;;;;;;;;;;;
+;; Espresso Default Settings
+;;;;;;;;;;;;;;;;;;;;;
+
+settings[ds_theme_predefined_background] = 001
+settings[ds_custom_bg_enabled] = 0
+settings[ds_theme_custom_background] = 0
+
+
+;;;;;;;;;;;;;;;;;;;;;
+;; Espresso JS Files
+;;;;;;;;;;;;;;;;;;;;;
+;;scripts[] = 'assets/js/jquery.min.js'
+scripts[] = 'assets/js/bootstrap.min.js'
+;;scripts[] = 'assets/js/bootstrap-dropdown.js'

@@ -1,0 +1,25 @@
+<?php
+
+function designssquare_com_theme_espresso_preprocess_html(&$vars){
+    drupal_add_css('http://fonts.googleapis.com/css?family=Oswald:400,700', array('type' => 'external', 'weight' =>CSS_THEME, 'preprocess' => FALSE));
+}
+
+function designssquare_com_theme_espresso_ds_block_context_alter(&$context, $block_id)
+{
+    switch ($block_id) {
+        case 'ds_recent_tweets':
+        case 'ds_about':
+        case 'ds_social':
+            $context['classes_array'][] = 'col-sm-3';
+            $context['classes_array'][] = 'row-element';
+            break;
+        case 'ds_announcement':
+            $context['classes_array'][] = 'col-sm-12';
+            break;
+    }
+}
+
+//theme setting background image handled
+//function ds_theme_custom_background_alter(&$form_state){
+//    drupal_set_message(t("hello from alter hook"));
+//}

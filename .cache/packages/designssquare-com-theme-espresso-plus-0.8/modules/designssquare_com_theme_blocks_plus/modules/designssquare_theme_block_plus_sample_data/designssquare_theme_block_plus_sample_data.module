@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the DesignsSquare.com: Theme: Block - Plus: Sample Data feature.
+ */
+
+include_once 'designssquare_theme_block_plus_sample_data.features.inc';

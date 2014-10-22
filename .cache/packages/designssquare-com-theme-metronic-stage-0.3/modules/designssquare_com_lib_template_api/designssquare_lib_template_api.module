@@ -1,0 +1,426 @@
+<?php
+require dirname(__FILE__) . '/includes/template_api.inc';
+
+function designssquare_lib_template_api_preprocess_html(&$vars)
+{
+//    if (!path_is_admin(current_path())) {
+    //NO templating in ADMIN
+    /****Header******/
+    $header_tapi = _header_tapi();
+    //header TAPI general
+    $vars['header_tapi'] = $header_tapi;
+    $path_to_theme = drupal_get_path('theme', variable_get('theme_default'));
+    //breadcrumbs
+    if (file_exists($path_to_theme . '/templates/template-api/header.tpl.php')) {
+        $header = array(
+            '#theme' => 'template_api_header',
+            '#header_tapi' => $header_tapi,
+            '#vars_tapi' => $vars,
+        );
+        $vars['header'] = $header;
+    }
+
+    /***Footer***/
+    $path_to_theme = drupal_get_path('theme', variable_get('theme_default'));
+    //breadcrumbs
+    if (file_exists($path_to_theme . '/templates/template-api/footer.tpl.php')) {
+    $footer_tapi = _footer_tapi();
+    //header TAPI for header.tpl.php
+    $footer = theme('template_api_footer', array(
+        'footer_tapi' => $footer_tapi,
+        'vars_tapi' => $vars,
+    ));
+    $vars['footer'] = $footer;
+    }
+
+
+
+    //user handling
+    //    $reqUrl = $_GET['q'];
+//    if(preg_match ('/user/', $reqUrl) && !$vars['logged_in']){
+//        $user_tapi = array();
+//        $user_tapi['login'] = _user_login_tapi();
+//        $user_tapi['password'] = _user_pass_tapi();
+//        $user_tapi['registration'] = _user_registration_tapi();
+//        $vars['user_tapi'] = $user_tapi;
+//    }elseif(preg_match ('/user/', $reqUrl) && $vars['logged_in']){
+//        $vars['user_tapi'] = _user_tapi();
+//    }
+}
+
+function designssquare_lib_template_api_preprocess_page(&$vars)
+{
+    /***PAGE TAPI****/
+    $vars['page_tapi'] = _page_tapi($vars);
+
+    /**CONTACT TAPI***/
+    if (file_exists(drupal_get_path('theme', variable_get('theme_default')) . '/templates/template-api/contact.tpl.php')) {
+        //contact page
+        $vars['contact_form'] = array(
+            '#theme' => 'template_api_contact_form',
+            '#contact_tapi' => _contact_tapi('contact'),
+        );
+        $vars['contact_block_form'] = array(
+            '#theme' => 'template_api_contact_block_form',
+            '#contact_tapi' => _contact_tapi('contact_block'),
+        );
+        $vars['contact_inquiry_form'] = array(
+            '#theme' => 'template_api_contact_inquiry_form',
+            '#contact_tapi' => _contact_tapi('inquiry'),
+        );
+    }
+
+    /*******User Login, Registration, Password*******/
+    $reqUrl = $_GET['q'];
+    if (preg_match('/user/', $reqUrl) && !$vars['logged_in']) {
+        $vars['user_tapi'] = _user_tapi();
+        $vars['user_tapi']['is_authenticated'] = true;
+        $vars['user_tapi']['password'] = _user_pass_tapi();
+        $vars['user_tapi']['registration'] = _user_registration_tapi();
+        $vars['user_tapi']['login'] = _user_login_tapi();
+    } else {
+        //for user profile
+        $vars['user_tapi'] = _user_tapi();
+        $vars['user_tapi']['is_authenticated'] = true;
+    }
+}
+
+function designssquare_lib_template_api_theme()
+{
+    $path_to_theme = drupal_get_path('theme', variable_get('theme_default'));
+    return array(
+        'template_api_breadcrumbs' => array(
+            'template' => 'breadcrumbs',
+            'variables' => array(
+                'breadcrumbs_tapi' => NULL,
+                'vars_tapi' => NULL,
+            ),
+            'path' => $path_to_theme . '/templates/template-api',
+        ),
+        'template_api_header' => array(
+            'template' => 'header',
+            'variables' => array(
+                'header_tapi' => NULL,
+                'vars_tapi' => NULL,
+            ),
+            'path' => $path_to_theme . '/templates/template-api',
+        ),
+        'template_api_footer' => array(
+            'template' => 'footer',
+            'variables' => array(
+                'footer_tapi' => NULL,
+                'vars_tapi' => NULL,
+            ),
+            'path' => $path_to_theme . '/templates/template-api',
+        ),
+        'template_api_search' => array(
+            'template' => 'search',
+            'variables' => array(
+                'search_tapi' => NULL,
+//               'vars_tapi' => NULL,
+            ),
+            'path' => $path_to_theme . '/templates/template-api',
+        ),
+        'template_api_main_menu' => array(
+            'template' => 'main-menu',
+            'variables' => array(
+                'menu_tapi' => NULL,
+            ),
+            'path' => $path_to_theme . '/templates/template-api',
+        ),
+        'template_api_main_menu_link' => array(
+            'template' => 'main-menu-link',
+            'variables' => array(
+                'link_tapi' => NULL,
+            ),
+            'path' => $path_to_theme . '/templates/template-api',
+        ),
+        'template_api_bottom_menu' => array(
+            'template' => 'bottom-menu',
+            'variables' => array(
+                'menu_tapi' => NULL,
+            ),
+            'path' => $path_to_theme . '/templates/template-api',
+        ),
+        'template_api_bottom_menu_link' => array(
+            'template' => 'bottom-menu-link',
+            'variables' => array(
+                'link_tapi' => NULL,
+            ),
+            'path' => $path_to_theme . '/templates/template-api',
+        ),
+        'template_api_user_menu' => array(
+            'template' => 'user-menu',
+            'variables' => array(
+                'menu_tapi' => NULL,
+            ),
+            'path' => $path_to_theme . '/templates/template-api',
+        ),
+        'template_api_user_menu_link' => array(
+            'template' => 'user-menu-link',
+            'variables' => array(
+                'link_tapi' => NULL,
+            ),
+            'path' => $path_to_theme . '/templates/template-api',
+        ),
+        'template_api_contact_form' => array(
+            'template' => 'contact',
+            'variables' => array(
+                'contact_tapi' => NULL,
+            ),
+            'path' => $path_to_theme . '/templates/template-api',
+        ),
+        'template_api_contact_block_form' => array(
+            'template' => 'contact-block',
+            'variables' => array(
+                'contact_tapi' => NULL,
+            ),
+            'path' => $path_to_theme . '/templates/template-api',
+        ),
+        'template_api_contact_inquiry_form' => array(
+            'template' => 'contact-inquiry',
+            'variables' => array(
+                'contact_tapi' => NULL,
+            ),
+            'path' => $path_to_theme . '/templates/template-api',
+        ),
+    );
+}
+
+/***SEARCH****/
+/**Overriding theme_form function to get rid of form html
+ * @param $variables
+ */
+function designssquare_lib_template_api_form($variables)
+{
+//function theme_form($variables) {
+    $element = $variables['element'];
+    if (isset($element['#action'])) {
+        $element['#attributes']['action'] = drupal_strip_dangerous_protocols($element['#action']);
+    }
+    element_set_attributes($element, array('method', 'id'));
+    if (empty($element['#attributes']['accept-charset'])) {
+        $element['#attributes']['accept-charset'] = "UTF-8";
+    }
+
+    if ($variables['element']['#form_id'] == 'search_block_form') {
+        return $element['#children'];
+    } else {
+        return '<form' . drupal_attributes($element['#attributes']) . '><div>' . $element['#children'] . '</div></form>';
+    }
+//    return $element['#children'];
+}
+
+function designssquare_lib_template_api_search()
+{
+    $search_tapi = _search_tapi();
+    $output = theme('template_api_search', array(
+        'search_tapi' => $search_tapi,
+//        'vars_tapi' => $variables,
+    ));
+    return $output;
+}
+
+/*****BREADCRUMBS*****/
+/*overrides theme_breadcrumb*/
+function designssquare_lib_template_api_breadcrumb(&$variables)
+{
+
+    $output = '';
+    $breadcrumbs = _breadcrumb_tapi();
+
+    if (path_is_admin(current_path())) {
+        //for admin don't template
+        if (!empty($breadcrumbs)) {
+            // Provide a navigational heading to give context for breadcrumb links to
+            // screen-reader users. Make the heading invisible with .element-invisible.
+            $output = '<h2 class="element-invisible">' . t('You are here') . '</h2>';
+
+            $output .= '<div class="breadcrumb">';
+            foreach($breadcrumbs as $key => $breadcrumb){
+                if(!$breadcrumb['first']){
+                    $output .= ' » ';
+                }
+                $output .= '<a href="'.$breadcrumb['url'].'">'.$breadcrumb['label'].' </a>';
+            }
+            $output .= '</div>';
+        }
+    } else {
+    //get the current content from cache
+    $content = drupal_set_page_content();
+    //indicate that you are not adding content but just reading it by setting static variable 'system...added' to False
+    $system_main_content_added = & drupal_static('system_main_content_added');
+    $system_main_content_added = FALSE;
+
+    //include all blocks
+    include_blocks($content);
+
+    //make it consistent with Drupal
+    $content['page'] = $content['region'];
+    // Determine if we are to display the breadcrumb.
+//    $bootstrap_breadcrumb = theme_get_setting('bootstrap_breadcrumb');
+//        if (($bootstrap_breadcrumb == 1 || ($bootstrap_breadcrumb == 2 && arg(0) == 'admin')) && !empty($breadcrumbs)) {
+    $output = theme('template_api_breadcrumbs', array(
+        'breadcrumbs_tapi' => $breadcrumbs,
+        'vars_tapi' => $content,
+    ));
+//        }
+    }
+
+
+    return $output;
+}
+
+
+//function designssquare_lib_template_api_preprocess_breadcrumb(&$vars)
+//{
+////    if (path_is_admin(current_path())) {
+////        //for admin keep, don't template
+////        $breadcrumb = & $variables['breadcrumb'];
+////
+////        // Optionally get rid of the homepage link.
+////        $show_breadcrumb_home = theme_get_setting('bootstrap_breadcrumb_home');
+////        if (!$show_breadcrumb_home && isset($breadcrumb) && array($breadcrumb) && !empty($breadcrumb)) {
+////            array_shift($breadcrumb);
+////        }
+////
+////        if (theme_get_setting('bootstrap_breadcrumb_title') && !empty($breadcrumb)) {
+////            $item = menu_get_item();
+////            $breadcrumb[] = array(
+////                // If we are on a non-default tab, use the tab's title.
+////                'data' => !empty($item['tab_parent']) ? check_plain($item['title']) : drupal_get_title(),
+////                'class' => array('active'),
+////            );
+////        }
+////
+////    } else {
+//        //reset breadcrumbs
+//        $vars['breadcrumb'] = _breadcrumb_tapi();
+////    }
+//}
+
+/*override breadcrumb trail*/
+function ds_menu_get_active_breadcrumb()
+{
+    $breadcrumb = array();
+
+    // No breadcrumb for the front page.
+    if (drupal_is_front_page()) {
+        return $breadcrumb;
+    }
+
+    $item = menu_get_item();
+    if (!empty($item['access'])) {
+        $active_trail = menu_get_active_trail();
+
+        // Allow modules to alter the breadcrumb, if possible, as that is much
+        // faster than rebuilding an entirely new active trail.
+        drupal_alter('menu_breadcrumb', $active_trail, $item);
+
+        // Don't show a link to the current page in the breadcrumb trail.
+        $end = end($active_trail);
+        if ($item['href'] == $end['href']) {
+            array_pop($active_trail);
+        }
+
+        // Remove the tab root (parent) if the current path links to its parent.
+        // Normally, the tab root link is included in the breadcrumb, as soon as we
+        // are on a local task or any other child link. However, if we are on a
+        // default local task (e.g., node/%/view), then we do not want the tab root
+        // link (e.g., node/%) to appear, as it would be identical to the current
+        // page. Since this behavior also needs to work recursively (i.e., on
+        // default local tasks of default local tasks), and since the last non-task
+        // link in the trail is used as page title (see menu_get_active_title()),
+        // this condition cannot be cleanly integrated into menu_get_active_trail().
+        // menu_get_active_trail() already skips all links that link to their parent
+        // (commonly MENU_DEFAULT_LOCAL_TASK). In order to also hide the parent link
+        // itself, we always remove the last link in the trail, if the current
+        // router item links to its parent.
+        if (($item['type'] & MENU_LINKS_TO_PARENT) == MENU_LINKS_TO_PARENT) {
+            array_pop($active_trail);
+        }
+
+        foreach ($active_trail as $parent) {
+//            if (path_is_admin(current_path())) {
+//                $breadcrumb[] = l($parent['title'], $parent['href'], $parent['localized_options']);
+//            } else {
+            $breadcrumb[] = array(
+                'label' => $parent['title'],
+                'url' => '/' . $parent['href'],
+                'last' => false,
+                'first' => false,
+            );
+//            }
+        }
+    }
+    return $breadcrumb;
+}
+
+/****MENUs****/
+function designssquare_lib_template_api_menu_tree(&$variables)
+{
+    $menu_item_raw = array_shift($variables);
+    $menu_item = array_shift($menu_item_raw);
+    $menu_name = $menu_item['#original_link']['menu_name'];
+    $menu_template = drupal_get_path('theme', variable_get('theme_default')) . '/templates/template-api/' . $menu_name . '.tpl.php';
+    $menu_link_template = drupal_get_path('theme', variable_get('theme_default')) . '/templates/template-api/' . $menu_name . '-link.tpl.php';
+
+    if (!file_exists($menu_template) || !file_exists($menu_link_template)) {
+        //in admin path use bootstrap_menu_tree
+        $output = '<ul class="menu nav navbar-nav">' . ((isset($variables['tree'])) ? $variables['tree'] : '') . '</ul>';
+    } else {
+        $active_trail = menu_set_active_trail();
+        //dispose home
+        array_shift($active_trail);
+        //retrieve active path trail
+        $active_trail_list = array_map('filter_active_path', $active_trail);
+        //retrieve menu structure
+        $tree = menu_tree_all_data($menu_name, NULL);
+        $depth = 0;
+        //rebuilds menu tree with link_output,depth,active etc present
+        $menu_name_final = str_replace('-', '_', $menu_name);
+        rebuild_menu_tree($tree, $menu_name_final, $depth, $active_trail_list);
+
+        $menu_tapi = _menu_tapi($tree, $depth);
+        $output = theme('template_api_' . $menu_name_final, array(
+            'menu_tapi' => $menu_tapi,
+        ));
+    }
+
+    return $output;
+}
+
+function designssquare_lib_template_api_theme_registry_alter(&$theme_registry)
+{
+
+    $path_to_theme = drupal_get_path('theme', variable_get('theme_default'));
+    //breadcrumbs
+    if (file_exists($path_to_theme . '/templates/template-api/breadcrumbs.tpl.php')) { //only enable if the template is present
+        //override theme_breadcrumb
+        $theme_registry['breadcrumb']['function'] = 'designssquare_lib_template_api_breadcrumb';
+        //reset preprocessor to ensure breadcrumbs are in breadcrumb_tapi
+        unset($theme_registry['breadcrumb']['preprocess functions']);
+//        $theme_registry['breadcrumb']['preprocess functions'] = array();
+//        $theme_registry['breadcrumb']['preprocess functions'][] = 'designssquare_lib_template_api_preprocess_breadcrumb';
+    }
+
+    //search box
+    if (file_exists($path_to_theme . '/templates/template-api/search.tpl.php')) { //only enable if the template is present
+        //override search form
+        $theme_registry['search_block_form']['function'] = 'designssquare_lib_template_api_search';
+
+        //override theme_form function to remove wrap around form element
+        if (!empty($theme_registry['form'])) {
+            $theme_registry['form']['function'] = 'designssquare_lib_template_api_form';
+        }
+    }
+
+
+    if (file_exists($path_to_theme . '/templates/template-api/main-menu.tpl.php') || file_exists($path_to_theme . '/templates/template-api/user-menu.tpl.php') || file_exists($path_to_theme . '/templates/template-api/bottom-menu.tpl.php')) { //only enable if the template is present
+        //main menu
+        $theme_registry['menu_tree']['function'] = 'designssquare_lib_template_api_menu_tree';
+        unset($theme_registry['menu_tree']['preprocess functions']);
+    }
+
+}
+

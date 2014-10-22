@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the DesignsSquare.com: Portfolio: Sample Data - Kickstart feature.
+ */
+
+include_once 'designssquare_com_portfolio_sample_data_kickstart.features.inc';

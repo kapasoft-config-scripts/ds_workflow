@@ -1,0 +1,20 @@
+name = DesignsSquare Blog Widget
+description = blog widget for publishing content, podcast, videocast with categories, tags and extra blocks
+core = 7.x
+version = v0.1.15
+project = designssquare_com_blog
+package = DesignsSquare.com.widget.blog
+files[] = designssquare_com_blog.module
+;configure = admin/config/moduleName ;this adds configuration button next to module name in modules list
+;;Module dependencies
+
+dependencies[] = ckeditor
+dependencies[] = imce
+dependencies[] = videojs
+dependencies[] = designssquarecom_blog_structure
+dependencies[] = contextual
+
+
+;;Artifact Dependencies
+;context:blog_posts
+;content_type:

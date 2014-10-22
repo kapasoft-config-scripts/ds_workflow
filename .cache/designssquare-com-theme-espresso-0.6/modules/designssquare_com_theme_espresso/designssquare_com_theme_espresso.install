@@ -1,0 +1,169 @@
+<?php
+
+function designssquare_com_theme_espresso_install(){
+    $t = get_t();
+    module_load_include('inc', 'designssquare_lib', 'includes/export_api');
+
+    $all_assets = array_merge(_assets_list(), _lib_assets_list());
+    //looping through the files and coping to the destination
+    foreach($all_assets as $file){
+        $uri = $file['uri'];
+        $dir_name = drupal_dirname($uri);
+        file_prepare_directory($dir_name,FILE_CREATE_DIRECTORY);
+        (!file_exists(drupal_realpath($uri))) ? file_unmanaged_copy($file['source'], $uri) : '';
+    }
+    drupal_set_message($t('Espresso Theme assets transferred'));
+}
+
+function designssquare_com_theme_espresso_uninstall(){
+    $t = get_t();
+
+    //looping through the files and removing one by one
+    foreach(_assets_list() as $file){
+        $uri = $file['uri'];
+        $filename = drupal_realpath($uri);
+        (file_exists($uri)) ? file_unmanaged_delete($filename) : '';
+    }
+    drupal_set_message($t('Espresso Theme assets removed'));
+}
+
+function _assets_list(){
+    $module_dir = drupal_get_path('module', 'designssquare_com_theme_espresso');
+    return array (
+        'public://designssquare_theme/espresso/img/001.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/001.jpg',
+            'filename' => '001.jpg',
+            'source' => $module_dir.'/assets/img/001.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/002.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/002.jpg',
+            'filename' => '002.jpg',
+            'source' => $module_dir.'/assets/img/002.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/003.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/003.jpg',
+            'filename' => '003.jpg',
+            'source' => $module_dir.'/assets/img/003.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/004.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/004.jpg',
+            'filename' => '004.jpg',
+            'source' => $module_dir.'/assets/img/004.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/005.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/005.jpg',
+            'filename' => '005.jpg',
+            'source' => $module_dir.'/assets/img/005.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/006.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/006.jpg',
+            'filename' => '006.jpg',
+            'source' => $module_dir.'/assets/img/006.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/007.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/007.jpg',
+            'filename' => '007.jpg',
+            'source' => $module_dir.'/assets/img/007.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/008.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/008.jpg',
+            'filename' => '008.jpg',
+            'source' => $module_dir.'/assets/img/008.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/009.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/009.jpg',
+            'filename' => '009.jpg',
+            'source' => $module_dir.'/assets/img/009.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/010.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/010.jpg',
+            'filename' => '010.jpg',
+            'source' => $module_dir.'/assets/img/010.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/011.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/011.jpg',
+            'filename' => '011.jpg',
+            'source' => $module_dir.'/assets/img/011.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/012.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/012.jpg',
+            'filename' => '012.jpg',
+            'source' => $module_dir.'/assets/img/012.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/background.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/background.jpg',
+            'filename' => 'background.jpg',
+            'source' => $module_dir.'/assets/img/background.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/bio-lg.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/bio-lg.jpg',
+            'filename' => 'bio-lg.jpg',
+            'source' => $module_dir.'/assets/img/bio-lg.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/bio.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/bio.jpg',
+            'filename' => 'bio.jpg',
+            'source' => $module_dir.'/assets/img/bio.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/birdfat-lg.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/birdfat-lg.jpg',
+            'filename' => 'birdfat-lg.jpg',
+            'source' => $module_dir.'/assets/img/birdfat-lg.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/birdgreen-lg.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/birdgreen-lg.jpg',
+            'filename' => 'birdgreen-lg.jpg',
+            'source' => $module_dir.'/assets/img/birdgreen-lg.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/birdretro-lg.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/birdretro-lg.jpg',
+            'filename' => 'birdretro-lg.jpg',
+            'source' => $module_dir.'/assets/img/birdretro-lg.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/birdsepia-lg.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/birdsepia-lg.jpg',
+            'filename' => 'birdsepia-lg.jpg',
+            'source' => $module_dir.'/assets/img/birdsepia-lg.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/butterfly-lg.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/butterfly-lg.jpg',
+            'filename' => 'butterfly-lg.jpg',
+            'source' => $module_dir.'/assets/img/butterfly-lg.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/flowers-lg.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/flowers-lg.jpg',
+            'filename' => 'flowers-lg.jpg',
+            'source' => $module_dir.'/assets/img/flowers-lg.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/glyphicons-halflings-white.png' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/glyphicons-halflings-white.png',
+            'filename' => 'glyphicons-halflings-white.png',
+            'source' => $module_dir.'/assets/img/glyphicons-halflings-white.png',
+        ),
+        'public://designssquare_theme/espresso/img/glyphicons-halflings.png' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/glyphicons-halflings.png',
+            'filename' => 'glyphicons-halflings.png',
+            'source' => $module_dir.'/assets/img/glyphicons-halflings.png',
+        ),
+        'public://designssquare_theme/espresso/img/gravatar-icon.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/gravatar-icon.jpg',
+            'filename' => 'gravatar-icon.jpg',
+            'source' => $module_dir.'/assets/img/gravatar-icon.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/leaves-lg.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/leaves-lg.jpg',
+            'filename' => 'leaves-lg.jpg',
+            'source' => $module_dir.'/assets/img/leaves-lg.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/slice.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/slice.jpg',
+            'filename' => 'slice.jpg',
+            'source' => $module_dir.'/assets/img/slice.jpg',
+        ),
+        'public://designssquare_theme/espresso/img/snail-lg.jpg' => array(
+            'uri' => 'public://designssquare_theme/espresso/img/snail-lg.jpg',
+            'filename' => 'snail-lg.jpg',
+            'source' => $module_dir.'/assets/img/snail-lg.jpg',
+        ),
+    );
+}

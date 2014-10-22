@@ -1,0 +1,10 @@
+<?php
+
+function designssquare_com_theme_espresso_preprocess_html(&$vars){
+    drupal_add_css('http://fonts.googleapis.com/css?family=Oswald:400,700', array('type' => 'external', 'weight' =>CSS_THEME, 'preprocess' => FALSE));
+}
+
+function designssquare_com_theme_espresso_init(){
+    //load for processing file_managed on Ajax calls(i.e. upload, remove)
+module_load_include('inc', 'designssquare_lib', 'inc/file_managed_alter');
+}

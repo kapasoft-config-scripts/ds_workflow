@@ -1,0 +1,10 @@
+<?php
+
+function designssquare_com_theme_blocks_install(){
+
+}
+
+function designssquare_com_theme_blocks_uninstall(){
+
+}
+

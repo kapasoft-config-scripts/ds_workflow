@@ -1,0 +1,11 @@
+name = DesignsSquare.com Portfolio Widget
+description = easy way to present your previous work and projects
+core = 7.x
+version = 0.2.1
+project = designssquare_com_widget_portfolio
+package = DesignsSquare.com.widget.portfolio
+files[] = designssquare_com_widget_portfolio.module
+
+;;Module dependencies
+dependencies[] = designssquare_com_portfolio_structure_and_configurations
+dependencies[] = contextual

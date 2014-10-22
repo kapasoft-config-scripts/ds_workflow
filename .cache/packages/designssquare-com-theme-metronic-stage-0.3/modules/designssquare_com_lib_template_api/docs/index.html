@@ -1,0 +1,738 @@
+<!doctype html>
+<!--[if IE 6 ]>
+<html lang="en-us" class="ie6"> <![endif]-->
+<!--[if IE 7 ]>
+<html lang="en-us" class="ie7"> <![endif]-->
+<!--[if IE 8 ]>
+<html lang="en-us" class="ie8"> <![endif]-->
+<!--[if (gt IE 7)|!(IE)]><!-->
+<html lang="en-us"><!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+
+    <title>Template API - Making Drupal Theming Easy</title>
+
+    <meta name="description"
+          content="DesignSquare.com giving back Drupal community">
+    <meta name="author" content="DesignsSquare.com">
+    <meta name="copyright" content="DesignsSquare.com">
+    <meta name="generator" content="Documenter v1.6 http://rxa.li/documenter">
+    <meta name="date" content="2012-03-27T00:00:00+02:00">
+    <link rel="stylesheet" href="css/documenter_style.css" media="all">
+    <script src="js/jquery.1.6.4.js"></script>
+    <script src="js/jquery.scrollTo-1.4.2-min.js"></script>
+    <script src="js/jquery.easing.js"></script>
+    <link rel="stylesheet" href="css/shDocumenter.css" media="screen">
+    <script src="js/shCore.js"></script>
+    <script src="js/shBrushCss.js"></script>
+    <script src="js/shBrushJScript.js"></script>
+    <script>SyntaxHighlighter.defaults['toolbar'] = false;
+    SyntaxHighlighter.all();</script>
+    <script>document.createElement('section');
+    var duration = 500, easing = 'swing';</script>
+    <script src="js/script.js"></script>
+    <style>
+        html {
+            background-color: #FFFFFF;
+            color: #383838;
+        }
+
+        ::-moz-selection {
+            background: #444444;
+            color: #DDDDDD;
+        }
+
+        ::selection {
+            background: #444444;
+            color: #DDDDDD;
+        }
+
+        hr {
+            border-top: 1px solid #E1B568;
+            border-bottom: 1px solid #FFFFFF;
+        }
+
+        #documenter_sidebar, #documenter_sidebar ol a {
+            background-color: #ffffff;
+            /*background-color: #E1B568;*/
+            /*color: #222222;*/
+            color: #373737;
+        }
+
+        #documenter_sidebar ol a {
+            -webkit-text-shadow: 1px 1px 0px #EEEEEE;
+            -moz-text-shadow: 1px 1px 0px #EEEEEE;
+            text-shadow: 1px 1px 0px #EEEEEE;
+        }
+
+        #documenter_sidebar ol {
+            border-top: 1px solid #E1A53C;
+        }
+
+        #documenter_sidebar ol a {
+            border-top: 1px solid #EEEEEE;
+            border-bottom: 1px solid #E1B568;
+            color: #444444;
+        }
+
+        #documenter_sidebar ol a:hover {
+            background: #cc9833;
+            color: #ffffff;
+            border-top: 1px solid #E1A53C;
+        }
+
+        #documenter_sidebar ol a.current {
+            background: #cc9833;
+            color: #ffffff;
+            border-top: 1px solid #E1A53C;
+        }
+
+        #documenter_copyright {
+            display: block !important;
+            visibility: visible !important;
+        }
+
+        #logo #textual span {
+            font-size: 20px;
+            font-family: 'Oswald', sans-serif;
+            color: #cc9833;
+            font-style: normal;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        #logo #textual {
+            font-size: 20px;
+            font-family: 'Oswald', sans-serif;
+            color: #373737;
+            font-style: normal;
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 40px;
+            margin-left: 10px;
+            /*margin-bottom: 12px;*/
+            line-height: 1em;
+            text-transform: uppercase;
+        }
+    </style>
+
+</head>
+<body>
+<div id="documenter_sidebar">
+    <!--<a href="http://www.wowthemes.net" id="documenter_logo"></a>-->
+    <div id="logo" class="group">
+        <a id="textual" href="http://designssquare.com" target="_blank" title="Design Square">
+            Designs <span class="title-highlight">Square</span>
+        </a>
+        <p id='tagline' style="text-align: center">Inspiration Designs. Practical Widgets</p>
+    </div>
+    <ol id="documenter_nav">
+        <li><a class="current" href="#documenter_cover">Start</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#tapi_overview">TAPI Overview</a></li>
+        <li><a href="#templates">Templates</a></li>
+        <li><a href="#header_tapi">Header TAPI</a></li>
+        <li><a href="#footer_tapi">Footer TAPI</a></li>
+        <li><a href="#breadcrumbs_tapi">Breadcrumbs TAPI</a></li>
+        <li><a href="#page_tapi">Page TAPI</a></li>
+        <li><a href="#menu_tapi">Menu TAPI</a></li>
+        <li><a href="#contact_tapi">Contact TAPI</a></li>
+        <li><a href="#search_tapi">Search TAPI</a></li>
+        <li><a href="#user_tapi">User TAPI</a></li>
+        <li><a href="#customize">Customize</a></li>
+
+        <li><a href="#backlog">Future Releases</a></li>
+        <li><a href="#releases">Release History</a></li>
+    </ol>
+    <div id="documenter_copyright">Free of any copyright brought to you by DesignsSquare.com 2014
+    </div>
+</div>
+<div id="documenter_content">
+<section id="documenter_cover">
+    <h1>Template API Documentation</h1>
+
+    <h2>Making themeing Drupal easy and fast</h2>
+    <hr>
+    <ul>
+        <li>Last Updated: Sep 17, 2014</li>
+        <li>Themed By: DesignsSquare.com</li>
+        <li><a href="">
+        </a>
+        </li>
+        <li>Email: <a href="mailto:contact@designssquare.com">contact@designssquare.com</a></li>
+    </ul>
+    . <p>if you find Template API valuable, please, tweet about us </p>
+    <i> <a href="https://twitter.com/DesignsSquare">@desginssquare</a></i>
+</section>
+<section id="about">
+    <h3>About</h3>
+    <hr>
+    <h4>Issue & Solution</h4>
+
+    <p><b>Issue: </b>
+
+    </p>
+    <p><b>Solution: </b></p>
+    <p>Template API provides the following advantages:
+    <ol>
+        <li>Easy and simple process for designers to theme Drupal without knowledge of Drupal</li>
+        <li>Create once and safe for future upgrades. With templates api, your themes are not effected Drupal versions or upgrades.
+            In another workds, the same theme works for Drupal 7, Drupal 8 ...or Drupal 15</li>
+        <li>Possible Dynamic Templeting - With Template Api you can swap different templates real time creating some really cool stuff!</li>
+        <li>Reuse Logic. (i.e. user_tapi, settings_tapi,etc)</li>
+    </ol>
+    </p>
+    <h4>About</h4>
+
+    <p>Template API doesn't render just by enabling Template API module. The template file has to be present in order
+        for template API mechanism to start. This also give flexibility in way you can use template api for menu but not for
+        search element by haveing menu templates present but not search element templates</p>
+    <p>All template files are located at templates/tapi dir. Here, is list of supported tempalates:</p>
+
+    <h4>About Header & Footer</h4>
+
+    <p>While other templates are rendered for you in appropriate time and place, it is different with header.tpl.php and footer.tpl.php. For
+    header and footer, you have to specify declare in html.tpl.php where you like them to be rendered as following:<br>
+        <code><?php print $header ?></code><br>
+        <code><?php print $footer ?></code><br>
+    </p>
+</section>
+<section id="tapi_overview">
+    <h3>Template API</h3>
+    <hr>
+    <h4>Template API Overview</h4>
+
+    <p>In the following is a list of all Template API available:</p>
+    <table>
+        <tr>
+            <th>Template API</th>
+            <th>Scope</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>$header_tapi</td>
+            <td>HTML</td>
+            <td>Template API used in header for logo, site name, etc.</td>
+        </tr>
+        <tr>
+            <td>$breadcrumbs</td>
+            <td>breadcrumbs.tpl.php</td>
+            <td>list of breadcrumbs in breadcrumbs template API format</td>
+        </tr>
+        <tr>
+            <td>$page_tapi</td>
+            <td>PAGE</td>
+            <td>Template API for basic page info such as title, info, slogan, body</td>
+        </tr>
+    </table>
+
+</section>
+<section id="templates">
+    <h3>About Templates</h3>
+    <hr>
+    <p>In the following is list of templates provided by Template API</p>
+
+    <table>
+        <tr>
+            <th>Element</th>
+            <th>Tamplate Name</th>
+            <th>Template API(s)</th>
+        </tr>
+        <tr>
+            <td>Breadcrumbs</td>
+            <td>templates.tpl.php</td>
+            <td>
+                <ul>
+                    <li>$breadcrumbs_tapi:[ARRAY]List of breadcrumbs each with Breadcrumb TAPI</li>
+                    <li>$vars_tapi:[ARRAY] Drupal $variables passed on(regions in $vars_tapi[page][region-id])</li>
+                </ul>
+            </td>
+        </tr>
+        <tr>
+            <td>Header</td>
+            <td>header</td>
+            .tpl.php</td>
+            <td>
+                <ul>
+                    <li>$header_tapi:[ARRAY] of Header TAPI</li>
+                    <li>$vars_tapi:[ARRAY] Drupal $variables passed on(regions in $vars_tapi[page][region-id])</li>
+                </ul>
+            </td>
+        </tr>
+    </table>
+</section>
+<section id="header_tapi">
+    <h3>Header TAPI</h3>
+    <hr>
+    <table>
+        <thead>
+        <th>Content Type</th>
+        <th>API</th>
+        <th>Methods Implementing API</th>
+        <th>Scope</th>
+        </thead>
+        <tr>
+            <td>Header TAPI</td>
+            <td>//logo img<br>
+                $header_tapi['logo']['path']::[STRING]<br>
+                $header_tapi['logo']['is_enabled']::[BOOLEAN] <br>
+                //site info<br>
+                $header_tapi['site']['name']::[STRING] <br>
+                $header_tapi['site']['name_enabled']::[BOOLEAN] <br>
+                $header_tapi['site']['front_url']::[STRING] <br>
+                //slogan<br>
+                $header_tapi['site_slogan']['text']::[STRING] <br>
+                $header_tapi['site_slogan']['is_enabled']::[STRING] <br>
+                //user<br>
+                $header_tapi['user']::[ARRAY] everything from User TAPI(_user_tapi()) <br>
+                //settings<br>
+                $header_tapi['settings']::[STRING]<br>
+
+            <td>_header_tapi()</td>
+            <td>header.tpl.php
+            </td>
+        </tr>
+    </table>
+</section>
+<section id="footer_tapi">
+    <h3>Footer Template API</h3>
+    <hr>
+    <p>In the following is Footer Template API description</p>
+    <table>
+        <thead>
+        <th>Content Type</th>
+        <th>API</th>
+        <th>Methods Implementing API</th>
+        <th>Scope</th>
+        </thead>
+        <tr>
+            @ToDo
+        </tr>
+    </table>
+</section>
+<section id='breadcrumbs_tapi'>
+    <h3>Breadcrumb TAPI</h3>
+    <hr>
+    <p>In following is description of breadcrumb TAPI:</p>
+    <table>
+        <thead>
+        <th>Content Type</th>
+        <th>API</th>
+        <th>Methods Implementing API</th>
+        <th>Scope</th>
+        </thead>
+        <tr>
+            <td>Breadcrumbs</td>
+            <td>$breadcrumbs[N]['url']::[STRING]<br>
+                $breadcrumbs[N]['label']::[STRING] <br>
+                $breadcrumbs[N]['first']::[BOOLEAN] <br>
+                $breadcrumbs[N]['last']::[BOOLEAN] <br>
+            <td>_breadcrumb_tapi($node = null)</td>
+            <td>breadcrumb.tpl.php</td>
+        </tr>
+    </table>
+</section>
+<section id="page_tapi">
+    <h3>Page Template API</h3>
+    <hr>
+    <p>In the following is Page Template API description</p>
+    <table>
+        <thead>
+        <th>Content Type</th>
+        <th>API</th>
+        <th>Methods Implementing API</th>
+        <th>Scope</th>
+        </thead>
+        <tr>
+            <td>PAGE TAPI</td>
+            <td>$page_tapi['title']::[STRING]<br>
+                $page_tapi['info']::[STRING] <br>
+                $page_tapi['slogan']::[STRING] <br>
+                $page_tapi['body']::[STRING] <br>
+            <td>_page_tapi($node)</td>
+            <td>all templates in PAGE scope</td>
+        </tr>
+    </table>
+    <p>For 'info' and 'slogan' to work, the content type has to have field named 'field_page_information' and 'field_page_slogan'</p>
+</section>
+<section id="menu_tapi">
+    <h3>Menu Template API</h3>
+    <hr>
+    <h4>Menu Templates</h4>
+    <p>The module supports three menus - main-menu, bottom-menu and user-menu. Each of the menu has two different templates - NAME-menu.tpl.php
+        and NAME-menu-link.tpl.php.</p>
+    <p>The template NAME-menu.tpl.php specifies the link wrapper the 'ul' tags layout. In another hand, the template NAME-menu-link.tpl.php specifies the
+    link layout. Since menu can have sub menus, the template NAME-menu.tpl.php may be called several times. You can use the "depth" variable available to
+    distinguish and theme accordingly</p>
+
+    <h4>Menu TAPI Description</h4>
+    <p>There are two parts of Menu Template API - menu_tapi and link_tapi. The menu_tapi is available in teplate NAME-menu.tpl.php where is the link_tapi is in
+        template NAME-menu-link.tpl.php. In the following is each description:</p>
+    <table>
+        <thead>
+        <th>Content Type</th>
+        <th>API</th>
+        <th>Methods Implementing API</th>
+        <th>Scope</th>
+        </thead>
+        <tr>
+            <td>MENUE TAPI</td>
+            <td>$menu_tapi['depth']::[NUMBER](the depth of the menu. it can be sub-menu as well with different depth)<br>
+                $menu_tapi['links']::[ARRAY](the links of the menu)<br>
+                $menu_tapi['links'][N]['link_output']::[RENDERABLE ARRAY](the link of the menu to render via drupal_render) <br>
+            <td>_menu_tapi($link['below'], $depth)</td>
+            <td>MENU-NAME-menu.tpl.php</td>
+        </tr>
+        <tr>
+            <td>LINK TAPI</td>
+            <td>$link_tapi['title']::[STRING](menu link name)<br>
+                $link_tapi['url']::[STRING](path to page)<br>
+                $link_tapi['active']::[BOOLEAN](if link part of active trail) <br>
+                $link_tapi['depth']::[NUMBER] <br>
+                $link_tapi['has_sub_menu']::[BOOLEAN](if link has sub menu) <br>
+                $link_tapi['sub_menu']::[RENDERABLE ARRAY](theme function to render sub menu) <br>
+            <td>_menu_link_tapi($link['link'], $depth, $link['sub_menu'])</td>
+            <td>MENU-NAME-menu-link.tpl.php</td>
+        </tr>
+    </table>
+</section>
+<section id="contact_tapi">
+    <h3>Contact Template API</h3>
+    <hr>
+    <h4>Contact Templates</h4>
+    <p>For all of the pages, there is 3 different contact templates available:
+    <ul>
+    <li><b>contact.tpl.php</b><br>
+        This template usually used for main contact form in the contact us page or anywhere else part of the content section
+    </li>
+    <li><b>contact-block.tpl.php</b><br>
+        This template usually used for sidebar, header, footer wheneever it is of form of block.
+    </li>
+    <li><b>contact-inquiry.tpl.php</b><br>
+        This template usually is used for inquiry purpose like you have store and for each product there is an inquiry form
+    </li>
+    </ul>
+    </p>
+    <p>With multiple templates, you can render more than one contact form on the page at the same time. Each contact template
+    recieves the same contact_tapi interface points. The only difference is that they have different contact form category, so when you receive
+    email those are distinguished</p>
+
+    <p>To render any of the contact forms at any place in page scope:<br>
+    <code>
+        <?php print render($contact_form)?><br>
+        <?php print render($contact_block_form)?><br>
+        <?php print render($contact_inquiry_form)?><br>
+    </code>
+    </p>
+    <p>Contact API utilizes Drupal core module - Contact, so it needs to be enabled in order for Contact Template API to work</p>
+
+
+    <h4>Contact TAPI Description</h4>
+    <p>Each of the different contact templates receives the following Contact TAPI interface points:</p>
+    <table>
+        <thead>
+        <th>Content Type</th>
+        <th>API</th>
+        <th>Methods Implementing API</th>
+        <th>Scope</th>
+        </thead>
+        <tr>
+            <td>CONTACT TAPI</td>
+            <td>$contact_tapi['id']::[NUMBER](the contact form id)<br>
+                $contact_tapi['action']::[STRING](the action for the form)<br>
+                //NAME INPUT<br>
+                $contact_tapi['name_name']::[STRING](the name attribute for input field of Name)<br>
+                $contact_tapi['name_label']::[STRING](the label of name input field)<br>
+                $contact_tapi['name_type']::[STRING](the type of name input field)<br>
+                //SUBJECT INPUT<br>
+                $contact_tapi['subject_name']::[STRING](the name attribute for input field of Subject)<br>
+                $contact_tapi['subject_value']::[STRING](the value of subject input field)<br>
+                $contact_tapi['subject_label']::[STRING](the label of subject input field)<br>
+                $contact_tapi['subject_type']::[STRING](the type of subject input field)<br>
+                //EMAIL INPUT<br>
+                $contact_tapi['email_name']::[STRING](the name attribute for input field of Email)<br>
+                $contact_tapi['email_label']::[STRING](the label of email input field)<br>
+                $contact_tapi['email_type']::[STRING](the type of email input field)<br>
+                //MESSAGE INPUT<br>
+                $contact_tapi['message_name']::[STRING](the name attribute for input field of Message)<br>
+                $contact_tapi['message_label']::[STRING](the label of message input field)<br>
+                //SUBMIT INPUT<br>
+                $contact_tapi['submit_name']::[STRING](the name attribute for submit button)<br>
+                $contact_tapi['submit_id']::[STRING](the id for submit button)<br>
+                $contact_tapi['submit_label']::[STRING](the label for submit button)<br>
+                //HIDDEN INPUT[need to be included]<br>
+                $contact_tapi['hidden_input']::[STRING]<br>
+                $contact_tapi['hidden_input2']::[STRING]<br>
+                $contact_tapi['hidden_input3']::[STRING]<br>
+            <td>_contact_tapi($category)</td>
+            <td>contact.tpl.php, contact-block.tpl.php, contact-inquiry.tpl.php</td>
+        </tr>
+    </table>
+    <p>Important to note, all of the hidden fields need to be included in order for form to work</p>
+</section>
+<section id="search_tapi">
+    <h3>Search Template API</h3>
+    <hr>
+    <p>In the following is Search Template API description</p>
+    <table>
+        <thead>
+        <th>Content Type</th>
+        <th>API</th>
+        <th>Methods Implementing API</th>
+        <th>Scope</th>
+        </thead>
+        <tr>
+            <td>Search TAPI</td>
+            <td>$search_tapi['id']::[STRING](search form id)<br>
+                $search_tapi['action']::[STRING] (search form action)<br>
+                $search_tapi['search_id']::[STRING](search input field id) <br>
+                $search_tapi['search_name']::[STRING](search input field name)<br>
+                $search_tapi['submit_name']::[STRING](submit button name)<br>
+                $search_tapi['submit_id']::[STRING](submit button id)<br>
+                $search_tapi['hidden_input']::[RENDERED ARRAY](hidden input 1)<br>
+                $search_tapi['hidden_input2']::[RENDERED ARRAY](hidden input 2)<br>
+                $search_tapi['hidden_input3']::[RENDERED ARRAY](hidden input 3)<br>
+            <td>_search_tapi()</td>
+            <td>search.tpl.php initiated for search block</td>
+        </tr>
+    </table>
+</section>
+<section id="user_tapi">
+    <h3>User Template API</h3>
+    <hr>
+    <h4>About User TAPI</h4>
+    <p>User Template API consists of 4 parts - profile info, user login form, registration form and password reset form. The User TAPI becomes
+        available for all requests with url containing 'user' word such as /user, /user/register and /user/password</p>
+    <h4>User TAPI Interface</h4>
+    <p>In the following is User Template API in detail</p>
+    <table>
+        <thead>
+        <th>Content Type</th>
+        <th>API</th>
+        <th>Methods Implementing API</th>
+        <th>Scope</th>
+        </thead>
+        <tr>
+            <td>User TAPI</td>
+            <td>$user_tapi['name']::[STRING]<br>
+                $user_tapi['avatar']['url']::[STRING] (url to profile img)<br>
+                $user_tapi['avatar']['width']::[STRING] (the width from image style "Avatar")<br>
+                $user_tapi['avatar']['height']::[STRING] (the height from image style "Avatar")<br>
+                $user_tapi['email']::[STRING]<br>
+                $user_tapi['user-login']['url']::[STRING]<br>
+                $user_tapi['user-login']['text']::[STRING]<br>
+                $user_tapi['profile']['url']::[STRING]<br>
+                $user_tapi['profile']['text']::[STRING]<br>
+                $user_tapi['profile']['width']::[STRING](the width from image style "User Profile")<br>
+                $user_tapi['profile']['height']::[STRING](the height from image style "User Profile")<br>
+                $user_tapi['is_authenticated']::[STRING]<br>
+            <td>_user_tapi()</td>
+            <td>any template file for request with word 'user' part of the url</td>
+        </tr>
+        <tr>
+            <td>User TAPI Login</td>
+            <td>$user_tapi['login']['form_id']::[STRING](form id for login form)<br>
+                $user_tapi['login']['form_action']::[STRING] (action for login form)<br>
+                $user_tapi['login']['user_name']::[STRING](name attribute for input field of username) <br>
+                $user_tapi['login']['pass_name']::[STRING](name attribute for input field of password)<br>
+                $user_tapi['login']['hidden_build_id']::[STRING](hidden field necessary for login form)<br>
+                $user_tapi['login']['hidden_form_id']::[STRING](hidden field necessary for login form)<br>
+            <td>_user_login_tapi()</td>
+            <td>any template file for request with word 'user' part of the url</td>
+        </tr>
+        <tr>
+            <td>User TAPI Password Reset</td>
+            <td>$user_tapi['password']['form_id']::[STRING](form id for password reset form)<br>
+                $user_tapi['password']['form_action']::[STRING] (action for password reset form)<br>
+                $user_tapi['password']['email_name']::[STRING](name attribute for input field of email) <br>
+                $user_tapi['password']['hidden_build_id']::[STRING](hidden field necessary for password reset form)<br>
+                $user_tapi['password']['hidden_form_id']::[STRING](hidden field necessary for password reset form)<br>
+            <td>_user_pass_tapi()</td>
+            <td>any template file for request with word 'user' part of the url</td>
+        </tr>
+        <tr>
+            <td>User TAPI Registration/td>
+            <td>$user_tapi['registration']['form_id']::[STRING](form id for registration form)<br>
+                $user_tapi['registration']['form_action']::[STRING] (action for registration form)<br>
+                $user_tapi['registration']['email_name']::[STRING](name attribute for input field of email) <br>
+                $user_tapi['registration']['user_name']::[STRING](name attribute for input field of username) <br>
+                $user_tapi['registration']['hidden_build_id']::[STRING](hidden field necessary for registration form)<br>
+                $user_tapi['registration']['hidden_form_id']::[STRING](hidden field necessary for registration form)<br>
+            <td>_user_registration_tapi()</td>
+            <td>any template file for request with word 'user' part of the url</td>
+        </tr>
+    </table>
+</section>
+<section id="theme_settings_tapi">
+    <h3>Theme Settings Template API</h3>
+    <hr>
+    <h4>About Theme Settings TAPI</h4>
+    <p>Many Drupal themes have a settings. The Theme Settings TAPI provides the interface points for you to share and reuse</p>
+    <h4>Theme Settings TAPI Interface</h4>
+    <p>In the following is Theme Settings Template API in detail</p>
+    <table>
+        <thead>
+        <th>Content Type</th>
+        <th>API</th>
+        <th>Methods Implementing API</th>
+        <th>Scope</th>
+        </thead>
+        <tr>
+            <td>Theme Settings TAPI</td>
+            <td>$theme_tapi['color']::[STRING](reads variable 'ds_theme_color')<br>
+                $theme_tapi['layout']::[STRING] (reads variable 'ds_theme_layout')<br>
+                $theme_tapi['bg-img']::[STRING](reads variable 'ds_theme_gb_img')<br>
+                $theme_tapi['bg-color']::[STRING](reads variable 'ds_theme_bg_color')<br>
+                $theme_tapi['header']::[STRING](reads variable 'ds_theme_header')<br>
+                $theme_tapi['sidebar']::[STRING](reads variable 'ds_theme_sidebar')<br>
+                $theme_tapi['sidebar_position']::[STRING](reads variable 'ds_theme_sidebar_pos')<br>
+                $theme_tapi['footer']::[STRING](reads variable 'ds_theme_footer')<br>
+            <td>_theme_settings_tapi()</td>
+            <td>you have to explicitly include as following:
+            <code><br>
+                module_load_include('inc', 'designssquare_lib_template_api', 'includes/template_api');<br>
+                $theme_tapi = _theme_settings_tapi();<br>
+            </code>
+
+            </td>
+        </tr>
+        <tr>
+            <td>User TAPI Login</td>
+            <td>$user_tapi['login']['form_id']::[STRING](form id for login form)<br>
+                $user_tapi['login']['form_action']::[STRING] (action for login form)<br>
+                $user_tapi['login']['user_name']::[STRING](name attribute for input field of username) <br>
+                $user_tapi['login']['pass_name']::[STRING](name attribute for input field of password)<br>
+                $user_tapi['login']['hidden_build_id']::[STRING](hidden field necessary for login form)<br>
+                $user_tapi['login']['hidden_form_id']::[STRING](hidden field necessary for login form)<br>
+            <td>_user_login_tapi()</td>
+            <td>any template file for request with word 'user' part of the url</td>
+        </tr>
+        <tr>
+            <td>User TAPI Password Reset</td>
+            <td>$user_tapi['password']['form_id']::[STRING](form id for password reset form)<br>
+                $user_tapi['password']['form_action']::[STRING] (action for password reset form)<br>
+                $user_tapi['password']['email_name']::[STRING](name attribute for input field of email) <br>
+                $user_tapi['password']['hidden_build_id']::[STRING](hidden field necessary for password reset form)<br>
+                $user_tapi['password']['hidden_form_id']::[STRING](hidden field necessary for password reset form)<br>
+            <td>_user_pass_tapi()</td>
+            <td>any template file for request with word 'user' part of the url</td>
+        </tr>
+        <tr>
+            <td>User TAPI Registration/td>
+            <td>$user_tapi['registration']['form_id']::[STRING](form id for registration form)<br>
+                $user_tapi['registration']['form_action']::[STRING] (action for registration form)<br>
+                $user_tapi['registration']['email_name']::[STRING](name attribute for input field of email) <br>
+                $user_tapi['registration']['user_name']::[STRING](name attribute for input field of username) <br>
+                $user_tapi['registration']['hidden_build_id']::[STRING](hidden field necessary for registration form)<br>
+                $user_tapi['registration']['hidden_form_id']::[STRING](hidden field necessary for registration form)<br>
+            <td>_user_registration_tapi()</td>
+            <td>any template file for request with word 'user' part of the url</td>
+        </tr>
+    </table>
+</section>
+<section id="theme_func">
+    <h3>Theme Functions</h3>
+    <hr>
+    <p>Template API is using theme functions that you can also use by calling them directly:
+    <code><br>
+        <?php print theme('THEME-FUNC', array('param' => NULL));?>
+    </code><br>
+        <b>--OR--</b>
+        <br>
+    <code><br>
+        $temp = array(<br>
+        '#theme' => 'THEME-FUNC',<br>
+        '#param' => $some,<br>
+        );<br>
+        <br><br>
+        //and then render it<br>
+        print render($temp);<br>
+    </code>
+    </p>
+    <p>Here is the list of available functions:
+    <ul>
+    <li>@ToDo</li>
+    </ul>
+    </p>
+</section>
+<section id="customize">
+    <h3>Customize Template API</h3>
+    <hr>
+    <h4>How To</h4>
+    <p>There may be time you like to customize the template API by adding new field or modifying content. To do so, use
+     hook - hook_NAME-OF-TAPI_alter in your custom module to update any of the Template API interfaces as you wish. Here is a
+    sample to modify main menu link title to upper case letters</p>
+    <code><br>
+        //alter main menu link<br>
+        function metronic_menu_link_tapi_alter(&$link_tapi, $depth){<br>
+               $link_tapi['title'] = strtoupper($link_tapi['title']);
+        }
+    </code>
+    <h4>Hooks Overview</h4>
+    <p>In the following are all the available hooks in Template API
+    <ul>
+    <li>hook_menu_link_tapi_alter(&$link_tapi, $depth, $menu_name)</li>
+    <li>hook_breadcrumb_tapi_alter(&$breadcrumb_tapi)</li>
+    <li>hook_header_tapi_alter(&$header_tapi)</li>
+    </ul>
+    </p>
+</section>
+<section id="how-to">
+    <h3>How To</h3>
+    <hr>
+    <h5>How to Pass Variables To Header?</h5>
+    <p>Lets say you have user menu that needs to be displayed in the header. To pass user menu(in our case renderable array) to
+    the header, there are two ways
+    <ol>
+    <li><b>TAPI HOOK</b> Each Tempalte API has hook including Header TAPI Via hook_header_tapi_alter(), you can pass the variable containing
+    rendearable array</li>
+    <li><b>Via Header Variable</b> Template API usesd theme function that is later rendered. This theme function takes variable
+    vars_tapi that you can update with user menu and access in the header scope
+    <code><br>
+        MODULE_preporcess_html(){<br>
+        $vars['header']['#vars_tapi']['user_menu'] = array(<br>
+        '#theme' => 'template_api_user_menu',<br>
+        '#menu_tapi' => _menu_tapi($tree, $user_menu),<br>
+        );<br>
+        }<br>
+    </code>
+        Here, we attach renderable array for user meny and then we will render in the header.tpl.php as following:
+        <code>
+            <?php print render($vars_tapi['user_menu']);?>
+        </code>
+    </li>
+    </ol>
+    </p>
+</section>
+<section id="troubleshoot">
+    <h3>Troubleshoot</h3>
+    <hr>
+    <h5>1. Search Form doesn't work</h5>
+    <p>Ensure that "form" tag has method with value "post"(i.e.<code> method="post"</code> ) in it. In addition, check all the elements of
+    Search TAPI is included</p>
+</section>
+<section id="backlog">
+    <h3>Things In Progress</h3>
+    <hr>
+    <ul>
+        <li>add drush command to create boilerplates template files. Each template file will have documentation on all available API points</li>
+    </ul>
+</section>
+<section id="releases">
+    <h3>Release History</h3>
+    <hr>
+    <h5>Release 0.1</h5>
+    <ul>
+        <li>Menu fix to expand in any page not only defined Node instances</li>
+        <li>Fix for admin overlay Jquery conflicts with Designs jquery</li>
+        <li>Error warnings</li>
+        <li>Site name, logo to toggle and configure from Theme setting UI</li>
+        <li>User menu implemented with new region 'User Popover'</li>
+        <li>Issue changing color from Styler fixed</li>
+        <li>Fix search block padding for first sidebar</li>
+    </ul>
+</section>
+</div>
+<!--end of documenter_content-->
+</body>
+</html>

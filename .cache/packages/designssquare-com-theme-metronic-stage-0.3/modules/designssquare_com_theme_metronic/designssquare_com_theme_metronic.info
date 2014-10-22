@@ -1,0 +1,13 @@
+name = DesignsSquare.com METRONIC_THEME widget
+description = functionality for Drupal METRONIC_THEME widget
+core = 7.x
+version = v0.0.9
+project = designssquare_com_theme_metronic
+package = DesignsSquare.com.theme.metronic
+
+dependencies[] = menu_html
+dependencies[] = contact
+dependencies[] = boxes
+dependencies[] = context
+dependencies[] = designssquare_com_theme_metronic_configurations_structure_data
+

@@ -1,0 +1,261 @@
+<?php
+
+/***********Variable Assets*********/
+/*
+ * assets referenced by variables
+ */
+function designssquare_lib_sample_data_features_api() {
+    return array(
+        'variable_assets' => array(
+            'name' => 'Variable Assets',
+            'file' => drupal_get_path('module', 'designssquare_lib_sample_data') .'/inc/variable_assets.features.inc',
+            'default_hook' => 'variable_assets_default_settings',
+            'feature_source' => TRUE,
+        ),
+        'menu_alias' => array(
+            'name' => 'Menu Alias',
+            'file' => drupal_get_path('module', 'designssquare_lib_sample_data') .'/inc/menu_alias.features.inc',
+            'default_hook' => 'menu_alias_default_settings',
+            'feature_source' => TRUE,
+        ),
+        'content_assets' => array(
+            'name' => 'Content Assets',
+            'file' => drupal_get_path('module', 'designssquare_lib_sample_data') .'/inc/content_assets.features.inc',
+            'default_hook' => 'content_assets_default_settings',
+            'feature_source' => TRUE,
+        ),
+        'context_override' => array(
+            'name' => 'Context Override',
+            'file' => drupal_get_path('module', 'designssquare_lib_sample_data') .'/inc/context_override.features.inc',
+            'default_hook' => 'context_override_default_settings',
+            'feature_source' => TRUE,
+        ),
+        'strongarm_override' => array(
+            'name' => 'StrongArm Override',
+            'file' => drupal_get_path('module', 'designssquare_lib_sample_data') .'/inc/strongarm_override.features.inc',
+            'default_hook' => 'strongarm_override_default_settings',
+            'feature_source' => TRUE,
+        ),
+    );
+}
+
+/***************Path Alias**********/
+//exports alias path
+function designssquare_lib_sample_data_uuid_node_features_export_render_alter(&$export, $node, $module){
+    if(isset($node->nid)){
+        $alias_url = drupal_get_path_alias('node/'.$node->nid);
+        $export->alias_url = $alias_url;
+    }
+
+    //assets referenced by node directly
+    _process_assets($node, $export, $module, 'export');
+}
+
+//save temporary alias path in variable mapped to node via node's uuid
+function designssquare_lib_sample_data_uuid_node_features_rebuild_alter(&$node, $module){
+    if(isset($node->alias_url)){
+        $alias_url = $node->alias_url;
+        variable_set('node_path_alias_'.$node->uuid, $alias_url);
+        unset($node->alias_url);
+    }
+
+    //assets referenced by node directly
+    _process_assets($node, $node, $module, 'import');
+}
+
+//inserts alias path for each node
+function designssquare_lib_sample_data_pathauto_alias_alter(&$alias, array &$context) {
+    $node = null;
+    //@ToDo Insert alias path for other times than 'node' such as 'taxanomy', 'user'
+    $pos = strpos($context['source'],'node/');
+
+    if($pos == 0){
+        $id = substr($context['source'], 5);
+        $node = node_load($id);
+        $alias_url = (isset($node->uuid)) ? variable_get('node_path_alias_'.$node->uuid, FALSE) : FALSE;
+    }else{
+        $alias_url = FALSE;
+    }
+
+    $alias = ($alias_url) ? $alias_url : $alias;
+}
+
+/*********API Directly Referenced Node Assets**********/
+function _process_assets(&$node, &$export, $module, $mode)
+{
+    $node_fields = get_object_vars($node);
+    //drupal core field types as listed in field_info_field()
+    $core_field_types = array('file', 'entityreference', 'image', 'list_integer', 'list_float', 'list_text', 'list_boolean', 'number_integer', 'number_decimal', 'number_float', 'taxonomy_term_reference', 'text', 'text_long', 'text_with_summary');
+    //fields to exclude that is not going to reference an assets
+    $fields_to_escape = array('uid', 'title', 'log', 'status', 'comment', 'promote', 'sticky', 'vuuid', 'type', 'language', 'tnid', 'created', 'translate', 'uuid', 'revision_uid', 'cid', 'last_comment_name', 'last_comment_uid', 'comment_count', 'name', 'picture', 'data', 'date', 'revision', 'nid', 'vid', 'rdf_mapping', 'menu');
+    $field_assets = array_diff(array_keys($node_fields), $fields_to_escape);
+    $field_map = field_info_field_map();
+    module_load_include('module', 'uuid_features');
+    //handling versions for uuid_features module
+    (function_exists('uuid_features_load_module_includes')) ? uuid_features_load_module_includes() : uuid_features_include();
+
+    foreach ($field_assets as $field_name) {
+        //@ToDo field_language is not consistant, so we are unable to use field_get_items API at this time
+        //$field_instance = field_get_items('node', $node, $field_name);
+        $langcode = isset($node->language) ? $node->language : LANGUAGE_NONE;
+        $field_instance = isset($node->{$field_name}[$langcode]) ? $node->{$field_name}[$langcode] : array();
+        if ($field_instance && is_array($field_instance)) {
+            foreach ($field_instance as $asset) {
+                $field_type = $field_map[$field_name]['type'];
+
+                //extract custom fields so the assets are transfered as well
+                $custom_field = array_diff(array($field_type), $core_field_types);
+
+                if ($field_type == 'image' || $field_type == 'file') {
+                    //drupal core field
+                    if (isset($asset['uri'])) {
+
+                        switch ($mode) {
+                            case 'export':
+                                _export_asset($asset, $module);
+                                break;
+                            case 'import':
+                                _transfer_asset($asset, $module, $node->type);
+                                break;
+                        }
+                    }
+                } elseif (!empty($custom_field)) {
+                    //custom field that may have assets to transfer
+                    //there may be multiple instances
+                    foreach ($field_instance as $key => $instance) {
+                        //go through field referencing assets and export the assets
+                        foreach (_find_fields_ref_assets($field_name) as $cust_field_name) {
+                            switch ($mode) {
+                                case 'export':
+                                    $file = file_load($instance[$cust_field_name]);
+
+                                    $file_export = 0;
+                                    if ($file) {
+                                        _export_asset((array)$file, $module);
+                                        $file_export = (array)$file;
+                                    }
+
+                                    //ensure custom field assets are exported
+                                    //export an array of a file or 0 if asset is not set
+                                    $export->{$field_name}[LANGUAGE_NONE][$key][$cust_field_name] = $file_export;
+                                    break;
+                                case 'import':
+                                    if (is_array($instance[$cust_field_name]) && isset($instance[$cust_field_name]['uri'])) {
+                                        //transfer asset
+                                        $file_fid = _transfer_asset($instance[$cust_field_name], $module, $node->type);
+                                        //this is a custom field so we manipulate the structure so it imports accordingly
+                                        $node->{$field_name}[LANGUAGE_NONE][$key][$cust_field_name] = $file_fid;
+
+                                    } else {
+                                        //asset that is not set and ,thus, not transferred
+                                        $node->{$field_name}[LANGUAGE_NONE][$key][$cust_field_name] = 0;
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+}
+
+function _export_asset($asset, $mod_name)
+{
+    module_load_include('module', 'designssquare_lib');
+    $dest_dir = _module_asset_dir($asset['uri'], $mod_name);
+    $dest_full_path = _module_asset_full_path($asset['uri'], $mod_name);
+    if (!file_exists($dest_full_path)) {
+        file_prepare_directory($dest_dir, FILE_CREATE_DIRECTORY);
+        file_unmanaged_copy($asset['uri'], $dest_full_path, FILE_EXISTS_REPLACE);
+    }
+}
+
+//transfers file and adds entry in database if not already present
+function _transfer_asset($asset, $mod_name, $node_type)
+{
+    module_load_include('module', 'designssquare_lib');
+    $source = _module_asset_full_path($asset['uri'], $mod_name);
+    $uri = $asset['uri'];
+
+    if (!file_exists($source)) {
+        watchdog('designssquare_lib_assets', 'file ' . $source . ' to be imported does not exist in ');
+    }
+
+    if (!file_exists($uri)) {
+        //ensure dir is present
+        $directory = drupal_dirname($uri);
+        file_prepare_directory($directory, FILE_CREATE_DIRECTORY);
+        file_unmanaged_copy($source, $uri);
+    }
+
+    /*****Save File*****/
+    $fid_file = db_select('file_managed', 'n')
+        ->fields('n', array('fid', 'uri'))
+        ->condition('n.uri', $uri)
+        ->execute()
+        ->fetchCol();
+    if (empty($fid_file)) {
+        //no asset with the 'uri' is present
+        unset($asset['fid']);
+        unset($asset['timestamp']);
+        $file_to_save = (object)$asset;
+        // Change status to permanent.
+        $file_to_save->status = FILE_STATUS_PERMANENT;
+        $file_to_save->uri = $uri;
+
+        $final_file = file_save($file_to_save);
+        //all permanent files needs an entry in the 'file_usage' table
+        file_usage_add($final_file, $mod_name, $node_type, 1);
+        return $final_file->fid;
+    } else {
+        //file already exist in database
+        return $fid_file[0];
+    }
+}
+
+//function _module_asset_dir($uri, $filename, $mod_name)
+//{
+//    $path_tokens = explode('/',$uri);
+//    array_pop($path_tokens);
+//    array_shift($path_tokens);
+//    array_shift($path_tokens);//remove double forward slashes
+//    $path_mod_relative = implode('/',$path_tokens);
+//    return drupal_get_path('module', $mod_name) . '/assets/public' . '/' . $path_mod_relative;
+//}
+//
+//function _module_asset_full_path($uri, $filename, $mod_name)
+//{
+//    return _module_asset_dir($uri, $filename, $mod_name).'/'._get_file_name($uri);
+//}
+//
+//function _get_file_name($uri){
+//    $path_tokens = explode('/',$uri);
+//    $filename = array_pop($path_tokens);
+//    return $filename;
+//}
+
+/*from the custom field instance locates all field names referencing assets based on 'file_managed' table
+ * param: takes the field name of a custom field instance
+ *
+ * return: array of field names referencing assets
+*/
+function _find_fields_ref_assets($field_name)
+{
+    //find field names that refer an assets.
+    //for each asset there is a reference in the 'file_managed' table, so we use it for look up
+    $temp_php53 = field_info_field($field_name);
+    $table_ref = $temp_php53['foreign keys'];
+    $field_names_ref_assets = array(); //array of field names referencing assets
+    if(isset($table_ref) && is_array($table_ref)){
+        foreach ($table_ref as $ref) {
+            if ($ref['table'] == 'file_managed') {
+                $fix_php53 = array_keys($ref['columns']);
+                $field_names_ref_assets[] = $fix_php53[0];
+            }
+        }
+    }
+
+    return $field_names_ref_assets;
+}

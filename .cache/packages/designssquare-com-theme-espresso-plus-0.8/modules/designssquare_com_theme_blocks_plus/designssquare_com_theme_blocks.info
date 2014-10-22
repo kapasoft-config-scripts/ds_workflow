@@ -1,0 +1,9 @@
+name = DesignsSquare.com Theme Blocks Plus
+description = common blocks that are shared for the themes
+core = 7.x
+version = v0.1.0
+project = designssquare_com_theme_blocks
+package = DesignsSquare.com.theme
+
+dependencies[] = designssquare_theme_block_plus_sample_data
+dependencies[] = contextual

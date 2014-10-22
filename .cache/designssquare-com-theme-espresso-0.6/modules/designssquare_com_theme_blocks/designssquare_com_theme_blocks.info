@@ -1,0 +1,9 @@
+name = DesignsSquare.com Theme Blocks
+description = common blocks that are shared for the themes
+core = 7.x
+version = 7.x-0.2-dev
+project = designssquare_com_theme_blocks
+package = DesignsSquare.com.theme
+
+;;dependencies[] = designssquare_lib_assets
+dependencies[] = designssquare_lib_sample_data

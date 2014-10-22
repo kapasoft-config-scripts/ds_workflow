@@ -1,0 +1,394 @@
+<?php
+module_load_include('inc', 'designssquare_com_theme_blocks','inc/block_form_api');
+define('DS_TARGET_MODULE', 'designssquare_com_theme_blocks');
+
+//remove any outer layout put by drupal
+function designssquare_com_theme_blocks_preprocess_block(&$vars, $hook){
+    switch($vars['block_html_id']){
+        case 'block-designssquare-com-theme-blocks-ds-blog-recent-posts':
+        case 'block-designssquare-com-theme-blocks-ds-about':
+        case 'block-designssquare-com-theme-blocks-ds-recent-tweets':
+        case 'block-designssquare-com-theme-blocks-ds-about-sidebar':
+        case 'block-designssquare-com-theme-blocks-ds-social':
+        case 'block-designssquare-com-theme-blocks-ds-social_sidebar':
+        case 'block-designssquare-com-theme-blocks-ds-blog-categories':
+        case 'block-designssquare-com-theme-blocks-ds-blog-archive':
+        case 'block-designssquare-com-theme-blocks-ds-portfolio-sidebar':
+        case 'block-designssquare-com-theme-blocks-ds-announcement':
+        case 'block-designssquare-com-theme-blocks-ds-copy-rights':
+        case 'block-designssquare-com-theme-blocks-ds-about':
+        case 'block-designssquare-com-theme-blocks-ds-blog-recent-posts-sidebar':
+            $vars['theme_hook_suggestions'][] = 'block__no_wrap';
+            break;
+    }
+}
+
+/*****CREATING BLOCK********/
+function designssquare_com_theme_blocks_block_info()
+{
+
+    $blocks = array();
+    $blocks['ds_about'] = array(
+        'info' => t('DesignsSquare Theme: Block: About'), //admin ui block name
+        'properties' => array('administrative' => TRUE),
+    );
+    $blocks['ds_about_teaser'] = array(
+        'info' => t('DesignsSquare Theme: Block: About - Teaser'), //admin ui block name
+        'properties' => array('administrative' => TRUE),
+    );
+    $blocks['ds_contact_info'] = array(
+        'info' => t('DesignsSquare Theme: Block: Contact Info'), //admin ui block name
+        'properties' => array('administrative' => TRUE),
+    );
+    $blocks['ds_copy_rights'] = array(
+        'info' => t('DesignsSquare Theme: Block: Copy Rights'), //admin ui block name
+        'properties' => array('administrative' => TRUE),
+    );
+    $blocks['ds_announcement'] = array(
+        'info' => t('DesignsSquare Theme: Block: Announcement'), //admin ui block name
+        'properties' => array('administrative' => TRUE),
+    );
+    $blocks['ds_portfolio'] = array(
+        'info' => t('DesignsSquare Theme: Block: Portfolio - Teaser'), //admin ui block name
+        'properties' => array('administrative' => TRUE),
+    );
+    $blocks['ds_portfolio_sidebar'] = array(
+        'info' => t('DesignsSquare Theme: Block: Portfolio'), //admin ui block name
+        'properties' => array('administrative' => TRUE),
+    );
+    $blocks['ds_recent_tweets'] = array(
+        'info' => t('DesignsSquare Theme: Block: Recent Tweets'), //admin ui block name
+        'properties' => array('administrative' => TRUE),
+//        'cache' => DRUPAL_NO_CACHE,
+    );
+    $blocks['ds_blog_recent_posts'] = array(
+    'info' => t('DesignsSquare Theme: Block: Recent Posts - Teaser'), //admin ui block name
+    'properties' => array('administrative' => TRUE),
+//        'cache' => DRUPAL_NO_CACHE,
+    );
+    $blocks['ds_blog_recent_posts_sidebar'] = array(
+        'info' => t('DesignsSquare Theme: Block: Recent Posts'), //admin ui block name
+        'properties' => array('administrative' => TRUE),
+//        'cache' => DRUPAL_NO_CACHE,
+    );
+    $blocks['ds_blog_categories'] = array(
+        'info' => t('DesignsSquare Theme: Block: Blog Categories'), //admin ui block name
+        'properties' => array('administrative' => TRUE),
+//        'cache' => DRUPAL_NO_CACHE,
+    );
+    $blocks['ds_blog_archive'] = array(
+        'info' => t('DesignsSquare Theme: Block: Blog Archive'), //admin ui block name
+        'properties' => array('administrative' => TRUE),
+//        'cache' => DRUPAL_NO_CACHE,
+    );
+    $blocks['ds_social'] = array(
+        'info' => t('DesignsSquare Theme: Block: Social'), //admin ui block name
+        'properties' => array('administrative' => TRUE),
+//        'cache' => DRUPAL_NO_CACHE,
+    );
+    $blocks['ds_social_sidebar'] = array(
+        'info' => t('DesignsSquare Theme: Block: Social Sidebar'), //admin ui block name
+        'properties' => array('administrative' => TRUE),
+//        'cache' => DRUPAL_NO_CACHE,
+    );
+    $blocks['ds_testimonial'] = array(
+        'info' => t('DesignsSquare Theme: Block: Testimonial'), //admin ui block name
+        'properties' => array('administrative' => TRUE),
+//        'cache' => DRUPAL_NO_CACHE,
+    );
+    $blocks['ds_testimonial_teaser'] = array(
+        'info' => t('DesignsSquare Theme: Block: Testimonial - Teaser'), //admin ui block name
+        'properties' => array('administrative' => TRUE),
+//        'cache' => DRUPAL_NO_CACHE,
+    );
+    return $blocks;
+}
+
+function designssquare_com_theme_blocks_block_view($delta = '')
+{
+    $block = array();
+
+    switch ($delta) {
+        case 'ds_about':
+        case 'ds_copy_rights':
+        case 'ds_announcement':
+        case 'ds_portfolio':
+        case 'ds_recent_tweets':
+        case 'ds_blog_recent_posts':
+        case 'ds_about_teaser':
+        case 'ds_social':
+        case 'ds_social_sidebar':
+        case 'ds_blog_categories':
+        case 'ds_blog_archive':
+        case 'ds_portfolio_sidebar':
+        case 'ds_blog_recent_posts_sidebar':
+        case 'ds_testimonial':
+        case 'ds_testimonial_teaser':
+        case 'ds_contact_info':
+            $block['subject'] = t('');
+            $block['content'] = build_basic_block($delta);
+            break;
+    }
+
+    return $block;
+}
+
+function build_basic_block($delta)
+{
+//    module_load_include('inc', 'designssquare_com_theme_blocks','inc/block_form_api');
+    module_load_include('module', 'designssquare_lib');
+    $template_name = null;//name of the template file
+    $content_feed = array();//array containing content of the block
+    $output = '';
+    switch ($delta) {
+        case 'ds_about':
+            $template_name = 'plus/block--ds-about';
+            $content_feed = _about_block_feed('ds_about');
+            break;
+        case 'ds_about_teaser':
+            $template_name = 'plus/block--ds-about-teaser';
+            $content_feed = _about_block_teaser_feed('ds_about_teaser');
+            break;
+        case 'ds_copy_rights':
+            $template_name = 'plus/block--ds-copy-rights';
+            $content_feed = _copy_rights_block_feed();
+            break;
+        case 'ds_contact_info':
+            $template_name = 'plus/block--ds-contact-info';
+            $content_feed = _contact_info_block_feed();
+            break;
+        case 'ds_announcement':
+            $template_name = 'plus/block--ds-announcement';
+            $content_feed = _announcement_block_feed();
+            break;
+        case 'ds_portfolio':
+            $template_name = 'plus/block--ds-portfolio';
+            break;
+        case 'ds_portfolio_sidebar':
+            $template_name = 'plus/block--ds-portfolio-sidebar';
+            break;
+        case 'ds_recent_tweets':
+            $template_name = 'plus/block--ds-recent-tweets';
+            $content_feed = _recent_tweets_block_feed();
+            break;
+        case 'ds_blog_recent_posts':
+            $template_name = 'plus/block--ds-recent-posts';
+            break;
+        case 'ds_social':
+            $template_name = 'plus/block--ds-social';
+            $content_feed = _social_block_feed('ds_social');
+            break;
+        case 'ds_social_sidebar':
+            $template_name = 'plus/block--ds-social';
+            $content_feed = _social_block_feed('ds_social_sidebar');
+            break;
+        case 'ds_blog_categories':
+            $template_name = 'plus/block--ds-blog-categories';
+            $content_feed = _blog_categories_block_feed();
+            break;
+        case 'ds_blog_archive':
+            $template_name = 'plus/block--ds-blog-archive';
+            $content_feed = _blog_archive_block_feed();
+            break;
+        case 'ds_blog_recent_posts_sidebar':
+            $template_name = 'plus/block--ds-recent-posts-sidebar';
+            $content_feed = _blog_recent_posts_block_feed();
+            break;
+        case 'ds_testimonial':
+            $template_name = 'plus/block--ds-testimonial';
+            $content_feed = _testimonial_block_feed('ds_testimonial');
+            break;
+        case 'ds_testimonial_teaser':
+            $template_name = 'plus/block--ds-testimonial-teaser';
+            $content_feed = _testimonial_block_feed('ds_testimonial_teaser');
+            break;
+    }
+
+    if(isset($template_name)){
+        $output .= theme_render_template(get_template_path(DS_TARGET_MODULE, '/designssquare-com-theme-blocks/'.$template_name) . '/designssquare-com-theme-blocks/'.$template_name.'.tpl.php', $content_feed);
+    }
+    return $output;
+}
+
+/****Package PLUS - Making Blocks Editable******/
+//PROCESSING USER INPUT
+function designssquare_com_theme_blocks_block_configure($delta='') {
+//    module_load_include('inc', 'designssquare_com_theme_blocks','inc/block_form_api');
+    $form = array();
+    switch($delta) {
+        case 'ds_about_teaser' :
+            $form = _about_block_teaser_form();
+            break;
+        case 'ds_about' :
+            $form = _about_block_form();
+            break;
+        case 'ds_social' :
+        case 'ds_social_sidebar' :
+            $form = _social_block_form();
+            break;
+        case 'ds_copy_rights' :
+            $form = _copy_rights_block_form();
+            break;
+        case 'ds_contact_info' :
+            $form = _contact_info_block_form();
+            break;
+        case 'ds_announcement' :
+            $form = _announcement_block_form();
+            break;
+        case 'ds_recent_tweets':
+            $form = _recent_tweets_block_form();
+            break;
+        case 'ds_blog_categories':
+            $form = _blog_categories_block_form();
+            break;
+        case 'ds_blog_archive':
+            $form = _blog_archive_block_form();
+            break;
+        case 'ds_blog_recent_posts_sidebar':
+            $form = _blog_recent_posts_block_form();
+            break;
+        case 'ds_testimonial':
+        case 'ds_testimonial_teaser':
+            $form = _testimonial_block_form();
+            break;
+    }
+    return $form;
+}
+
+function designssquare_com_theme_blocks_block_save($delta = '', $edit = array()) {
+
+    switch($delta) {
+        case 'ds_about_teaser' :
+            _about_block_teaser_form_process($edit);
+            break;
+        case 'ds_about' :
+            _about_block_form_process($edit);
+            break;
+        case 'ds_social' :
+        case 'ds_social_sidebar' :
+            _social_block_form_process($edit);
+            break;
+        case 'ds_copy_rights' :
+            _copy_rights_block_form_process($edit);
+            break;
+        case 'ds_contact_info' :
+            _contact_info_block_form_process($edit);
+            break;
+        case 'ds_announcement' :
+            _announcement_block_form_process($edit);
+            break;
+        case 'ds_recent_tweets':
+            _recent_tweets_block_form_process($edit);
+            break;
+        case 'ds_blog_categories':
+            _blog_categories_block_form_process($edit);
+            break;
+        case 'ds_archive_categories':
+            _blog_archive_block_form_process($edit);
+            break;
+        case 'ds_blog_recent_posts_sidebar':
+            _blog_recent_posts_block_form_process($edit);
+            break;
+        case 'ds_testimonial':
+        case 'ds_testimonial_teaser':
+            _testimonial_block_form_process($edit);
+            break;
+    }
+}
+
+//@ToDo figure out what this is for...should we remove?
+function designssquare_com_theme_blocks_form_alter(&$form, &$form_state, $form_id){
+    module_load_include('inc', 'designssquare_com_theme_blocks','inc/block_form_api');
+
+    switch($form_id){
+        case 'block-designssquare-com-theme-blocks-ds-about-sidebar':
+        case 'block-designssquare-com-theme-blocks-ds-about':
+            $form[] = _about_block_form();
+            break;
+        case 'block-designssquare-com-theme-blocks-ds-social-sidebar':
+        case 'block-designssquare-com-theme-blocks-ds-social':
+            $form[] = _social_block_form();
+            break;
+        case 'block-designssquare-com-theme-blocks-ds-copy-rights':
+            $form[] = _copy_rights_block_form();
+            break;
+        case 'block-designssquare-com-theme-blocks-ds-announcement':
+            $form[] = _announcement_block_form();
+            break;
+        case 'block-designssquare-com-theme-blocks-ds-recent-tweets':
+            $form[] = _recent_tweets_block_form();
+            break;
+        case 'block-designssquare-com-theme-blocks-ds-testimonial':
+            $form[] = _testimonial_block_form();
+            break;
+        case 'block-designssquare-com-theme-blocks-ds-contact-info':
+            $form[] = _contact_info_block_form();
+            break;
+    }
+}
+
+//FEEDING BLOCK CONTENT
+
+//MENU FOR CONTEXT
+function designssquare_com_theme_blocks_menu() {
+    //contextual link for all designssquare blocks
+    $items['designssquare-blocks/%/edit'] = array(
+        'title' => 'Edit',
+        'type' => MENU_LOCAL_ACTION,
+        'context' => MENU_CONTEXT_INLINE,
+        'page callback' => 'ds_block_process',
+        'page arguments' => array(1),
+        'access callback' => TRUE,
+    );
+    // To use local task menu items, there must be a parent page.
+    $items['designssquare-blocks'] = array(
+        'title' => 'The contextual example page',
+        'page callback' => 'ds_block_process',
+        'page arguments' => array(1),
+        'access callback' => TRUE,
+    );
+
+    return $items;
+}
+
+
+
+function ds_block_process($block_id){
+    $form_id = 'ds_block_edit_form';
+    return drupal_get_form($form_id, $block_id);
+}
+
+function designssquare_com_theme_blocks_admin_paths() {
+    $paths = array(
+        'designssquare-blocks/*/edit' => TRUE,
+    );
+    return $paths;
+}
+
+
+//@ToDo the hook_overlay_paths doesn't appear to work
+function designssquare_com_theme_blocks_overlay_paths(){
+    $paths = array(
+        'designssquare-blocks/*/edit' => TRUE,
+    );
+    return $paths;
+}
+
+//hooke into block context to set attributes,etc
+function designssquare_com_theme_blocks_ds_block_context_alter(&$context, $block_id){
+    switch($block_id){
+        case 'ds_social_sidebar':
+        case 'ds_recent_tweets':
+        case 'ds_about_teaser' :
+        case 'ds_portfolio_sidebar':
+        case 'ds_blog_recent_posts_sidebar':
+        case 'ds_blog_categories':
+        case 'ds_blog_archive':
+            $context['classes_array'][] = 'widget';
+            break;
+        case 'ds_testimonial':
+//            $context['classes_array'][] = 'span4';
+//            $context['classes_array'][] = 'about';
+            break;
+    }
+}

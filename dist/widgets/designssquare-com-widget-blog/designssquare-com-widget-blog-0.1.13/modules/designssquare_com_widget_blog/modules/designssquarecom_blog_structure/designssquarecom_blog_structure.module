@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the designssquarecom_blog_structure feature.
+ */
+
+include_once 'designssquarecom_blog_structure.features.inc';

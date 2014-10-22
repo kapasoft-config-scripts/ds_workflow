@@ -1,0 +1,25 @@
+<?php
+function designssquare_com_blog_install(){
+$t = get_t();
+
+//looping through the files and coping to the destination
+foreach (_blog_assets_list() as $file) {
+    $uri = $file['uri'];
+    $dir_name = drupal_dirname($uri);
+    file_prepare_directory($dir_name, FILE_CREATE_DIRECTORY);
+    (!file_exists(drupal_realpath($uri))) ? file_unmanaged_copy($file['source'], $uri) : '';
+}
+drupal_set_message($t('DesignsSquare.com.blog assets transferred'));
+}
+
+/************COPY _blog_assets_list() HERE*******/
+function _blog_assets_list(){
+    $module_dir = drupal_get_path('module', 'designssquare_com_blog');
+    return array (
+        'public://designssquare_com_module_blog/img/author.png' => array(
+            'uri' => 'public://designssquare_com_module_blog/img/author.png',
+            'filename' => 'author.png',
+            'source' => $module_dir.'/assets-to-export/img/author.png',
+        ),
+    );
+}

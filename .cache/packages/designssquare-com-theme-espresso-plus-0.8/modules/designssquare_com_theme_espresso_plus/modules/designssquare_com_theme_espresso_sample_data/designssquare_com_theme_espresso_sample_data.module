@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Designssquare.com: Theme: Espresso: Sample Data feature.
+ */
+
+include_once 'designssquare_com_theme_espresso_sample_data.features.inc';

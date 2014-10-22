@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the DesignsSquare.com: Portfolio : Structure and Configurations feature.
+ */
+
+include_once 'designssquare_com_portfolio_structure_and_configurations.features.inc';

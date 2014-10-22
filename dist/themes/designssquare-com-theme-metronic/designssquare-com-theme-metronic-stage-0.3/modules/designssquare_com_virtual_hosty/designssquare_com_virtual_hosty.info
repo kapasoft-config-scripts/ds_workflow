@@ -1,0 +1,6 @@
+name = DesignsSquare.com VIRTUAL_HOSTY widget
+description = functionality for Drupal VIRTUAL_HOSTY widget
+core = 7.x
+version = v0.0.2
+project = designssquare_utils_virtual_hosty
+package = designssquare.com.widget.virtual_hosty

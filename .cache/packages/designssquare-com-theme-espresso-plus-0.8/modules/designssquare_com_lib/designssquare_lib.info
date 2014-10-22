@@ -1,0 +1,7 @@
+name = DesignsSquare.com Library
+description = shared common utilities for designssquare.com widgets and themes
+core = 7.x
+version = 0.2
+project = designssquare_lib
+package = DesignsSquare.com.utilities
+

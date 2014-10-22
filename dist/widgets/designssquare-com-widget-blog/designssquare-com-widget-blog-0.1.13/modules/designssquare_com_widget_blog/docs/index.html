@@ -1,0 +1,578 @@
+<!doctype html>
+<!--[if IE 6 ]>
+<html lang="en-us" class="ie6"> <![endif]-->
+<!--[if IE 7 ]>
+<html lang="en-us" class="ie7"> <![endif]-->
+<!--[if IE 8 ]>
+<html lang="en-us" class="ie8"> <![endif]-->
+<!--[if (gt IE 7)|!(IE)]><!-->
+<html lang="en-us"><!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+
+    <title>DesignsSquare.com Blog Widget Documentation</title>
+    <meta name="generator" content="Documenter v1.6 http://rxa.li/documenter">
+    <meta name="date" content="2012-03-27T00:00:00+02:00">
+    <link rel="stylesheet" href="css/documenter_style.css" media="all">
+    <script src="js/jquery.1.6.4.js"></script>
+    <script src="js/jquery.scrollTo-1.4.2-min.js"></script>
+    <script src="js/jquery.easing.js"></script>
+    <link rel="stylesheet" href="css/shDocumenter.css" media="screen">
+    <script src="js/shCore.js"></script>
+    <script src="js/shBrushCss.js"></script>
+    <script src="js/shBrushJScript.js"></script>
+    <script>SyntaxHighlighter.defaults['toolbar'] = false;
+    SyntaxHighlighter.all();</script>
+    <script>document.createElement('section');
+    var duration = 500, easing = 'swing';</script>
+    <script src="js/script.js"></script>
+    <style>
+        html {
+            background-color: #FFFFFF;
+            color: #383838;
+        }
+
+        ::-moz-selection {
+            background: #444444;
+            color: #DDDDDD;
+        }
+
+        ::selection {
+            background: #444444;
+            color: #DDDDDD;
+        }
+
+        hr {
+            border-top: 1px solid #E1B568;
+            border-bottom: 1px solid #FFFFFF;
+        }
+
+        #documenter_sidebar, #documenter_sidebar ol a {
+            background-color: #ffffff;
+            /*background-color: #E1B568;*/
+            /*color: #222222;*/
+            color: #373737;
+        }
+
+        #documenter_sidebar ol a {
+            -webkit-text-shadow: 1px 1px 0px #EEEEEE;
+            -moz-text-shadow: 1px 1px 0px #EEEEEE;
+            text-shadow: 1px 1px 0px #EEEEEE;
+        }
+
+        #documenter_sidebar ol {
+            border-top: 1px solid #E1A53C;
+        }
+
+        #documenter_sidebar ol a {
+            border-top: 1px solid #EEEEEE;
+            border-bottom: 1px solid #E1B568;
+            color: #444444;
+        }
+
+        #documenter_sidebar ol a:hover {
+            background: #cc9833;
+            color: #ffffff;
+            border-top: 1px solid #E1A53C;
+        }
+
+        #documenter_sidebar ol a.current {
+            background: #cc9833;
+            color: #ffffff;
+            border-top: 1px solid #E1A53C;
+        }
+
+        #documenter_copyright {
+            display: block !important;
+            visibility: visible !important;
+        }
+
+        #logo #textual span {
+            font-size: 20px;
+            font-family: 'Oswald', sans-serif;
+            color: #cc9833;
+            font-style: normal;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        #logo #textual {
+            font-size: 20px;
+            font-family: 'Oswald', sans-serif;
+            color: #373737;
+            font-style: normal;
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 40px;
+            margin-left: 10px;
+            /*margin-bottom: 12px;*/
+            line-height: 1em;
+            text-transform: uppercase;
+        }
+    </style>
+
+</head>
+<body>
+<div id="documenter_sidebar">
+    <!--<a href="http://www.wowthemes.net" id="documenter_logo"></a>-->
+    <div id="logo" class="group">
+        <a id="textual" href="http://designssquare.com" target="_blank" title="Design Square">
+            Designs <span class="title-highlight">Square</span>
+        </a>
+        <!--<p id='tagline'>Inspiration Designs. Practical Widgets</p>-->
+    </div>
+    <ol id="documenter_nav">
+        <li><a class="current" href="#documenter_cover">Start</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#installation">Installation</a></li>
+        <li><a href="#blocks">Blocks</a></li>
+        <li><a href="#views">Views</a></li>
+        <li><a href="#image_styles">Image/Video Styles</a></li>
+        <li><a href="#how_to">How To</a></li>
+        <li><a href="#ckeditor">CKEditor</a></li>
+        <li><a href="#other">Other</a></li>
+        <li><a href="#template_api">Template API</a></li>
+        <li><a href="#drupal_depenencies">Drupal Dependencies</a></li>
+        <li><a href="#troubleshooting">Troubleshooting</a></li>
+        <li><a href="#releases">Release History</a></li>
+        <li><a href="#backlog">Future Releases</a></li>
+    </ol>
+    <div id="documenter_copyright">Copyright DesignsSquare.com 2014
+    </div>
+</div>
+<div id="documenter_content">
+<section id="documenter_cover">
+    <h1>DesignsSquare.com Blog Widget Documentation</h1>
+
+    <h2>ALL-IN-ONE Blog/Podcast/Videocast Drupal Module </h2>
+    <hr>
+    <ul>
+        <li>Last Updated: May 5, 2014</li>
+        <li>Developed By: DesignsSquare.com</li>
+        <li><a href="">
+        </a>
+        </li>
+        <li>Email: <a href="mailto:contact@designssquare.com">contact@designssquare.com</a></li>
+    </ul>
+    . <p>Thank you for purchasing our product. If you have any questions, please feel free to email us! </p>
+</section>
+<section id="about">
+    <h3>About</h3>
+    <hr>
+    <p>Here are some of the most notable features of ALL-IN-ONE Blog/Videocast/Audiocast widget:</p>
+    <ul>
+        <li>Video Support - video file upload ('mp4','mov','flv' and most other ) or from Vimeo.com</li>
+        <li>Audio Support - audio file upload ('mp3','wav','wma')</li>
+        <li>CKEditor with its 20 most popular plugins</li>
+        <li>Post Sharing to over 250 social networks/applications via <a href="http://www.addthis.com/" target="_blank">AddThis Widget</a></li>
+        <li>Recent Post Slider - good for featuring recent posts in the home page(landing page)</li>
+        <li>Three Different skins(future release)</li>
+        <li>Admin Styler powered by LESS(future release)</li>
+        <li>many other features... </li>
+    </ul>
+
+    <h4>Components</h4>
+    <p>Here are the main components of the widget:</p>
+    <ul>
+        <li>
+            <b>Post</b> - single post with sidebar to configure left, right or none
+        </li>
+        <li>
+            <b>List of Posts</b> - page listing all posts with sidebar to configure left, right or none
+        </li>
+        <li>
+            <b>Recent Posts Blocks</b> - there are two blocks Ver1 and Ver2 both displaying recent posts
+        </li>
+        <li>
+            <b>Recent Posts Slider</b> - slider displaying recent posts perfect for home page or any section featuring blog
+        </li>
+    </ul>
+</section>
+<section id="installation">
+    <h3>Installation</h3>
+    <hr>
+
+    <p>In the following are the steps to install DesignsSquare.com Blog Widget</p>
+    <ul>
+        <li>Copy all modules into sites/all/modules directory</li>
+        <li>Enable module designssquare_com_blog(DesignsSquare Blog Widget). This will also enable module designssquarecom_blog_structure</li>
+        <li>Copy designssqure_com_blog/libraries/video-js into sites/all/libraries/video-js</li>
+        <li>Copy designssqure_com_blog/libraries/ckeditor into sites/all/libraries/ckeditor</li>
+        <li>Configure Audio by setting MP3 Audio Players to "WordPress Audio Player" and Auddio Playes Dir to "sites/all/modules/designssquare_com_module_blog/libraries/player" in admin/config/media/audiofield</li>
+        <li>Import Sample Data
+            <ul>
+                <li>Ensure Modules - DesignsSquare.com Library: Assets and DesignsSquare.com Library: Alias Path are enabled</li>
+                <li>Enable designssquarecom_blog_example_data that will import sample data and transfer assets such as sample images, videos, etc</li>
+            </ul>
+        </li>
+        <li>Revert features - designssquarecom_blog_structure, designssquare_com_blog_data and clear ALL cache</li>
+    </ul>
+</section>
+<section id="blocks">
+    <h3>Blocks</h3>
+    <hr>
+    <p>The ALL-IN-ONE Blog/Videocast/Podcast widget comes with the following blocks</p>
+    <h4>Recent Posts Menu Blocks</h4>
+    <p>
+        There are total of two extra blocks for displaying recent posts. Both blocks are two different views - Recent Posts Ver1(recent_posts_ver1), Recent Posts Ver2(recent_posts_ver2)
+        that you can customize per your needs(title, number of posts to show, etc). Each view has two associated
+        template files views-view--MACHINE_NAME_OF_BLOCK and views-view-list--MACHINE_NAME_OF_BLOCK(i.e. views-view--recent-posts-ver1.tpl.php)
+    </p>
+
+    <h4>Recent Posts Slider</h4>
+    <p>
+        Recent Posts Slider is a block from view - 'Recent Posts Slider'(machine name: ds_slider) that you can customize(title, number of posts,etc) as you wish.
+        The Slider block can be assigned in any region of the page
+    </p>
+
+    <h4>About Author Block</h4>
+    <p>
+        There is configurable block 'About Author' to set title for the about author section in each post. In this section, post author's profile picture and
+        'about author' content is retrieved and displayed. User can edit content of 'about author' & profile picture in the user settings page(/user)
+    </p>
+
+    <h4>Category Menu Block</h4>
+    <p>
+        The Category Block is constructed from view - blog_categories:ds_blog_categories that you can edit as you wish(title, number of categories,etc).
+        The category block displays all the categories specified in Taxonomy 'Blog Categories'. Each post has field 'Blog Categories' where
+        you can assign multiple categories for a particular post.<br>
+        The same way as with list of posts page, the category page renders the format - Big or Small based on individual post. In another words, your
+        list of posts per category may have posts of format 'big' along posts of format 'small'.<br>
+        Each taxonomy term should have a 'description' because that is used for the title when rendering certain category of posts.<br>
+        Left and right sidebars are configured via context - 'blog_category' that is activated for all pages displaying posts of certain category
+    </p>
+
+    <h4>Tag Cloud Block</h4>
+    <p>
+        The Tag Cloud block displays tag cloud for the blog entries. It uses view - ds_blog_tags:tag that you are able to costumize
+        as you wish(i.e. update title, filter tags,etc). In each blog entry there is a field to assign tag that is used in this Tag Cloud block<br>
+
+        The same way as with list of posts page, in the tag page each post is rendered in the format - Big or Small based on individual post. In another words, your
+        list of posts per tag may have posts of format 'big' along posts of format 'small'.<br>
+        Left and right sidebars are configured via context - 'blog_tags' that is activated for all pages displaying posts of certain tag
+    </p>
+    <p>*The blocks are available to edit in template files in BASIC package. To edit blocks from UI, please, upgrade to
+        package - PLUS</p>
+</section>
+<section id="views">
+    <h3>Views</h3>
+    <hr>
+
+    Some views may have multiple templates depending of the content type settings
+    <table border="1">
+        <thead><td>View</td><td>Tag</td><td>Templates</td><td>Comments</td></thead>
+        <tr>
+            <td>blog_block_view:recent_posts_ver1</td>
+            <td>designssquare_blog_block, designssquare_blog_block_recent_posts_ver1</td>
+            <td>views-view-list--recent-posts-ver1.tpl.php,views-view-recent-posts-ver1.tpl.php</td>
+            <td>view collecting last x number of posts and then rendered in a block available to put in any section on the page. The tag - "designssquare_blog_block" triggers the Template API. The tag - "designssquare_blog_block_recent_posts_ver1" triggers layout(the template file to load).</td>
+        </tr>
+        <tr>
+            <td>blog_block_view:recent_posts_ver2</td>
+            <td>designssquare_blog_block</td>
+            <td>views-view-list--recent-posts-ver2.tpl.php,views-view-recent-posts-ver2.tpl.php</td>
+            <td>view collecting last x number of posts and then rendered in a block available to put any section on the page. The tag - "designssquare_blog_block" triggers the Template API. The tag - "designssquare_blog_block_recent_posts_ver2" triggers layout(the template file to load).</td>
+        </tr>
+        <tr>
+            <td>blog_content_view:posts</td>
+            <td>n/a</td>
+            <td>views-view-list--posts.tpl.php,node--blog-teaser-small.tpl.php, node--blog-teaser-big.tpl.php</td>
+            <td>depending on the individual post format one of the templates node--blog-teaser-small or node--blog-teaser-big is rendered</td>
+        </tr>
+        <tr>
+            <td>blog_content_view:recent_posts_slider</td>
+            <td>ds_slider</td>
+            <td>views-view--recent-posts-slider.tpl.php,views-view-list--recent-posts-slider.tpl.php,node--blog-slide.tpl.php</td>
+            <td>there is javascript dependency injected - file(jquery.flexslider-min.js) and inline script(to initialize flexslider) both at the bottom
+                of page for the purpose of performance. The tag designssquare_blog_slider turns on the slider mechanism, so its important to have it. To override slide layout, add template node--blog-slide.tpl.php in template/block directory while the other two templates deals with view and slider functionality</td>
+        </tr>
+        <tr>
+            <td>blog_categories:cat</td>
+            <td>designssquare_blog_block_categories</td>
+            <td>views-view--blog-categories.tpl.php, views-view-list--blog-categories.tpl.php</td>
+            <td>by default the Category Menu Block displays unlimited number of categories</td>
+        </tr>
+        <tr>
+            <td>ds_blog_tags:tag</td>
+            <td>designssquare_blog_block_tags</td>
+            <td>views-view-list--blog-tags.tpl.php, views-view--blog-tags.tpl.php</td>
+            <td>The size of tag is incremented by 0.5pt for each additional association</td>
+        </tr>
+    </table>
+
+</section>
+<section id="image_styles">
+    <h3>Image Styles</h3>
+    <hr>
+    Blog comes with the following custom styles used to format sizes of image, video, vimeo in post teaser:
+    <table border="1">
+        <thead><td>Style Name</td><td>Style ID</td><td>Default</td><td>Description</td></thead>
+        <tr><td>DS Image Post Teaser Small</td><td>ds_blog_img_post_small</td><td>Image Post Teaser with format - Small</td><td>width:370px, height:222px</td></tr>
+        <tr><td>DS Image Post Teaser Big</td><td>ds_blog_img_post_big</td><td>Image Post Teaser with format - Big</td><td>width:780px, height:468px</td></tr>
+        <tr><td>DS Image Post Teaser Slider</td><td>ds_blog_img_post_slider</td><td>Image Post Teaser with format - Slider</td><td>width:570px, height:330px</td></tr>
+        <tr><td>DS Video Post Teaser Small</td><td>ds_blog_video_post_small</td><td>Video Post Teaser with format - Small</td><td>width:370px, height:222px</td></tr>
+        <tr><td>DS Video Post Teaser Big</td><td>ds_blog_video_post_big</td><td>Video Post Teaser with format - Big</td><td>width:780px, height:468px</td></tr>
+        <tr><td>DS Video Post Teaser Slider</td><td>ds_blog_video_post_slider</td><td>Video Post Teaser with format - Slider</td><td>width:570px, height:330px</td></tr>
+        <tr><td>DS Vimeo Post Teaser Small</td><td>ds_blog_vimeo_post_small</td><td>Vimeo Post Teaser with format - Small</td><td>width:200px, height:150px</td></tr>
+        <tr><td>DS Vimeo Post Teaser Big</td><td>ds_blog_vimeo_post_big</td><td>Vimeo Post Teaser with format - Big</td><td>width:624px, height:468px</td></tr>
+        <tr><td>DS Vimeo Post Teaser Slider</td><td>ds_blog_vimeo_post_slider</td><td>Vimeo Post Teaser with format - Slider</td><td>width:320px, height:240px</td></tr>
+    </table>
+
+    <p>These styles are applied to for template api - $blog_entry['picture']['content'], $blog_entry['video']['content']. If you don't like to use the styles, the template API contains enough template points to structure your own video,image element.</p>
+    <p>Note: Setting the width to 1, will make the width to 100%. As result, the outer element will determine the width for post image, video favorable to achieve the responsive effect.</p>
+</section>
+<section id="how_to">
+    <h3>How-To</h3>
+    <hr>
+    <h4>Blog Index</h4>
+    <p>The Blog Index is a page with list of posts that is the entry point to the widget. It is the list of posts displayed in teaser format.</p>
+    </p>
+    To create index or page with list of posts, use content type 'blog_posts'. Depending on each particular post format - Big or Small, the post is going to be rendered in that particular format.
+    So, you may have big post and small post at the same time in the list of posts(index). In another words, the format is determined at the individual post level('blog')<br>
+    It also provides option to choose sidebar right, left or none. The content of the sidebar itself is configured in the context - 'blog_posts'. You should only
+    configure one of the sidebars either 'Primary' or 'Secondary', because it will move all content from one sidebar to another for the sidebar disabled.
+    </p>
+    <p>
+        Once you have the index(page with list of posts), the posts themselves are assigned via view and context UI("admin/structure/context"). In the context section, edit 'blog_posts' and assign the view - 'DesignsSquare.com: Blog: Posts' to the Content section. To customize the posts you wish in the Blog widget, edit the view -  DesignsSquare.com: Blog: Posts itself.
+    </p>
+
+    <h4>Post</h4>
+    <p>
+        To create post either video, audio or plain text/image, use content type Blog Entry('blog'). There are currently two formats - Big and Small for presenting particular post.
+        It also provides option to choose sidebar right, left or none. The content of the sidebar is configured in the context - 'blog_entry'. You should only
+        configure one of the sidebars either 'Primary' or 'Secondary', because it will move all content from one sidebar to another for the sidebar disabled.<br>
+    </p>
+    <p>
+        Module determines what kind of post - video, audio, image or plain text in a predefined order. The oder is image/vimeo/video/audio. In another words, if you like to have
+        audio post then there should not be a video uploaded because it will be first checked before the audio for determining the post.
+    </p>
+</section>
+<section id="ckeditor">
+    <h3>CKEditor</h3>
+    <hr>
+    <p>
+        The ALL-IN-One Blog plugin comes with CKEditor(ver 4.4.0) installed and configured along with its most popular plugins. Here is the list of CKEditor plugins:
+    </p>
+    <ul>
+        <li><a href="http://ckeditor.com/addon/leaflet" target="_blank">Leaflet Maps</a></li>
+        <li><a href="http://ckeditor.com/addon/lineutils" target="_blank">Line Utils</a></li>
+        <li><a href="http://ckeditor.com/addon/widget" target="_blank">Widget</a></li>
+        <li><a href="http://ckeditor.com/addon/codesnippet" target="_blank">Code Snippet</a></li>
+        <li><a href="http://ckeditor.com/addon/eqneditor" target="_blank">Equetion Editor</a></li>
+        <li><a href="http://ckeditor.com/addon/tliyoutube" target="_blank">Minimal YouTube</a></li>
+        <li><a href="http://ckeditor.com/addon/xmas" target="_blank">Greeting Card</a></li>
+        <li><a href="http://ckeditor.com/addon/googledocs" target="_blank">Google Docs Viewer</a></li>
+        <li><a href="http://ckeditor.com/addon/fakeobjects" target="_blank">Fake Objects</a></li>
+
+        <li><a href="http://ckeditor.com/addon/tableresize" target="_blank">Table Re-Size</a></li>
+        <li><a href="http://ckeditor.com/addon/autogrow" target="_blank">Auto Grow</a></li>
+        <li><a href="http://ckeditor.com/addon/oembed" target="_blank">Media(oEmbed)</a></li>
+        <li><a href="http://ckeditor.com/addon/uicolor" target="_blank">UI Color</a></li>
+
+        <li><a href="http://ckeditor.com/addon/sourcedialog" target="_blank">Source Dialog</a></li>
+        <li><a href="http://ckeditor.com/addon/iframedialog" target="_blank">IFrame Dialog Field</a></li>
+        <li><a href="http://ckeditor.com/addon/devtools" target="_blank">Developer Tools</a></li>
+        <li><a href="http://ckeditor.com/addon/backgrounds" target="_blank">Background Image for Tables and Cells</a></li>
+        <li><a href="http://ckeditor.com/addon/confighelper" target="_blank">Configuration Helper</a></li>
+        <li><a href="http://ckeditor.com/addon/uploadcare" target="_blank">Uploadcare: Add media from anywhere</a></li>
+        <li><a href="http://ckeditor.com/addon/htmlbuttons" target="_blank">HTML Buttons</a></li>
+
+        <li><a href="http://ckeditor.com/addon/docprops" target="_blank">Document Properties</a></li>
+        <li><a href="http://ckeditor.com/addon/image2" target="_blank">Image Enhance</a></li>
+        <li><a href="http://ckeditor.com/addon/slideshow" target="_blank">Slideshow</a></li>
+        <li><a href="http://ckeditor.com/addon/floating-tools" target="_blank">Flooting Tools</a></li>
+
+        <li><a href="http://ckeditor.com/addon/maxheight" target="_blank">Max Height</a></li>
+        <li><a href="http://ckeditor.com/addon/texttransform" target="_blank">Text Transform</a></li>
+        <li><a href="http://ckeditor.com/addon/textselection" target="_blank">Keep Text Selection</a></li>
+        <li><a href="http://ckeditor.com/addon/mrmonkey" target="_blank">MrMonkey - simulator</a></li>
+        <li><a href="http://ckeditor.com/addon/letterspacing" target="_blank">Letter Spacing</a></li>
+    </ul>
+    <p>Important to note, the <a href="https://drupal.org/project/IMCE" target="_blank">IMCE</a> is used for uploading assets used with CKEditor</p>
+    <p>For complete details on CKEditor installation and integration, please, see post - <a href="http://margotskapacs.com/2013/11/wysiwyg-with-ckeditor-in-drupal/">Wysiwyg With Ckeditor In Drupal</a></p>
+</section>
+<section id="other">
+    <h3>Other</h3>
+    <hr>
+    <h4>Artifacts</h4>
+    <table border="1">
+        <thead><td>Content Type</td><td>Context</td><td>Templates</td><td>Views</td><td>Comments</td></thead>
+        <tr><td>blog_posts</td><td>blog_posts</td><td>page--blog-common.tpl.php,views-view-list--posts.tpl.php, node--blog-teaser-small.tpl.php, node--blog-teaser-big.tpl.php</td><td>Blog Content View(blog_content_view):Posts(posts)</td><td>page with list of posts</td></tr>
+        <tr><td>blog</td><td>blog_entry</td><td>page--blog-common.tpl.php ,node--blog-big.tpl.php, node--blog-small.tpl.php</td><td>none</td><td>Note: the name of content type is 'Blog Entry' while the machine name is 'blog'</td></tr>
+        <tr><td>blog_categories(Taxonomy)</td><td>blog_categories</td><td>page--blog-common.tpl.php ,node--blog-teaser-big.tpl.php, node--blog-teaser-small.tpl.php, views-view--blog-categories.tpl.php, views-view-list--blog-categories.tpl.php</td><td>blog_categories:blog_cat</td><td></td></tr>
+        <tr><td>tags(Taxonomy)</td><td>blog_tags</td><td>page--blog-common.tpl.php, node--blog-teaser-big.tpl.php, node--blog-teaser-small.tpl.php, views-view-list--blog-tags.tpl.php, views-view--blog-tags.tpl.php</td><td>ds_blog_tags:tag</td><td></td></tr>
+        <tr><td>none(comment)</td><td>none</td><td>node--blog-comment.tpl.php, node--blog-comment-form.tpl.php</td><td>none</td><td>comments separated out into template files created for easy overwriting the look and feel of comments</td></tr>
+    </table>
+</section>
+<section id="template_api">
+    <h3>Template API</h3>
+    <hr>
+    There is common representation API so the layouts(template files) can be swapped out and changed
+    <table>
+        <thead><th>Content Type</th><th>API</th><th>Methods Implementing API</th><th>Scope</th></thead>
+        <tr>
+            <td>Blog Entry</td>
+            <td>$blog_entry['title']::[STRING]<br>
+                $blog_entry['path_alias']::[STRING] <br>
+                $blog_entry['date']['full']::[STRING] <br>
+                $blog_entry['date']['day']::[STRING] <br>
+                $blog_entry['date']['month']::[STRING] <br>
+                $blog_entry['date']['year']::[STRING] <br>
+                $blog_entry['author']::[STRING] <br>
+                $blog_entry['path_to_author']::[STRING] <br>
+                $blog_entry['comment_count']::[STRING]<br>
+                $blog_entry['has_picture']::[BOOLEAN] <br>
+                $blog_entry['picture']['url']::[STRING] <br>
+                $blog_entry['picture']['alt']::[STRING] <br>
+                $blog_entry['picture']['title']::[STRING]<br>
+                $blog_entry['picture']['content']::[STRING]<br>
+                $blog_entry['has_video']::[BOOLEAN]<br>
+                $blog_entry['video']['content']::[STRING]<br>
+                $blog_entry['has_audio']::[BOOLEAN]<br>
+                $blog_entry['audio']['content']::[STRING]<br>
+                $blog_entry['body']::[STRING]<br>
+                $blog_entry['category']::[ARRAY](with categories each in its own renderable array ) <br>
+                $blog_entry['category'][N]['#title']::[STRING]<br>
+                $blog_entry['category'][N]['#href']::[STRING] <br>
+                $blog_entry['category'][N]['#access']::[BOOLEAN] <br>
+                $blog_entry['category'][N]['...']::[...] <br>
+                $blog_entry['tag']::[ARRAY] (with tags each in its own renderable array )<br>
+                $blog_entry['tag'][N]['#title']::[STRING]<br>
+                $blog_entry['tag'][N]['#href']::[STRING] <br>
+                $blog_entry['tag'][N]['#access']::[BOOLEAN] <br>
+                $blog_entry['tag'][N]['...']::[...] <br>
+                $blog_entry['contextual_links']::[RENDERABLE_ARRAY] <br>
+            <td>_blog_entry_tapi($node)</td>
+            <td>node--blog-slide.tpl.php, node--blog-teaser-small.tpl.php, node--blog-teaser-big.tpl.php, node--blog-teaser-big.tpl.php, node--blog-teaser-small.tpl.php</td>
+        </tr>
+        <tr>
+            <td>Blog Entry Full</td>
+            <td>
+                <b>...all from _blog_entry_tapi($node)</b>
+                $blog_entry['about_author']['content']::[STRING]<br>
+                $blog_entry['about_author']['avatar']::[STRING] <br>
+                $blog_entry['about_author']['title']::[STRING] <br>
+            <td>_blog_entry_full_tapi($node, $post_format = 'Big')</td>
+            <td>node--blog-small.tpl.php, node--blog-big.tpl.php</td>
+        </tr>
+        <tr>
+            <td>Comment Entry</td>
+            <td>
+                $blog_entry['author']['name']::[STRING]<br>
+                $blog_entry['author']['avatar_url']::[STRING]<br>
+                $blog_entry['date']::[STRING] <br>
+                $blog_entry['content']::[STRING] <br>
+            <td>_blog_comment_tapi($comment)</td>
+            <td>node--blog-comment.tpl.php</td>
+        </tr>
+        <tr>
+            <td>Slide Entry</td>
+            <td>
+                $post_media::[STRING]<br>
+                $blog_entry::[ARRAY](everything from _blog_entry_tapi())<br>
+            <td>_slider_media($post)</td>
+            <td>node--blog-slide.tpl.php</td>
+        </tr>
+        <tr>
+            <td>Contextual Links</td>
+            <td>$ds_contextual_links['contextual_links']::[RENDERABLE_ARRAY]</td>
+            <td></td>
+            <td>views-view--blog-categories, views-view--blog-tags, views-view-recent-posts-ver2, views-view--recent-posts-ver1, views-view--recent-posts-slider,</td>
+        </tr>
+
+    </table>
+
+</section>
+<section id="drupal_depenencies">
+    <h3>Drupal Module Dependencies</h3>
+    <hr>
+    In the following are direct dependencies for the Calypso theme:
+    <ul>
+        <li><b>pathauto:</b> This module required for menu importer.</li>
+        <li><b>strongarm, features, uuid_features, features_extra </b> all of these modules used for importing structure
+            as well as the sample data. Important to note, that modules uuid and uuid_feature has to dev version of
+            7.x-1.0-alpha3+15-d or higher
+        </li>
+        <li><b>audiofield:</b></li>
+        <li><b>videojs:</b></li>
+        <li><b><a href="https://drupal.org/project/IMCE">IMCE</a>:</b> for artifact upload into textarea</li>
+        <li><b><a href="https://drupal.org/project/ckeditor">CKEditor</a>:</b> for having CKEditor</li>
+    </ul>
+</section>
+<section id="troubleshooting">
+    <h3>Troubleshooting</h3>
+    <hr>
+    <h5>1. Posts does not show up</h5>
+    <p>Ensure that :
+    <ul>
+        <li>there is at least one instance of Blog_Posts(blog index)</li>
+        <li>the context import hasn't dropped the view for list of posts(make sure "DesignsSquare.com: Blog: Posts" is assigned to region - "Content")</li>
+        <li>there is no context conflict</li>
+    </ul>
+    </p>
+
+
+    <h5>2. The Sample Data Exporting with Errors/Missing data</h5>
+    <p>Ensure the UUID and UUID_FEATURES modules have version of 7.x-1.0-alpha3(and above) and 7.x-1.0-alpha5(and above)</p>
+
+    <h5>3. Video is not displaying.</h5>
+    <p>Make sure designssquare_com_module_blog/libraries/vidoe-js was copied into sites/all/libraries/video-js dir</p>
+
+    <h5>4. Audio is not working.</h5>
+    <p>Ensure Audio configurations are correct at admin/config/media/audiofield, so that 'Audio Players Directory' is pointing to 'sites/all/modules/designssquare_com_module_blog/libraries/player' and setting 'MP3 Audio Players' is 'WordPress Audio Player'</p>
+
+</section>
+<section id="releases">
+    <h3>Release History</h3>
+    <hr>
+    <h5>0.1</h5>
+
+    <ul>
+        <li>initial release</li>
+    </ul>
+    <h5>O.1.9</h5>
+    <ul>
+        <li>incorporate CKEDITOR and more than 25 most popular CKEDITOR plugins</li>
+    </ul>
+    <h5>O.1.10</h5>
+    <ul>
+        <li>incorporate Image/Video styles</li>
+    </ul>
+    <h5>0.1.11</h5>
+    <ul>
+        <li>moved templates into separate directory and update theme registry</li>
+        <li>rebuild views so their names don't get hashed</li>
+    </ul>
+    <h5>O.1.12</h5>
+    <ul>
+        <li>incorporate contextual links for all blocks</li>
+        <li>separate out slider slide into separate template file for easy themeing</li>
+    </ul>
+</section>
+<section id="backlog">
+    <h3>Things For Future Release</h3>
+    <hr>
+    <ul>
+        <li>move to sidewide context and export to structure</li>
+        <li>add description field to the blog_posts entry...perhaps blog entry?</li>
+        <li>refactor blog_posts to blog_index to make it consistent across products</li>
+        <li>update data export so nodes disabled for being published in front page</li>
+        <li>Extract Audio Configurations In Feature</li>
+        <li>Add Archive Block</li>
+        <li>Add Recent Comments Block</li>
+        <li>fix breadcrumbs</li>
+        <li>remove the logic of right,left,none sidebar from template into code</li>
+        <li>Extract Widget configurations in separate Admin section</li>
+        <li>Fix bug for ds-blog for not activating blocks that are disabled</li>
+        <li>Add path to Author in Template API. Update templates</li>
+        <li>test date inmpor for blog entry sample data</li>
+        <li>Refactor image styles toward only three - teaser, big, small</li>
+    </ul>
+    <p>If you are missing something in the theme, please, submit us request via email - <a
+            href="mailto:contact@designssquare.com">contact@designssquare.com</a> and we will try to incorporate it in
+        next release</p>
+</section>
+</div>
+<!--end of documenter_content-->
+</body>
+</html>

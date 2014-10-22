@@ -1,0 +1,12 @@
+<?php
+
+function designssquare_com_theme_espresso_install(){
+}
+
+function designssquare_com_theme_espresso_uninstall(){
+
+}
+
+function _assets_list(){
+
+}

@@ -1,0 +1,388 @@
+<!doctype html>
+<!--[if IE 6 ]>
+<html lang="en-us" class="ie6"> <![endif]-->
+<!--[if IE 7 ]>
+<html lang="en-us" class="ie7"> <![endif]-->
+<!--[if IE 8 ]>
+<html lang="en-us" class="ie8"> <![endif]-->
+<!--[if (gt IE 7)|!(IE)]><!-->
+<html lang="en-us"><!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+
+    <title>DesignsSquare.com Portfolio Widget</title>
+    <meta name="generator" content="Documenter v1.6 http://rxa.li/documenter">
+    <meta name="date" content="2012-03-27T00:00:00+02:00">
+    <link rel="stylesheet" href="css/documenter_style.css" media="all">
+    <script src="js/jquery.1.6.4.js"></script>
+    <script src="js/jquery.scrollTo-1.4.2-min.js"></script>
+    <script src="js/jquery.easing.js"></script>
+    <link rel="stylesheet" href="css/shDocumenter.css" media="screen">
+    <script src="js/shCore.js"></script>
+    <script src="js/shBrushCss.js"></script>
+    <script src="js/shBrushJScript.js"></script>
+    <script>SyntaxHighlighter.defaults['toolbar'] = false;
+    SyntaxHighlighter.all();</script>
+    <script>document.createElement('section');
+    var duration = 500, easing = 'swing';</script>
+    <script src="js/script.js"></script>
+    <style>
+        html {
+            background-color: #FFFFFF;
+            color: #383838;
+        }
+
+        ::-moz-selection {
+            background: #444444;
+            color: #DDDDDD;
+        }
+
+        ::selection {
+            background: #444444;
+            color: #DDDDDD;
+        }
+
+        hr {
+            border-top: 1px solid #E1B568;
+            border-bottom: 1px solid #FFFFFF;
+        }
+
+        #documenter_sidebar, #documenter_sidebar ol a {
+            background-color: #ffffff;
+            /*background-color: #E1B568;*/
+            /*color: #222222;*/
+            color: #373737;
+        }
+
+        #documenter_sidebar ol a {
+            -webkit-text-shadow: 1px 1px 0px #EEEEEE;
+            -moz-text-shadow: 1px 1px 0px #EEEEEE;
+            text-shadow: 1px 1px 0px #EEEEEE;
+        }
+
+        #documenter_sidebar ol {
+            border-top: 1px solid #E1A53C;
+        }
+
+        #documenter_sidebar ol a {
+            border-top: 1px solid #EEEEEE;
+            border-bottom: 1px solid #E1B568;
+            color: #444444;
+        }
+
+        #documenter_sidebar ol a:hover {
+            background: #cc9833;
+            color: #ffffff;
+            border-top: 1px solid #E1A53C;
+        }
+
+        #documenter_sidebar ol a.current {
+            background: #cc9833;
+            color: #ffffff;
+            border-top: 1px solid #E1A53C;
+        }
+
+        #documenter_copyright {
+            display: block !important;
+            visibility: visible !important;
+        }
+
+        #logo #textual span {
+            font-size: 20px;
+            font-family: 'Oswald', sans-serif;
+            color: #cc9833;
+            font-style: normal;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        #logo #textual {
+            font-size: 20px;
+            font-family: 'Oswald', sans-serif;
+            color: #373737;
+            font-style: normal;
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 40px;
+            margin-left: 10px;
+            /*margin-bottom: 12px;*/
+            line-height: 1em;
+            text-transform: uppercase;
+        }
+    </style>
+
+</head>
+<body>
+<div id="documenter_sidebar">
+    <!--<a href="http://www.wowthemes.net" id="documenter_logo"></a>-->
+    <div id="logo" class="group">
+        <a id="textual" href="http://designssquare.com" target="_blank" title="Design Square">
+            Designs <span class="title-highlight">Square</span>
+        </a>
+        <!--<p id='tagline'>Inspiration Designs. Practical Widgets</p>-->
+    </div>
+    <ol id="documenter_nav">
+        <li><a class="current" href="#documenter_cover">Start</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#installation">Installation</a></li>
+        <li><a href="#blocks">Blocks</a></li>
+        <li><a href="#fields">Fields</a></li>
+        <li><a href="#layouts">Layouts(Content Types)</a></li>
+        <li><a href="#views">Views</a></li>
+        <li><a href="#how_to">How To</a></li>
+        <li><a href="#templates">Templates</a></li>
+        <li><a href="#artifacts">Artifacts</a></li>
+        <li><a href="#product_api">Product API</a></li>
+        <li><a href="#drupal_depenencies">Drupal Dependencies</a></li>
+        <li><a href="#troubleshooting">Troubleshooting</a></li>
+        <li><a href="#releases">Release History</a></li>
+        <li><a href="#backlog">Future Releases</a></li>
+    </ol>
+    <div id="documenter_copyright">Copyright DesignsSquare.com 2014
+    </div>
+</div>
+<div id="documenter_content">
+<section id="documenter_cover">
+    <h1>DesignsSquare.com Portfolio Widget Documentation</h1>
+
+    <h2>Portfolio Functionality For Drupal</h2>
+    <hr>
+    <ul>
+        <li>Last Updated: Jun 8, 2014</li>
+        <li>Developed By: DesignsSquare.com</li>
+        <li><a href="">
+        </a>
+        </li>
+        <li>Email: <a href="mailto:contact@designssquare.com">contact@designssquare.com</a></li>
+    </ul>
+    . <p>Thank you for purchasing our product. If you have any questions, please feel free to email us! </p>
+</section>
+<section id="about">
+    <h3>About</h3>
+    <hr>
+    <p>DesignsSquare.com.portfolio widget contains:</p>
+    <ul>
+        <li>Portfolio Index: portfolio space for displaying all projects</li>
+        <li>Project Display: Display of the each project with set of image to better convey information about project</li>
+        <li>Portfolio Teaser: project thumbs embedded in slider for front page display easy to configure with views,blocks UI</li>
+
+        <li>Portfolio Block: displays project thumbs intended for regions such as sidebar, footer,etc. It is easy to configure with views, context and blocks UI</li>
+        <li>Sample Products for kick start</li>
+
+    </ul>
+</section>
+<section id="installation">
+    <h3>Installation</h3>
+    <hr>
+
+    <p>Here are steps to install the widget</p>
+    <ol>
+        <li>Enable module "DesignsSquare.com Portfolio Widget" that will also enable "DesignsSquare.com: Portfolio : Structure and Configurations" module</li>
+        <li>Enable module "DesignsSquare.com: Portfolio: Sample Data - Kickstart" for Sample Products(recommended) to import block configurations, products attribute taxonomies, views among other things all related to sample data</li>
+        <li>Revert Features - "DesignsSquare.com: Portfolio : Structure and Configurations","DesignsSquare.com: Portfolio: Sample Data - Kickstart" and Clear All Cache</li>
+    </ol>
+
+</section>
+<section id="blocks">
+    <h3>Blocks</h3>
+    <hr>
+    <p>The Portfolio widget comes with the following blocks</p>
+
+    <p><b>DesignsSquare.com: Portfolio: Teaser</b> This block displays projects thumbs in a row that slides and is fully functional slider intended for home page/landing page. It is configured via view - DesignsSquare.com: Portfolio: Teaser</p>
+    <p><b>DesignsSquare.com: Portfolio: Projects</b> This block displays projects thumbs intended for Portfolio Index space to list all projects. It is configured via view - DesignsSquare.com: Portfolio: Projects</p>
+    <p><b>DesignsSquare.com: Portfolio: Block</b>This block displays projects thumbs linking to each project intended for regions such as sidebar, footer,etc. It is configured via view - DesignsSquare.com: Portfolio: Block</p>
+
+</section>
+<section id="fields">
+    <h3>Fields</h3>
+    <hr>
+
+    <h4>Project Display Fields</h4>
+    <p>Here are recommended fields for project display to have complete functionality</p>
+    <table border="1">
+        <thead><td>Field Name</td><td>Machine Name</td><td>Type</td><td>Purpose</td></thead>
+        <tr><td>Featured Img</td><td>field_ds_portfolio_featured_img</td><td>Image</td><td>image used int the Project teaser</td></tr>
+        <tr><td>Summary</td><td>field_ds_portfolio_summary</td><td>Long text</td><td>short intro about the project displayed in the Project teaser</td></tr>
+        <tr><td>Images</td><td>field_ds_portfolio_images</td><td>Images</td><td>Other images to better represent project</td></tr>
+    </table>
+</section>
+<section id="layouts">
+    <h3>Layouts(Content Types)</h3>
+    <hr>
+    <ul>
+        <li><b>DS Portfolio:</b> The layout for Portfolio Space that displays teaser of the each project</li>
+        <li><b>DS Portfolio Index:</b> The layout for displaying projects</li>
+    </ul>
+</section>
+<section id="views">
+    <h3>Views</h3>
+    <hr>
+    <p>In the following is overview of all views provided by the Portfolio widget:</p>
+    <table border="1">
+        <thead><td>View</td><td>Specifics</td><td>Purpose</td></thead>
+        <tr>
+            <td>DesignsSquare.com: Portfolio: Projects</td>
+            <td>
+                <ul>
+                    <li>Format: HTML List OR Unformatted List</li>
+                    <li>Fields: Content: Rendered Node</li>
+                    <li>Use pager:Full | Paged, 0(or unlimited) items</li>
+                    <li>Add Filter Criteria to filter per content type 'DS Portfolio'</li>
+                    <li>Add tag 'designssquare_portfolio_products' </li>
+                </ul>
+            </td>
+            <td>contains projects to display in the Portfolio space</td>
+        </tr>
+
+        <tr>
+            <td>DesignsSquare.com: Portfolio: Teaser</td>
+            <td>
+                <ul>
+                    <li>Format: HTML List OR Unformatted List</li>
+                    <li>Fields: Content: Rendered Node</li>
+                    <li>Use pager:Full | Paged, 0(or unlimited) items</li>
+                    <li>Add Filter Criteria to filter per content type 'DS Portfolio'</li>
+                    <li>Add tag 'designssquare_portfolio_teaser' </li>
+                </ul>
+            </td>
+            <td>contains products to display in the store</td>
+        </tr>
+        <tr>
+            <td>DesignsSquare.com: Portfolio: Block</td>
+            <td>
+                <ul>
+                    <li>Format: HTML List OR Unformatted List</li>
+                    <li>Fields: Content: Rendered Node</li>
+                    <li>Use pager:Full | Paged, 0(or unlimited) items</li>
+                    <li>Add Filter Criteria to filter per content type 'DS Portfolio'</li>
+                    <li>Add tag 'designssquare_portfolio_block' </li>
+                </ul>
+            </td>
+            <td>contains products to display in the store</td>
+        </tr>
+    </table>
+</section>
+<section id="how_to">
+    <h3>How To</h3>
+    <hr>
+
+    <h4>Portfolio</h4>
+    <p><b>Portfolio Index</b> is the portfolio space displaying teasers of pultiple projects. It is the front page of the portoflio. There is a sample portoflio index at url address - '/ds-portfolio'. This portfolio space finds the last node instance of 'Portfolio Index' and displays it. If you don't have Portfolio Index(space), you can create one by going 'admin/content/add" and select "DS Portfolio Index"' or import data by enabling module "DesignsSquae.com Portfolio Sample Data"</p>
+    <p>There is content type - "DS Portfolio" that you would use if you would like to create a portfolio space in your site. By default it is configured to have context - "portfolio_index"</p>
+    <p>After creating portfolio index, you need to tell what projects to include in your portfolio. To do so, go to the Context(admin/structure/context) and edit context 'portfolio_index'. Here, you assign the view containing the projects you like to be included to the region 'Content'. There is sample view  DesignsSquare.com: Portfolio: Sample available for you to use and alter as you like. If you like to create your own view, then</p>
+    <ul>
+        <li>it has to have a tag 'designssquare_portfolio_projects'</li>
+        <li>it has to reference a rendered instance of type 'DS Portfolio' </li>
+    </ul>
+
+    <h4>Portfolio Display</h4>
+    <p><b>Portfolio Display</b> displays the info about project including little description and number of images</p>
+
+    <h4>Portfolio Teaser</h4>
+    <p><b>Portfolio teaser</b> is a block that can be assigned to any region via Block/Context UI. This block is a slider with project thumbs intended for landing page/ home page. The view - DesignsSquare.com: Portfolio: Block is used for configuring title, projects to include in the teaser </p>
+
+    <h4>Portfolio Block</h4>
+    <p><b>Portfolio Block</b> is a block that can be assigned to any region via Block/Contect UI. It is itnended for regions sidebar, footer, etc. The view - DesignsSquare.com: Portfolio: Block is used to configure title as well the projects to include</p>
+
+</section>
+<section id="template_api">
+    <h3>Template API</h3>
+    <hr>
+    There is common representation API so the layouts(template files) can be swapped out and changed
+    <table>
+        <thead><th>Content Type</th><th>API</th><th>Methods Implementing API</th><th>Scope</th></thead>
+        <tr>
+            <td>Project Teaser Entry</td>
+            <td>
+                $project_tapi['url']::[STRING];<br>
+                $project_tapi['title']::[STRING];<br>
+                $project_tapi['featured_img']::[ARRAY];<br>
+                $project_tapi['featured_img']['url']::[STRING];<br>
+                $project_tapi['featured_img']['alt']::[STRING];<br>
+                $project_tapi['summary']::[STRING]<br>
+                $project_tapi['ds_contextual_links']::[RENDERABLE_ARRAY]<br>]
+            <td>_project_teaser_tapi($node)</td>
+            <td>portfolio-project-teaser.tpl.php</td>
+        </tr>
+        <tr>
+            <td>Project Entry</td>
+            <td>
+                <b>...everything from "Project Teaser Entry"</b>(_project_teaser_tapi())
+                $project_tapi['content']::[STRING];<br>
+                $project_tapi['index']::[ARRAY];<br>
+                $project_tapi['index']['next']::[ARRAY];<br>
+                $project_tapi['index']['next']['url']::[STRING];<br>
+                $project_tapi['index']['next']['text']::[STRING];<br>
+                $project_tapi['index']['previous']::[ARRAY];<br>
+                $project_tapi['index']['previous']['text']::[STRING];<br>
+                $project_tapi['index']['previous']['url']::[STRING];<br>
+                $project_tapi['featured_img']::[ARRAY];<br>
+                $project_tapi['featured_img']['url']::[STRING];<br>
+                $project_tapi['featured_img']['alt']::[STRING];<br>
+                $project_tapi['project_img']::[ARRAY];<br>
+                $project_tapi['project_img']['N']::[ARRAY];<br>
+                $project_tapi['project_img']['N']['url']::[STRING];<br>
+                $project_tapi['project_img']['N']['alt']::[STRING];<br>
+            <td>_project_tapi($node)</td>
+            <td>page--ds-portfolio--project.tpl.php</td>
+        </tr>
+    </table>
+
+</section>
+<section id="artifacts">
+    <h3>Artifacts</h3>
+    <hr>
+    <p>Here are summary of all artifacts part of the Portfolio widget:</p>
+    <table border="1">
+        <thead><td>Item</td><td>Content Type</td><td>Context</td><td>Templates</td><td>Views</td><td>Comments</td></thead>
+        <tr><td>Portfolio Space</td><td>DS Portfolio Index</td><td>portoflio_index</td><td>page--ds-portfolio.tpl.php</td><td>none</td><td>this the layout of the portfolio space. To tell what projects to display in your porfolio, the view contain projects has to be assigned in the context 'profolio_index'</td></tr>
+        <tr><td>Project Display</td><td>DS Portfolio</td><td>any</td><td>page--ds-portfolio--project.tpl.php</td><td>n/a</td><td>this is where the project is being displayed. One project display has a featured image with multiple other images</td></tr>
+        <tr><td>Portfolio Teaser</td><td>n/a</td><td>any</td><td>views-view-portfolio-projects.tpl.php, views-view-list--project-teaser.tpl.php, portfolio-project-teaser.tpl.php</td><td>DesignsSquare.com: Portfolio: Teaser</td><td>The tag - designssquare_portfolio_teaser kicks in the mechanism for slider teaser and appropriate template. This is good for featuring projects of the portfolio in home pages or landing page</td></tr>
+        <tr><td>Portfolio Index Teaser</td><td>n/a</td><td>any</td><td>views-view-portfolio-projects.tpl.php, views-view-list--project-teaser.tpl.php, portfolio-project-index-teaser.tpl.php</td><td>DesignsSquare.com: Portfolio: Teaser</td><td>The tag - designssquare_portfolio_teaser kicks in the mechanism for slider teaser and appropriate template. This is good for featuring projects of the portfolio in Portfolio Index pages</td></tr>
+        <tr><td>Portfolio Block</td><td>n/a</td><td>any</td><td>views-view-portfolio-block.tpl.php, views-view-list--project-block.tpl.php, </td><td>DesignsSquare.com: Portfolio: Block</td><td>The tag - designssquare_portfolio_block kicks in the mechanism for appropriate templates. This is good for assigning to regions such as sidebar, footer, etc</td></tr>
+        <tr><td>Portfolio Projects</td><td>n/a</td><td>any</td><td>views-view-portfolio-projects.tpl.php, views-view-list--project-portfolio.tpl.php, portfolio-project-teaser.tpl.php</td><td>DesignsSquare.com: Portfolio: Projects</td><td>The tag - designssquare_portfolio_projects kicks in the mechanism for appropriate templates. This is good for Portfolio space to show all projects in portfolio</td></tr>
+    </table>
+</section>
+<section id="drupal_depenencies">
+    <h3>Drupal Module Dependencies</h3>
+    <hr>
+    In the following are direct dependencies for the Portfolio widget:
+    <ul>
+        <li><b>Portfolio: ?</b> utilizes Drupal Portfolio funcionality</li>
+        <li><b>Portfolio_features</b> for sample product import/export</li>
+    </ul>
+</section>
+<section id="troubleshooting">
+    <h3>Troubleshooting</h3>
+    <hr>
+    <h5>0. Unable to generate the derived image located at public://... or ... Warning: filesize(): stat failed for</h5>
+    <p>This happens when importing products on Drupal instance running on server without library - libjpeg installed/configured. Solution compile the PHP with libjpeg library or just copy artifacts manually</p>
+</section>
+<section id="releases">
+    <h3>Release History</h3>
+    <hr>
+    <h5>O.1</h5>
+
+    <ul>
+        <li>initial release</li>
+    </ul>
+</section>
+<section id="backlog">
+    <h3>Things For Future Release</h3>
+    <hr>
+    <p>Here is list of features and enhancements that will be included in future releases:</p>
+    <ul>
+        <li>Add tags and category functionality</li>
+        <li>Add flex slider to scroll images in the portfolio template</li>
+        <li>Fix image switcher on click to display in portfolio template</li>
+        <li>It takes times to load teaser, so lets add progress bar or something to demonstrate loading process</li>
+    </ul>
+</section>
+</div>
+<!--end of documenter_content-->
+</body>
+</html>
+
+
+
+

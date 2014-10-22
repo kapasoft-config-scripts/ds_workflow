@@ -1,0 +1,19 @@
+<?php
+
+function designssquare_com_virtual_hosty_preprocess_html(&$vars){
+    //get base path
+    $base_url = base_path();
+//    $base_url = '/test';
+
+    //include base path in header so the other JS can use for their path "BASE_URL"
+    $js_to_add = 'window.BASE_URL="'.$base_url.'";';
+    drupal_add_js($js_to_add, array('scope' =>'header', 'type' =>'inline', 'weight' => JS_THEME - 100));
+
+    //load lib
+    drupal_add_js(drupal_get_path('module','designssquare_com_virtual_hosty') .'/assets/js/virtual_hosty_lib.js', array('scope' =>'header', 'type' =>'file', 'weight' => JS_THEME));
+
+    //initilize(init app and run the parser)
+//    $js_to_add = 'VIRTUAL_HOSTY.turnOnDebug();VIRTUAL_HOSTY.set_base("'.$base_url.'");VIRTUAL_HOSTY.init();';
+    $js_to_add = 'VIRTUAL_HOSTY.init();';
+    drupal_add_js($js_to_add, array('scope' =>'header', 'type' =>'inline', 'weight' => JS_THEME + 1));
+}

@@ -1,0 +1,300 @@
+<?php
+//module_load_include('module', 'designssquare_lib');
+module_load_include('inc', 'designssquare_lib', 'includes/template_api');
+
+function designssquare_com_widget_portfolio_preprocess_node(&$vars)
+{
+//    switch($vars['type']){
+//        case 'ds_portfolio':
+//            $vars['theme_hook_suggestions'][] = 'node__ds_portfolio__project';
+//            break;
+//    }
+
+    if (arg(0) == 'ds-portfolio') {
+        $vars['theme_hook_suggestion'] = 'node__portfolio_no_wrapper';
+    }
+}
+
+function designssquare_com_widget_portfolio_preprocess_page(&$vars)
+{
+
+    if (isset($vars['node']) && isset($vars['node']->type) && !path_is_admin(current_path())) {
+        switch ($vars['node']->type) {
+            case 'ds_portfolio':
+                drupal_add_js(drupal_get_path('module', 'designssquare_com_widget_portfolio') . '/js/ds-portfolio.js', array('scope' => 'footer', 'type' => 'file', 'weight' => 4));
+                $vars['portfolio_tapi'] = _project_tapi($vars['node']);
+//                $vars['theme_hook_suggestions'][100] = 'page__ds_portfolio__project';
+                $vars['theme_hook_suggestion'] = 'page__ds_portfolio__project';
+                break;
+            case 'ds_portfolio_index':
+//                $vars['portfolio_tapi'] = _project_tapi($vars['node']);
+//                $vars['theme_hook_suggestions'][] = 'page__ds_portfolio';
+                $vars['theme_hook_suggestion'] = 'page__ds_portfolio';
+                break;
+        }
+    }
+
+    //for the predefined widget path
+    if (arg(0) == 'ds-portfolio') {
+        $vars['theme_hook_suggestions'][] = 'page__ds_portfolio';
+    }
+
+}
+
+/**altering Theme registry to look up template files in our module folder***/
+/**
+ * Implements hook_theme_registry_alter().
+ */
+function designssquare_com_widget_portfolio_theme_registry_alter(&$theme_registry)
+{
+    $path = drupal_get_path('module', 'designssquare_com_widget_portfolio') . '/templates/designssquare-com-widget-portfolio';
+    $registry_entries = drupal_find_theme_templates($theme_registry, '.tpl.php', $path);
+
+    //to avoid error message adding 'type'
+    foreach ($registry_entries as $key => $entry) {
+        $registry_entries[$key]['type'] = 'module';
+        $registry_entries[$key]['theme path'] = $path;
+    }
+    $theme_registry += $registry_entries;
+
+}
+
+function designssquare_com_widget_portfolio_preprocess_views_view(&$vars)
+{
+    module_load_include('module', 'designssquare_lib');
+
+    $vars['ds_contextual_links'] = view_contextual_links($vars['view']);
+
+    $tag_list = drupal_explode_tags($vars['view']->tag);
+    $view = $vars['view'];
+
+    //handling title
+    $display_id = $view->current_display;
+    $vars['views_title'] = (isset($display_id) && isset($view->display[$display_id])) ? $view->display[$display_id]->display_title : '';
+
+    if ((in_array('designssquare_portfolio_projects', $tag_list)) && !path_is_admin(current_path())) {
+        $vars['theme_hook_suggestion'] = 'views_view__portfolio_projects';
+    }
+
+    if (in_array('designssquare_portfolio_teaser', $tag_list) && !path_is_admin(current_path())) {
+        $vars['theme_hook_suggestion'] = 'views_view__portfolio_teaser';
+    }
+
+//    if (in_array('designssquare_portfolio_teaser', $tag_list) && !path_is_admin(current_path())) {
+//        $vars['theme_hook_suggestion'] = 'views_view__portfolio_projects';
+//    }
+//
+    if (in_array('designssquare_portfolio_block', $tag_list) && !path_is_admin(current_path())) {
+        $vars['theme_hook_suggestion'] = 'views_view__portfolio_block';
+    }
+}
+
+function designssquare_com_widget_portfolio_preprocess_views_view_list(&$vars)
+{
+    $tag_list = drupal_explode_tags($vars['view']->tag);
+
+    if (in_array('designssquare_portfolio_projects', $tag_list) && !path_is_admin(current_path())) {
+        _portofolio_view_list($vars);
+        $vars['theme_hook_suggestion'] = 'views_view_list__project_portfolio';
+    }
+
+    if (in_array('designssquare_portfolio_teaser', $tag_list) && !path_is_admin(current_path())) {
+        drupal_add_css(drupal_get_path('module', 'designssquare_com_widget_portfolio') . '/css/ds-portfolio-style.css', array('group' => CSS_SYSTEM + 4, 'type' => 'file'));
+//        $options = array(
+//            'num_items_slide' => 4,
+//            'slider_id' => 'portfolio-teaser-slider',
+//            'animation' => 'slide',
+//            'manualControls' => ".ds-portfolio-direction-nav a",
+//            'controlNav' => "true",
+//            'directionNav' => "false",
+//            'minItems' => 4,
+//            'maxItems' => 4,
+//            'itemWidth' => 4,
+//            'itemMargin' => 0,
+//        );
+//        import_flex_slider($vars, $options);
+        _portfolio_flex_slider($vars, 'portfolio-teaser-slider', 300, 0);
+        _portofolio_view_list($vars);
+        $vars['theme_hook_suggestion'] = 'views_view_list__project_teaser';
+    }
+
+    if (in_array('designssquare_portfolio_block', $tag_list) && !path_is_admin(current_path())) {
+        _portfolio_block_tapi($vars);
+        $vars['theme_hook_suggestion'] = 'views_view_list__project_block';
+    }
+}
+
+function designssquare_com_widget_portfolio_preprocess_views_view_unformatted(&$vars)
+{
+    $tag_list = drupal_explode_tags($vars['view']->tag);
+
+    if (in_array('designssquare_portfolio_projects', $tag_list) && !path_is_admin(current_path())) {
+        _portofolio_view_list_index($vars);
+        $vars['theme_hook_suggestion'] = 'views_view_list__project_portfolio';
+    }
+
+    if (in_array('designssquare_portfolio_teaser', $tag_list) && !path_is_admin(current_path())) {
+        drupal_add_css(drupal_get_path('module', 'designssquare_com_widget_portfolio') . '/css/ds-portfolio-style.css', array('group' => CSS_SYSTEM + 4, 'type' => 'file'));
+        _portfolio_flex_slider($vars, 'portfolio-teaser-slider', 300, 0);
+        _portofolio_view_list($vars);
+        $vars['theme_hook_suggestion'] = 'views_view_list__project_teaser';
+    }
+
+    if (in_array('designssquare_portfolio_block', $tag_list) && !path_is_admin(current_path())) {
+        _portfolio_block_tapi($vars);
+        $vars['theme_hook_suggestion'] = 'views_view_list__project_block';
+    }
+}
+
+function _portofolio_view_list(&$vars)
+{
+
+    foreach ($vars['view']->result as $id => $row) {
+        $project = $row->_entity_properties['entity object'];
+
+        $portfolio_project = array(
+            '#theme' => 'ds_portfolio_project_teaser',
+            '#project_tapi' => _project_teaser_tapi($project),
+        );
+
+        $row->portfolio_project = drupal_render($portfolio_project);
+    }
+    $vars['theme_hook_suggestion'] = 'views_view_list__project_portfolio';
+}
+
+function _portofolio_view_list_index(&$vars)
+{
+
+    foreach ($vars['view']->result as $id => $row) {
+        $project = $row->_entity_properties['entity object'];
+
+        $portfolio_project = array(
+            '#theme' => 'ds_portfolio_project_index_teaser',
+            '#project_tapi' => _project_teaser_tapi($project),
+        );
+
+        $row->portfolio_project = drupal_render($portfolio_project);
+    }
+    $vars['theme_hook_suggestion'] = 'views_view_list__project_portfolio';
+}
+
+function  _portfolio_block_tapi(&$vars)
+{
+    foreach ($vars['view']->result as $id => $row) {
+        $project = $row->_entity_properties['entity object'];
+        $row->project_tapi = _project_teaser_tapi($project);
+    }
+}
+
+
+function designssquare_com_widget_portfolio_theme($existing, $type, $theme, $path)
+{
+    $current_theme = $GLOBALS['theme'];
+    $current_module = basename(__FILE__, '.module');
+    return array(
+        'ds_portfolio_project_teaser' => array(
+            'template' => 'portfolio-project-teaser',
+            'variables' => array(
+                'project_tapi' => NULL,
+            ),
+            'path' => get_template_path('designssquare_com_widget_portfolio', 'designssquare-com-widget-portfolio/portfolio-project-teaser') . '/designssquare-com-widget-portfolio',
+        ),
+        'ds_portfolio_project_index_teaser' => array(
+            'template' => 'portfolio-project-index-teaser',
+            'variables' => array(
+                'project_tapi' => NULL,
+            ),
+            'path' => get_template_path('designssquare_com_widget_portfolio', 'designssquare-com-widget-portfolio/portfolio-project-teaser') . '/designssquare-com-widget-portfolio',
+        ),
+        'render_portfolio' => array(
+            'template' => 'portfolio-project-teaser',
+            'render element' => 'page',
+            'path' => get_template_path('designssquare_com_widget_portfolio', 'designssquare-com-widget-portfolio/portfolio-project-teaser') . '/designssquare-com-widget-portfolio',
+            'preprocess functions' => array(
+                'template_preprocess',
+                'template_preprocess_page',
+                $current_module . '_preprocess_render_portfolio',
+                $current_module . '_preprocess_page',
+                $current_theme . '_preprocess_page',
+            ),
+
+        ),
+    );
+}
+
+function designssquare_com_widget_portfolio_preprocess_render_portfolio(&$vars)
+{
+
+    //retrieve all messages and set to be rendered in template file. it also clears the message queue
+    $messages = theme_status_messages(array('display' => null));
+    $vars['messages'] = ($vars['show_messages'] && isset($messages)) ? $messages : '';
+
+    //retrieve current node being loaded
+//    $current_node = array_slice($vars['page']['content']['system_main']['nodes'],0,1);
+    $current_node = get_node_from_cache();
+
+    if (isset($current_node) && !empty($current_node)) {
+        //prepare for theme_preprocess_page function
+        $vars['node'] = $current_node;
+//        $vars['node'] = array_values($current_node)[0]['#node'];
+//        $vars['basic_tapi'] = _basic_tapi($vars['node']);
+
+        //    //in blog_posts the posts are renedered from view. there is no need to render the the node itself at the end.
+
+    } else {
+        $vars['basic_tapi'] = array(
+            'title' => 'Portfolio Not Found'
+        );
+        drupal_set_message(t('It appears there is no Portfolio index created. Please, go to \'Content\'->\'Add Content\'->\'Portfolio Index\'. Or enable \'DesignsSquare.com: Portfolio: Sample Data - Kickstart\' module to import sample data (consult documentation for importing Sample Data)'));
+        $vars['page']['content'] = array(
+//            '#markup' => 'It appears there is no Blog index created. Please, go to \'Content\'->\'Add Content\'->\'Blog Posts\'. Or enable \'designssquarecom_blog_example_data\' module to import sample data(consult documentation for importing Sample Data)' ,
+            '#markup' => '',
+        );
+    }
+}
+
+function designssquare_com_widget_portfolio_preprocess_block(&$vars)
+{
+    switch ($vars['block_html_id']) {
+        case 'block-views-ds-portfolio-projects-projects':
+        case 'block-views-ds-portfolio-teaser-projects':
+        case 'block-views-ds-portfolio-block-projects':
+            $vars['theme_hook_suggestions'][] = 'block__portfolio_no_wrapper';
+            break;
+    }
+}
+
+
+//****Create Entry Page(front page) For Portfolio*****/
+function designssquare_com_widget_portfolio_menu()
+{
+    $items['ds-portfolio'] = array(
+        'title' => 'Portfolio',
+        'page callback' => 'portfolio_display',
+        'access arguments' => array('access content'),
+        'type' => MENU_NORMAL_ITEM,
+        'file' => 'inc/ds-portfolio.pages.inc',
+    );
+    return $items;
+}
+
+//configure and add flex slider to service widget
+function _portfolio_flex_slider(&$vars, $id, $itemWith, $itemMargin)
+{
+    $options = array(
+        'slider_id' => $id,
+        'animation' => 'slide',
+        'controlNav' => "false",
+        'directionNav' => "false",
+        'itemWidth' => $itemWith,
+        'itemMargin' => $itemMargin,
+        'minItems' => 4,
+        'maxItems' => 4,
+        'slideshow' => "true",
+        'animationLoop' => "true",
+        'slideshowSpeed' => 6000,
+        'animationSpeed' => 700,
+    );
+    import_flex_slider($vars, $options);
+    drupal_add_js(drupal_get_path('module', 'designssquare_com_widget_portfolio') . '/js/portfolio-flex-custom.js', array('scope' => 'footer', 'type' => 'file', 'weight' => JS_THEME + 1));
+}

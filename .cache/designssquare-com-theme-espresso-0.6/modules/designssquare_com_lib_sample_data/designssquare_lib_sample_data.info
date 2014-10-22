@@ -1,0 +1,12 @@
+name = DesignsSquare.com Library: Sample Data
+description = exporting/importing Sample Data with all of its referenced assets
+core = 7.x
+version = v.0.1
+project = designssquare_lib_sample_data
+package = DesignsSquare.com.utilities
+
+dependencies[] = designssquare_lib
+dependencies[] = pathauto
+dependencies[] = strongarm
+dependencies[] = uuid_features
+dependencies[] = features
