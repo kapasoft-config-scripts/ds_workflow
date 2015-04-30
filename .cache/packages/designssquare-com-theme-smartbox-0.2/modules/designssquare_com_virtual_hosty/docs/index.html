@@ -1,0 +1,260 @@
+<!doctype html>
+<!--[if IE 6 ]>
+<html lang="en-us" class="ie6"> <![endif]-->
+<!--[if IE 7 ]>
+<html lang="en-us" class="ie7"> <![endif]-->
+<!--[if IE 8 ]>
+<html lang="en-us" class="ie8"> <![endif]-->
+<!--[if (gt IE 7)|!(IE)]><!-->
+<html lang="en-us"><!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+
+    <title>Virtual Hosty - Making Virtual Directories At Work</title>
+
+    <meta name="description"
+          content="DesignSquare.com giving back Drupal community">
+    <meta name="author" content="DesignsSquare.com">
+    <meta name="copyright" content="DesignsSquare.com">
+    <meta name="generator" content="Documenter v1.6 http://rxa.li/documenter">
+    <meta name="date" content="2012-03-27T00:00:00+02:00">
+    <link rel="stylesheet" href="css/documenter_style.css" media="all">
+    <script src="js/jquery.1.6.4.js"></script>
+    <script src="js/jquery.scrollTo-1.4.2-min.js"></script>
+    <script src="js/jquery.easing.js"></script>
+    <link rel="stylesheet" href="css/shDocumenter.css" media="screen">
+    <script src="js/shCore.js"></script>
+    <script src="js/shBrushCss.js"></script>
+    <script src="js/shBrushJScript.js"></script>
+    <script>SyntaxHighlighter.defaults['toolbar'] = false;
+    SyntaxHighlighter.all();</script>
+    <script>document.createElement('section');
+    var duration = 500, easing = 'swing';</script>
+    <script src="js/script.js"></script>
+    <style>
+        html {
+            background-color: #FFFFFF;
+            color: #383838;
+        }
+
+        ::-moz-selection {
+            background: #444444;
+            color: #DDDDDD;
+        }
+
+        ::selection {
+            background: #444444;
+            color: #DDDDDD;
+        }
+
+        hr {
+            border-top: 1px solid #E1B568;
+            border-bottom: 1px solid #FFFFFF;
+        }
+
+        #documenter_sidebar, #documenter_sidebar ol a {
+            background-color: #ffffff;
+            /*background-color: #E1B568;*/
+            /*color: #222222;*/
+            color: #373737;
+        }
+
+        #documenter_sidebar ol a {
+            -webkit-text-shadow: 1px 1px 0px #EEEEEE;
+            -moz-text-shadow: 1px 1px 0px #EEEEEE;
+            text-shadow: 1px 1px 0px #EEEEEE;
+        }
+
+        #documenter_sidebar ol {
+            border-top: 1px solid #E1A53C;
+        }
+
+        #documenter_sidebar ol a {
+            border-top: 1px solid #EEEEEE;
+            border-bottom: 1px solid #E1B568;
+            color: #444444;
+        }
+
+        #documenter_sidebar ol a:hover {
+            background: #cc9833;
+            color: #ffffff;
+            border-top: 1px solid #E1A53C;
+        }
+
+        #documenter_sidebar ol a.current {
+            background: #cc9833;
+            color: #ffffff;
+            border-top: 1px solid #E1A53C;
+        }
+
+        #documenter_copyright {
+            display: block !important;
+            visibility: visible !important;
+        }
+
+        #logo #textual span {
+            font-size: 20px;
+            font-family: 'Oswald', sans-serif;
+            color: #cc9833;
+            font-style: normal;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        #logo #textual {
+            font-size: 20px;
+            font-family: 'Oswald', sans-serif;
+            color: #373737;
+            font-style: normal;
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 40px;
+            margin-left: 10px;
+            /*margin-bottom: 12px;*/
+            line-height: 1em;
+            text-transform: uppercase;
+        }
+    </style>
+
+</head>
+<body>
+<div id="documenter_sidebar">
+    <!--<a href="http://www.wowthemes.net" id="documenter_logo"></a>-->
+    <div id="logo" class="group">
+        <a id="textual" href="http://designssquare.com" target="_blank" title="Design Square">
+            Designs <span class="title-highlight">Square</span>
+        </a>
+
+        <p id='tagline' style="text-align: center">Inspiration Designs. Practical Widgets</p>
+    </div>
+    <ol id="documenter_nav">
+        <li><a class="current" href="#documenter_cover">Start</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#installation">Installation</a></li>
+        <li><a href="#troubleshoot">Troubleshoot</a></li>
+        <li><a href="#backlog">Backlog</a></li>
+        <li><a href="#releases">Releases</a></li>
+
+    </ol>
+    <div id="documenter_copyright">Free of any copyright brought to you by DesignsSquare.com 2014
+    </div>
+</div>
+<div id="documenter_content">
+    <section id="documenter_cover">
+        <h1>Virutal Hosty Documentation</h1>
+
+        <h2>Making Virtual Directories At Work</h2>
+        <hr>
+        <ul>
+            <li>Last Updated: Oct 6, 2014</li>
+            <li>Themed By: DesignsSquare.com</li>
+            <li><a href="">
+            </a>
+            </li>
+            <li>Email: <a href="mailto:contact@designssquare.com">contact@designssquare.com</a></li>
+        </ul>
+        . <p>if you find Virtual Hosty valuable, please, tweet about us </p>
+        <i> <a href="https://twitter.com/DesignsSquare">@desginssquare</a></i>
+    </section>
+    <section id="about">
+        <h3>About</h3>
+        <hr>
+        <h4>Issue & Solution</h4>
+
+        <p><b>Issue: </b>
+            When deploying Drupal site on different virtual host each in different directory than the images will not load due to path change
+        </p>
+
+        <p><b>Solution: </b></p>
+
+        <p>The Virtual Hosty takes care of the virtual directory for all images, so that deploying site in different virtual directories, the images load accordingly
+        </p>
+        <h4>About</h4>
+
+        <p>The Virtual Host reads all the image path and updates the path if site runs from virtual directory accordingly.
+            In the following is overview:</p>
+        <ol>
+            <li>provides global JS variable 'BASE_URL', so you can pass in other JS libraries</li>
+            <li>Updates each img path with virtual directory at the time page is loaded</li>
+        </ol>
+        <p>
+        </p>
+    </section>
+    <section id="installation">
+        <h3>Installation</h3>
+        <hr>
+        <h5>Dependencies</h5>
+
+        <p>In the following are dependencies:
+        <ul>
+            <li>jQuery</li>
+        </ul>
+        </p>
+
+        <h5>Steps For Installation</h5>
+
+        <p>In the following are steps to install Virtual Hosty
+        <ol>
+            <li>Enabale DesignsSquare.com Virtual Hosty module</li>
+        </ol>
+        </p>
+    </section>
+    <section id="how_to">
+        <h3>How To</h3>
+        <br>
+        <h5>Static Path</h5>
+        <p>Each image path in the content should be referenced either relative path or full path. For example, an image
+        in public directory that by default is sites/default/files/ is referenced as following:<br>
+        <code>
+         <img src="/sites/default/files/IMAG-NAME.png" />
+        </code><br>
+         --or--
+         <code><br>
+             <img src="http://domain.org/sites/default/files/IMAG-NAME.png" />
+         </code>
+        </p>
+        <h5>JS Path</h5>
+        <p>Path referenced in JS should be as following:
+        <code><br>
+            var path = BASE_URL + "sites/default/files/IMAG-NAME.png";
+        </code>
+        </p>
+        <p>The variable "BASE_URL" will include the virtual directory</p>
+        <h5>PHP Path</h5>
+        <p>If you are able to pass the virtual directory at the server side, then that will save resources. Here, is quick example:
+        </p>
+        <code>
+            <img src="<?php print base_path()?>/sites/default/files/IMAGE-NAME.png" >
+        </code>
+        <p>The Virtual Hosty will detect that this image path already includes the virtual directory and will keep it intact</p>
+    </section>
+    <section id="troubleshoot">
+        <h3>Troubleshoot</h3>
+        <hr>
+        <h5>Tip 1: Turn on logging</h5>
+        <p>To turn on logging:
+        <code><br>
+            VIRTUAL_HOSTY.turnOnDebug();
+        </code>
+
+        </p>
+    </section>
+    <section id="backlog">
+        <h3>Things In Progress</h3>
+        <hr>
+        <ul>
+            <li>@ToDo</li>
+        </ul>
+    </section>
+    <section id="releases">
+        <h3>Release History</h3>
+        <hr>
+        <h5>Release 0.1</h5>
+        <ul>
+            <li>basic functionality</li>
+        </ul>
+    </section>
+</div>
+<!--end of documenter_content-->
+</body>
+</html>

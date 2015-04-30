@@ -1,0 +1,18 @@
+name = DesignsSquare CKEditor Widget
+description = plugins of CKEditor and other enhancements
+core = 7.x
+version = v0.1.11
+project = designssquare_com_ckeditor
+package = DesignsSquare.com.utilities.ckeditor
+files[] = designssquare_com_ckeditor.module
+;configure = admin/config/moduleName ;this adds configuration button next to module name in modules list
+;;Module dependencies
+
+dependencies[] = ckeditor
+dependencies[] = imce
+dependencies[] = designssquare_com_utils_ckeditor
+
+
+;;Artifact Dependencies
+;context:blog_posts
+;content_type:

@@ -1,0 +1,618 @@
+<?php
+//module_load_include('module', 'designssquare_lib');
+//module_load_include('inc', 'designssquare_lib', 'includes/template_api');
+module_load_include('inc', 'designssquare_com_widget_gallery', 'inc/gallery-template-api');
+
+function designssquare_com_widget_gallery_preprocess_html(&$vars)
+{
+    $vars['theme_hook_suggestions'][] = 'html'; //set to default layout
+    if (preg_match('/ds-gallery-popup/', $_GET['q'])) {
+        //ajax requests
+        $vars['theme_hook_suggestion'] = 'html__ds_gallery_ajax';
+    }
+}
+
+function designssquare_com_widget_gallery_preprocess_page(&$vars)
+{
+    if (isset($vars['node']) && isset($vars['node']->type) && !path_is_admin(current_path())) {
+        switch ($vars['node']->type) {
+            case 'ds_gallery':
+                init_gallery_node_layouts();
+                //setup template file for the node element
+                $raw_node = get_raw_node_from_cache();
+                $vars['comments'] = $raw_node['comments'];
+                $vars['links'] = $raw_node['links'];
+                $vars['page']['content'] = array(
+                    '#theme' => 'ds_gallery_node',
+                    '#gallery_tapi' => _gallery_node_tapi($vars['node']),
+                    '#vars_tapi' => $vars,
+                );
+                $vars['theme_hook_suggestions'][] = 'page';
+            //set to default layout
+            case 'ds_gallery_index':
+//                unset($vars['page']['content']['system_main']);//content set by view
+                $vars['page']['content']['system_main']['#weight'] = "100";
+                init_gallery_index_layouts();
+                $vars['theme_hook_suggestions'][] = 'page'; //set to default layout
+                break;
+        }
+    }
+
+    /********Handle INDEX for Taxonomies*********/
+    if (is_taxonomy('ds_gallery')) {
+        init_gallery_index_layouts();
+        $parent = array(
+            'theme_func' => 'ds_gallery_index',
+            'tapi_name' => 'gallery_view_tapi',
+            'tapi_func' => '_gallery_index_tapi',
+        );
+        $child = array(
+            'theme_func' => 'ds_gallery_index_single',
+            'tapi_name' => 'gallery_tapi',
+            'tapi_func' => '_gallery_teaser_tapi',
+        );
+        $nodes = extract_all_nodes($vars);
+        $vars['page']['content'] = construct_index_output($parent, $child, $nodes);
+    }
+
+    /**********DS Gallery Ajax requests************/
+    if (preg_match('/ds-gallery-popup/', $_GET['q'])) {
+        //ajax requests
+        $vars['theme_hook_suggestion'] = 'page__ds_gallery_ajax';
+    }
+}
+
+/*incorporates index into breadcrumbs. it uses the category field(field_breadcrumb_category) for the name if referenced.
+ Otherwise, it takes the default name from admin configurations
+*/
+function designssquare_com_widget_gallery_menu_breadcrumb_alter(&$active_trail, $item)
+{
+    $node = get_node_from_cache();
+    if (isset($node) && ($node->type == 'ds_gallery')) { //for solo gallery
+        if (isset($node->field_ds_index_reference) && !empty($node->field_ds_index_reference)) {
+
+            $field_instance = field_get_items('node', $node, 'field_ds_index_reference');
+            $index_id = $field_instance[0]['target_id'];
+            $index = node_load($index_id);
+            $options = get_breadcrumb_category_options($index, 'field_breadcrumb_category');
+            if (empty($options['title'])) {
+                module_load_include('inc', 'designssquare_com_widget_gallery', 'inc/gallery-settings');
+                $general_settings = _gallery_settings_general();
+                $options['title'] = $general_settings['default_index_name'];
+            }
+        } else {
+            module_load_include('inc', 'designssquare_com_widget_gallery', 'inc/gallery-settings');
+            $general_settings = _gallery_settings_general();
+            $options = array(
+                'title' => $general_settings['default_index_name'],
+                'href' => $general_settings['default_index_url'],
+                'localized_options' => array(),
+            );
+        }
+        $active_trail = rebuild_breadcrumbs($active_trail, $item, $options);
+    } elseif (isset($node) && ($node->type == 'ds_gallery_index')) { //for gallery index
+        if (isset($node->field_breadcrumb_category) && !empty($node->field_breadcrumb_category)) {
+
+//            $breadcrumb_element_ins = field_get_items('node', $node, 'field_breadcrumb_category');
+//            $temp_view = field_view_value('node', $node, 'field_breadcrumb_category', $breadcrumb_element_ins[0]);
+//            $breadcrumb_element_value = render($temp_view);
+//            $options = array(
+//                'title' => $breadcrumb_element_value,
+//                'href' => drupal_get_path_alias('node/' . $node->nid),
+//                'localized_options' => array(),
+//            );
+            $options = get_breadcrumb_category_options($node, 'field_breadcrumb_category');
+        } else {
+            module_load_include('inc', 'designssquare_com_widget_gallery', 'inc/gallery-settings');
+            $general_settings = _gallery_settings_general();
+            $options = array(
+                'title' => $general_settings['default_index_name'],
+                'href' => $general_settings['default_index_url'],
+                'localized_options' => array(),
+//            'type' => 'ds_gallery',
+            );
+        }
+        $active_trail = rebuild_breadcrumbs($active_trail, $item, $options);
+    }
+}
+
+/**altering Theme registry to look up template files in our module folder***/
+/**
+ * Implements hook_theme_registry_alter().
+ */
+function designssquare_com_widget_gallery_theme_registry_alter(&$theme_registry)
+{
+    $path = drupal_get_path('module', 'designssquare_com_widget_gallery') . '/templates/designssquare-com-widget-gallery';
+    $registry_entries = drupal_find_theme_templates($theme_registry, '.tpl.php', $path);
+    if (isset($registry_entries) && is_array($registry_entries)) {
+        //to avoid error message adding 'type'
+        foreach ($registry_entries as $key => $entry) {
+            $registry_entries[$key]['type'] = 'module';
+            $registry_entries[$key]['theme path'] = $path;
+        }
+    }
+    $theme_registry += $registry_entries;
+
+}
+
+function designssquare_com_widget_gallery_preprocess_views_view(&$vars)
+{
+//    module_load_include('module', 'designssquare_lib');
+    $view = $vars['view'];
+    $tag_list = drupal_explode_tags($view->tag);
+
+    if ((in_array('designssquare_gallery_index', $tag_list) || in_array('designssquare_gallery_teaser', $tag_list) || in_array('designssquare_gallery_block', $tag_list)) && !path_is_admin(current_path())) {
+//        $vars['gallerys_index_tapi'] = _gallery_index_tapi($view);
+        $vars['wrap_class'] = '';
+        $vars['ds_contextual_links'] = view_contextual_links($view);
+        $vars['theme_hook_suggestion'] = 'views_view__gallery_wrap';
+    }
+
+    if (in_array('designssquare_gallery_index', $tag_list) && !path_is_admin(current_path())) {
+        $theme_func = 'ds_gallery_index_single';
+        $rows = _gallery_view_list($view, $theme_func);
+        $vars['gallery_content'] = array(
+            '#theme' => 'ds_gallery_index',
+            '#gallery_view_tapi' => _gallery_view_tapi($view),
+            '#rows' => $rows,
+        );
+    }
+
+    if (in_array('designssquare_gallery_teaser', $tag_list) && !path_is_admin(current_path())) {
+        init_gallery_teaser_layouts();
+        $vars['slider_tapi'] = (!isset($vars['slider_tapi'])) ? _gallery_flex_slider('gallery-teaser-slider', 300, 4) : $vars['slider_tapi'];
+        $view_tapi = _gallery_view_tapi($view);
+        $view_tapi['slider_tapi'] = _gallery_flex_slider('gallery-teaser-slider', 300, 4);
+        $vars['gallery_content'] = array(
+            '#theme' => 'ds_gallery_teaser',
+            '#gallery_view_tapi' => $view_tapi,
+            '#rows' => _gallery_view_list($view, 'ds_gallery_teaser_single'),
+        );
+    }
+//
+    if (in_array('designssquare_gallery_block', $tag_list) && !path_is_admin(current_path())) {
+        init_gallery_block_layouts();
+        $vars['wrap_class'] = 'widget widget-ds-gallery';
+        $vars['gallery_content'] = array(
+            '#theme' => 'ds_gallery_block',
+            '#gallery_view_tapi' => _gallery_view_tapi($view),
+            '#rows' => _gallery_view_list($view, 'ds_gallery_block_single'),
+        );
+    }
+}
+
+function _gallery_view_list($view, $theme_func)
+{
+    $rows = array();
+    if (isset($view->result) && is_array($view->result)) {
+        foreach ($view->result as $row) {
+            $gallery = (isset($row->_entity_properties['entity object'])) ? $row->_entity_properties['entity object'] : NULL;
+            if ($gallery) {
+                $rows[] = array(
+                    '#theme' => $theme_func,
+                    '#gallery_tapi' => _gallery_tapi($gallery),
+                );
+            }
+
+
+        }
+    }
+    return $rows;
+}
+
+//configure and add flex slider to service widget
+function _gallery_flex_slider($id, $itemWith, $itemMargin)
+{
+    $options = array(
+        'slider_id' => $id,
+        'animation' => 'slide',
+        'controlNav' => "false",
+        'directionNav' => "false",
+        'itemWidth' => $itemWith,
+        'itemMargin' => $itemMargin,
+        'minItems' => 4,
+        'maxItems' => 4,
+        'slideshow' => "true",
+        'animationLoop' => "true",
+        'slideshowSpeed' => 6000,
+        'animationSpeed' => 700,
+    );
+    drupal_add_js(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/js/gallery-flex-custom.js', array('scope' => 'footer', 'type' => 'file', 'weight' => JS_THEME + 1));
+    return import_flex_slider($options);
+}
+
+function  _gallery_block_tapi(&$vars)
+{
+    if (isset($vars['view']) && isset($vars['view']->result) && is_array($vars['view']->result)) {
+        foreach ($vars['view']->result as $id => $row) {
+            $gallery = $row->_entity_properties['entity object'];
+            $row->gallery_tapi = _gallery_teaser_tapi($gallery);
+        }
+    }
+}
+
+function designssquare_com_widget_gallery_theme($existing, $type, $theme, $path)
+{
+    $current_theme = $GLOBALS['theme'];
+    $current_module = basename(__FILE__, '.module');
+    $index_layout = get_gallery_layout_info('index');
+    $block_layout = get_gallery_layout_info('block');
+    $teaser_layout = get_gallery_layout_info('teaser');
+    $node_layout = get_gallery_layout_info('node');
+
+    return array(
+        'render_gallery' => array(
+            'template' => 'page',
+            'render element' => 'page',
+            'path' => $current_theme . '/templates',
+            'preprocess functions' => build_page_preprocessors('render_gallery', $current_module),
+            'process functions' => array('template_process', 'template_process_page'),
+        ),
+        'ds_gallery_index' => array(
+            'template' => $index_layout['master_tpl'],
+            'variables' => array(
+                'gallery_view_tapi' => NULL,
+                'rows' => NULL,
+            ),
+            'path' => $index_layout['path'],
+        ),
+        'ds_gallery_index_single' => array(
+            'template' => $index_layout['leaf_tpl'],
+            'variables' => array(
+                'gallery_tapi' => NULL,
+            ),
+            'path' => $index_layout['path'],
+        ),
+        'ds_gallery_block' => array(
+            'template' => $block_layout['master_tpl'],
+            'variables' => array(
+                'gallery_view_tapi' => NULL,
+                'rows' => NULL,
+            ),
+            'path' => $block_layout['path'],
+        ),
+        'ds_gallery_block_single' => array(
+            'template' => $block_layout['leaf_tpl'],
+            'variables' => array(
+                'gallery_tapi' => NULL,
+            ),
+            'path' => $block_layout['path'],
+        ),
+        'ds_gallery_teaser' => array(
+            'template' => $teaser_layout['master_tpl'],
+            'variables' => array(
+                'gallery_view_tapi' => NULL,
+                'rows' => NULL,
+            ),
+            'path' => $teaser_layout['path'],
+        ),
+        'ds_gallery_teaser_single' => array(
+            'template' => $teaser_layout['leaf_tpl'],
+            'variables' => array(
+                'gallery_tapi' => NULL,
+            ),
+            'path' => $teaser_layout['path'],
+        ),
+        'ds_gallery_node' => array(
+            'template' => $node_layout['master_tpl'],
+            'variables' => array(
+                'gallery_tapi' => NULL,
+                'vars_tapi' => NULL,
+            ),
+//            'preprocess functions' => module_preprocessors('preprocess_node'),
+            'path' => $node_layout['path'],
+        ),
+    );
+}
+
+/**
+ * Retrieves info about the layout based on the configurations
+ * @param $level
+ * @return mixed
+ */
+function get_gallery_layout_info($level)
+{
+    $layout_info = & drupal_static(__FUNCTION__ . $level);
+    if (!isset($layout_info)) {
+        $layout_info = array();
+        module_load_include('inc', 'designssquare_com_widget_gallery', 'inc/gallery-settings');
+        $layout_info['path'] = drupal_get_path('module', 'designssquare_com_widget_gallery') . '/templates/layouts/';
+        switch ($level) {
+            case 'index':
+                $index_settings = _gallery_settings_index();
+                $layout_info['path'] = $layout_info['path'] . $index_settings['layout'];
+                $layout_info['master_tpl'] = (isset($index_settings['columns'])) ? 'ds-gallery-index-' . $index_settings['columns'] : 'ds-gallery-index';
+                $layout_info['leaf_tpl'] = (isset($index_settings['columns'])) ? 'ds-gallery-index-single-' . $index_settings['columns'] : 'ds-gallery-index-single';
+                if (!file_exists($layout_info['path'] . DIRECTORY_SEPARATOR . $layout_info['leaf_tpl'] . '.tpl.php')) {
+                    $layout_info['leaf_tpl'] = 'ds-gallery-index-single';
+                }
+                if (!file_exists($layout_info['path'] . DIRECTORY_SEPARATOR . $layout_info['master_tpl'] . '.tpl.php')) {
+                    $layout_info['master_tpl'] = 'ds-gallery-index';
+                }
+                break;
+            case 'teaser':
+                $teaser_settings = _gallery_settings_teaser();
+                $layout_info['path'] = $layout_info['path'] . $teaser_settings['layout'];
+                $layout_info['master_tpl'] = (isset($teaser_settings['columns'])) ? 'ds-gallery-teaser-' . $teaser_settings['columns'] : 'ds-gallery-tease';
+                $layout_info['leaf_tpl'] = (isset($teaser_settings['columns'])) ? 'ds-gallery-teaser-single-' . $teaser_settings['columns'] : 'ds-gallery-teaser-single';
+                if (!file_exists($layout_info['path'] . DIRECTORY_SEPARATOR . $layout_info['leaf_tpl'] . '.tpl.php')) {
+                    $layout_info['leaf_tpl'] = 'ds-gallery-teaser-single';
+                }
+                if (!file_exists($layout_info['path'] . DIRECTORY_SEPARATOR . $layout_info['master_tpl'] . '.tpl.php')) {
+                    $layout_info['master_tpl'] = 'ds-gallery-teaser';
+                }
+                break;
+            case 'block':
+                $block_settings = _gallery_settings_block();
+                $layout_info['path'] = $layout_info['path'] . $block_settings['layout'];
+                $layout_info['master_tpl'] = (isset($block_settings['columns'])) ? 'ds-gallery-block-' . $block_settings['columns'] : 'ds-gallery-block';
+                $layout_info['leaf_tpl'] = (isset($block_settings['columns'])) ? 'ds-gallery-block-single-' . $block_settings['columns'] : 'ds-gallery-block-single';
+                if (!file_exists($layout_info['path'] . DIRECTORY_SEPARATOR . $layout_info['leaf_tpl'] . '.tpl.php')) {
+                    $layout_info['leaf_tpl'] = 'ds-gallery-block-single';
+                }
+                if (!file_exists($layout_info['path'] . DIRECTORY_SEPARATOR . $layout_info['master_tpl'] . '.tpl.php')) {
+                    $layout_info['master_tpl'] = 'ds-gallery-block';
+                }
+                break;
+            case 'node':
+                $node_settings = _gallery_settings_node();
+                $layout_info['path'] = $layout_info['path'] . $node_settings['layout'];
+                $layout_info['master_tpl'] = 'ds-gallery-node';
+                $layout_info['master_tpl'] = (isset($node_settings['columns'])) ? 'ds-gallery-node-' . $node_settings['columns'] : 'ds-gallery-node';
+                $layout_info['leaf_tpl'] = (isset($node_settings['columns'])) ? 'ds-gallery-node-' . $node_settings['columns'] : 'ds-gallery-node';
+                if (!file_exists($layout_info['path'] . DIRECTORY_SEPARATOR . $layout_info['leaf_tpl'] . '.tpl.php')) {
+                    $layout_info['leaf_tpl'] = 'ds-gallery-node';
+                }
+                if (!file_exists($layout_info['path'] . DIRECTORY_SEPARATOR . $layout_info['master_tpl'] . '.tpl.php')) {
+                    $layout_info['master_tpl'] = 'ds-gallery-node';
+                }
+                break;
+        }
+
+        if (!file_exists($layout_info['path'] . DIRECTORY_SEPARATOR . $layout_info['leaf_tpl'] . '.tpl.php') || !file_exists($layout_info['path'] . DIRECTORY_SEPARATOR . $layout_info['master_tpl'] . '.tpl.php')) {
+            watchdog('designssquare_com_widget_gallery', "at level - " . $level . " layout path - " . $layout_info['path'] . " with template - " . $layout_info['leaf_tpl'] . " Or " . $layout_info['master_tpl'] . " doesn't exist", NULL, WATCHDOG_ALERT);
+        }
+    }
+    return $layout_info;
+}
+
+function designssquare_com_widget_gallery_preprocess_render_gallery(&$vars)
+{
+
+    //retrieve current node being loaded(alternative is to get the node from content cache)
+    $current_node = array_slice($vars['page']['content']['system_main']['nodes'], 0, 1);
+//    set content
+    if (isset($current_node) && !empty($current_node)) {
+        //prepare for theme_preprocess_page function
+        $temp = array_values($current_node); //fix for php versions
+        $vars['node'] = $temp[0]['#node'];
+    } else {
+        drupal_set_message(t('It appears there is no gallery index created. Please, go to \'Content\'->\'Add Content\'->\'gallery Index\'. Or enable \'DesignsSquare.com: gallery: Sample Data - Kickstart\' module to import sample data (consult documentation for importing Sample Data)'));
+        $vars['page']['content'] = array(
+            '#markup' => "",
+        );
+    }
+
+}
+
+function designssquare_com_widget_gallery_preprocess_block(&$vars)
+{
+    switch ($vars['block_html_id']) {
+        case 'block-views-ds-gallery-all-all':
+        case 'block-views-ds-gallery-teaser-teaser':
+        case 'block-views-ds-gallery-block-block':
+            $vars['theme_hook_suggestions'][] = 'block__gallery_no_wrapper';
+            break;
+    }
+}
+
+
+//****Create Entry Page(front page) For gallery*****/
+function designssquare_com_widget_gallery_menu()
+{
+    $items['ds-gallery'] = array(
+        'title' => 'Gallery',
+        'page callback' => 'gallery_display',
+        'access arguments' => array('access content'),
+        'type' => MENU_NORMAL_ITEM,
+        'file' => 'inc/ds-gallery.pages.inc',
+    );
+    $items['admin/designs-square/ds-widget-gallery'] = array(
+        'title' => 'DS Widget - Gallery',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('gallery_admin_interface'),
+        'access arguments' => array('administer users'),
+        'type' => MENU_NORMAL_ITEM,
+        'file' => 'inc/gallery-settings.inc',
+    );
+    $items['ds-gallery-popup/video'] = array(
+        'title' => 'DS Widget - Gallery Video Popup',
+        'page callback' => 'ds_gallery_video_popup',
+//        'page arguments' => array('gallery_admin_interface'),
+        'access arguments' => array('access content'),
+        'type' => MENU_NORMAL_ITEM,
+//        'file' => 'inc/gallery-settings.inc',
+    );
+    return $items;
+}
+
+function ds_gallery_video_popup($args)
+{
+    $file = (isset($args) && is_numeric($args)) ? file_load($args) : NULL;
+    if (isset($file) && !empty($file)) {
+        $items = array();
+        $items[] = array(
+            'uri' => $file->uri,
+            'filemime' => $file->filemime,
+        );
+        //video file
+        $video_render_array = array(
+//            '#theme' => 'videojs_view',
+            '#theme' => 'videojs',
+            '#items' => $items,
+            '#player_id' => 'vidoejs-' . $args,
+            '#attributes' => array('width' => '100%', 'height' => '500'),
+        );
+    } else {
+        $video_render_array = array(
+            '#type' => 'markup',
+            '#markup' => '<p class="lead">' . t('Error on loading Video. Please, contact site Admin') . '</p>',
+        );
+    }
+    return $video_render_array;
+}
+
+//setups html layouts per webmaster configurations
+function init_gallery_index_layouts()
+{
+    module_load_include('inc', 'designssquare_com_widget_gallery', 'inc/gallery-settings');
+    $settings = _gallery_settings_index();
+    $layout = $settings['layout'];
+    switch ($layout) {
+        case 'everest':
+//            _portofolio_view_list_index($vars);
+            drupal_add_js(drupal_get_path('module', 'designssquare_lib') . '/js/ds-jslib/media-equalizer.js', array('scope' => 'footer', 'type' => 'file', 'weight' => 4));
+            $inline_js = 'jQuery(document).ready(function() {' . "\n";
+            $index_height = _get_gallery_index_heigth();
+            if(empty($index_height)){
+                $inline_js .= 'DS_EQUALIZER.equalize({target_id: \'.ds-gallery-index img\'})'. "\n";
+            }else{
+                $inline_js .= 'DS_EQUALIZER.equalize({target_id: \'.ds-gallery-index img\', height: \''. $index_height . '\'})'. "\n";
+            }
+            $inline_js .= ' });' . "\n";
+            drupal_add_js($inline_js, array('scope' => 'footer', 'type' => 'inline', 'weight' => 5));
+            break;
+        case 'k2':
+            drupal_add_css(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/js/plugins/fancybox/source/jquery.fancybox.css', array('group' => CSS_SYSTEM + 4, 'type' => 'file'));
+            drupal_add_css(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/css/layouts/k2/gallery.css', array('group' => CSS_SYSTEM + 4, 'type' => 'file'));
+            drupal_add_js(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/js/plugins/jquery-mixitup/jquery.mixitup.min.js', array('scope' => 'footer', 'type' => 'file', 'weight' => 4));
+//            drupal_add_js(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/js/plugins/fancybox/source/jquery.fancybox.js', array('scope' => 'footer', 'type' => 'file', 'weight' => 4));
+            drupal_add_js(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/js/plugins/fancybox/source/jquery.fancybox.pack.js', array('scope' => 'footer', 'type' => 'file', 'weight' => 4));
+            drupal_add_js(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/js/layouts/k2/gallery.js', array('scope' => 'footer', 'type' => 'file', 'weight' => 4));
+            drupal_add_js(drupal_get_path('module', 'designssquare_lib') . '/js/ds-jslib/media-equalizer.js', array('scope' => 'footer', 'type' => 'file', 'weight' => 4));
+
+            $inline_js = 'jQuery(document).ready(function() {' . "\n";
+            $inline_js .= 'Portfolio.init();' . "\n";
+            $index_height = _get_gallery_index_heigth();
+            if(empty($index_height)){
+                $inline_js .= 'DS_EQUALIZER.turnOnDebug();'. "\n";
+                $inline_js .= 'DS_EQUALIZER.equalize({target_id: \'.ds-gallery-index img, .ds-gallery-index .mix-inner, .ds-gallery-index .mix-details\'})'. "\n";
+            }else{
+                $inline_js .= 'DS_EQUALIZER.turnOnDebug();'. "\n";
+                $inline_js .= 'DS_EQUALIZER.equalize({target_id: \'.ds-gallery-index img, .ds-gallery-index .mix-inner, .ds-gallery-index .mix-details\', height: \''. $index_height . '\'})'. "\n";
+            }
+
+            $inline_js .= ' });' . "\n";
+            drupal_add_js($inline_js, array('scope' => 'footer', 'type' => 'inline', 'weight' => 5));
+            break;
+//        case 'mckinley':
+//            drupal_add_css(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/css/layouts/mckinley/mckinley-index.css', array('group' => CSS_SYSTEM + 4, 'type' => 'file'));
+//            drupal_add_js(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/js/layouts/mckinley/jquery.colorbox-min.js', array('scope' => 'footer', 'type' => 'file', 'weight' => 4));
+//            break;
+    }
+
+    drupal_add_css(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/css/ds-gallery-general.css', array('group' => CSS_THEME + 2, 'type' => 'file'));
+}
+
+function init_gallery_node_layouts()
+{
+    module_load_include('inc', 'designssquare_com_widget_gallery', 'inc/gallery-settings');
+    $settings = _gallery_settings_node();
+    $layout = $settings['layout'];
+    switch ($layout) {
+        case 'everest':
+            drupal_add_js(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/js/layouts/everest/ds-gallery.js', array('scope' => 'footer', 'type' => 'file', 'weight' => JS_THEME));
+            drupal_add_js(drupal_get_path('module', 'designssquare_lib') . '/js/ds-jslib/media-equalizer.js', array('scope' => 'footer', 'type' => 'file', 'weight' => 4));
+
+            $inline_js = 'jQuery(document).ready(function() {' . "\n";
+            $node_height = _get_gallery_node_heigth();
+            if(empty($node_height)){
+                $inline_js .= 'DS_EQUALIZER.equalize({target_id: \' .ds-gallery-node img\'})'. "\n";
+            }else{
+                $inline_js .= 'DS_EQUALIZER.equalize({target_id: \' .ds-gallery-node img\', height: \''. $node_height . '\'})'. "\n";
+            }
+            $inline_js .= ' });' . "\n";
+            drupal_add_js($inline_js, array('scope' => 'footer', 'type' => 'inline', 'weight' => 5));
+            break;
+        case 'mckinley':
+            drupal_add_css(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/js/plugins/colorbox/example3/colorbox.css', array('group' => CSS_SYSTEM + 4, 'type' => 'file'));
+            drupal_add_css(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/js/plugins/image-overlay-hover/css/ds-image-overlay-style.css', array('group' => CSS_SYSTEM + 3, 'type' => 'file'));
+            drupal_add_css(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/css/layouts/mckinley/mckinley-node.css', array('group' => CSS_SYSTEM + 4, 'type' => 'file'));
+            drupal_add_js(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/js/plugins/colorbox/jquery.colorbox-min.js', array('scope' => 'header', 'type' => 'file', 'weight' => JS_THEME));
+            drupal_add_js(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/js/plugins/image-overlay-hover/js/modernizr.js', array('scope' => 'header', 'type' => 'file', 'weight' => JS_THEME));
+            drupal_add_js(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/js/plugins/image-overlay-hover/js/ds-image-overlay.js', array('scope' => 'footer', 'type' => 'file', 'weight' => JS_THEME));
+            break;
+        case 'k2':
+            drupal_add_css(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/js/plugins/fancybox/source/jquery.fancybox.css', array('group' => CSS_SYSTEM + 4, 'type' => 'file'));
+            drupal_add_css(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/css/layouts/k2/gallery.css', array('group' => CSS_SYSTEM + 4, 'type' => 'file'));
+            drupal_add_js(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/js/plugins/jquery-mixitup/jquery.mixitup.min.js', array('scope' => 'footer', 'type' => 'file', 'weight' => 4));
+//            drupal_add_js(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/js/plugins/fancybox/source/jquery.fancybox.js', array('scope' => 'footer', 'type' => 'file', 'weight' => 4));
+            drupal_add_js(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/js/plugins/fancybox/source/jquery.fancybox.pack.js', array('scope' => 'footer', 'type' => 'file', 'weight' => 4));
+            drupal_add_js(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/js/layouts/k2/gallery.js', array('scope' => 'footer', 'type' => 'file', 'weight' => 4));
+            drupal_add_js(drupal_get_path('module', 'designssquare_lib') . '/js/ds-jslib/media-equalizer.js', array('scope' => 'footer', 'type' => 'file', 'weight' => 4));
+
+            $inline_js = 'jQuery(document).ready(function() {' . "\n";
+            $inline_js .= 'Portfolio.init();' . "\n";
+            $node_height = _get_gallery_node_heigth();
+            if(empty($node_height)){
+                $inline_js .= 'DS_EQUALIZER.equalize({target_id: \' .ds-gallery-node img, .ds-gallery-node .mix-inner, .ds-gallery-node .mix-details\'})'. "\n";
+            }else{
+                $inline_js .= 'DS_EQUALIZER.equalize({target_id: \' .ds-gallery-node img, .ds-gallery-node .mix-inner, .ds-gallery-node .mix-details\', height: \''. $node_height . '\'})'. "\n";
+            }
+            $inline_js .= ' });' . "\n";
+            drupal_add_js($inline_js, array('scope' => 'footer', 'type' => 'inline', 'weight' => 5));
+            break;
+    }
+    drupal_add_css(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/css/ds-gallery-general.css', array('group' => CSS_THEME + 2, 'type' => 'file'));
+
+}
+
+
+function init_gallery_block_layouts()
+{
+    module_load_include('inc', 'designssquare_com_widget_gallery', 'inc/gallery-settings');
+    $settings = _gallery_settings_block();
+    $layout = $settings['layout'];
+    switch ($layout) {
+        case 'everest':
+            drupal_add_css(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/css/layouts/everest/ds-gallery-style.css', array('group' => CSS_SYSTEM + 4, 'type' => 'file'));
+            drupal_add_js(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/js/layouts/everest/ds-gallery.js', array('scope' => 'footer', 'type' => 'file', 'weight' => 4));
+            break;
+        case 'mckinley':
+            drupal_add_css(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/css/layouts/mckinley/mckinley-block.css', array('group' => CSS_SYSTEM + 4, 'type' => 'file'));
+            drupal_add_js(drupal_get_path('module', 'designssquare_lib') . '/libs/FlexSlider/jquery.flexslider.js', array('scope' => 'header', 'type' => 'file', 'weight' => 4));
+            break;
+        default:
+            break;
+
+    }
+
+    drupal_add_js(drupal_get_path('module', 'designssquare_lib') . '/js/ds-jslib/media-equalizer.js', array('scope' => 'footer', 'type' => 'file', 'weight' => 4));
+    $inline_js = 'jQuery(document).ready(function() {' . "\n";
+    $block_height = _get_gallery_block_heigth();
+    if(empty($block_height)){
+        $inline_js .= 'DS_EQUALIZER.equalize({target_id: \'.ds-widget-gallery-block img\'})'. "\n";
+    }else{
+        $inline_js .= 'DS_EQUALIZER.equalize({target_id: \'.ds-widget-gallery-block img\', height: \''. $block_height . '\'})'. "\n";
+    }
+    $inline_js .= ' });' . "\n";
+    drupal_add_js($inline_js, array('scope' => 'footer', 'type' => 'inline', 'weight' => 5));
+
+    drupal_add_css(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/css/ds-gallery-general.css', array('group' => CSS_THEME + 2, 'type' => 'file'));
+}
+
+function init_gallery_teaser_layouts()
+{
+    module_load_include('inc', 'designssquare_com_widget_gallery', 'inc/gallery-settings');
+    $settings = _gallery_settings_teaser();
+    $layout = $settings['layout'];
+    switch ($layout) {
+        case 'everest':
+            drupal_add_css(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/css/layouts/everest/ds-gallery-style.css', array('group' => CSS_SYSTEM + 4, 'type' => 'file'));
+            break;
+        default:
+            break;
+
+    }
+    drupal_add_css(drupal_get_path('module', 'designssquare_com_widget_gallery') . '/css/ds-gallery-general.css', array('group' => CSS_THEME + 2, 'type' => 'file'));
+}

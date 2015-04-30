@@ -1,0 +1,621 @@
+<!doctype html>
+<!--[if IE 6 ]>
+<html lang="en-us" class="ie6"> <![endif]-->
+<!--[if IE 7 ]>
+<html lang="en-us" class="ie7"> <![endif]-->
+<!--[if IE 8 ]>
+<html lang="en-us" class="ie8"> <![endif]-->
+<!--[if (gt IE 7)|!(IE)]><!-->
+<html lang="en-us"><!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+
+    <title>DesignsSquare.com Gallery Widget</title>
+    <meta name="generator" content="Documenter v1.6 http://rxa.li/documenter">
+    <link rel="stylesheet" href="css/documenter_style.css" media="all">
+    <script src="js/jquery.1.6.4.js"></script>
+    <script src="js/jquery.scrollTo-1.4.2-min.js"></script>
+    <script src="js/jquery.easing.js"></script>
+    <link rel="stylesheet" href="css/shDocumenter.css" media="screen">
+    <script src="js/shCore.js"></script>
+    <script src="js/shBrushCss.js"></script>
+    <script src="js/shBrushJScript.js"></script>
+    <script>SyntaxHighlighter.defaults['toolbar'] = false;
+    SyntaxHighlighter.all();</script>
+    <script>document.createElement('section');
+    var duration = 500, easing = 'swing';</script>
+    <script src="js/script.js"></script>
+    <style>
+        html {
+            background-color: #FFFFFF;
+            color: #383838;
+        }
+
+        ::-moz-selection {
+            background: #444444;
+            color: #DDDDDD;
+        }
+
+        ::selection {
+            background: #444444;
+            color: #DDDDDD;
+        }
+
+        hr {
+            border-top: 1px solid #E1B568;
+            border-bottom: 1px solid #FFFFFF;
+        }
+
+        #documenter_sidebar, #documenter_sidebar ol a {
+            background-color: #ffffff;
+            /*background-color: #E1B568;*/
+            /*color: #222222;*/
+            color: #373737;
+        }
+
+        #documenter_sidebar ol a {
+            -webkit-text-shadow: 1px 1px 0px #EEEEEE;
+            -moz-text-shadow: 1px 1px 0px #EEEEEE;
+            text-shadow: 1px 1px 0px #EEEEEE;
+        }
+
+        #documenter_sidebar ol {
+            border-top: 1px solid #E1A53C;
+        }
+
+        #documenter_sidebar ol a {
+            border-top: 1px solid #EEEEEE;
+            border-bottom: 1px solid #E1B568;
+            color: #444444;
+        }
+
+        #documenter_sidebar ol a:hover {
+            background: #cc9833;
+            color: #ffffff;
+            border-top: 1px solid #E1A53C;
+        }
+
+        #documenter_sidebar ol a.current {
+            background: #cc9833;
+            color: #ffffff;
+            border-top: 1px solid #E1A53C;
+        }
+
+        #documenter_copyright {
+            display: block !important;
+            visibility: visible !important;
+        }
+
+        #logo #textual span {
+            font-size: 20px;
+            font-family: 'Oswald', sans-serif;
+            color: #cc9833;
+            font-style: normal;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        #logo #textual {
+            font-size: 20px;
+            font-family: 'Oswald', sans-serif;
+            color: #373737;
+            font-style: normal;
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 40px;
+            margin-left: 10px;
+            /*margin-bottom: 12px;*/
+            line-height: 1em;
+            text-transform: uppercase;
+        }
+    </style>
+
+</head>
+<body>
+<div id="documenter_sidebar">
+    <div id="logo" class="group">
+        <a id="textual" href="http://designssquare.com" target="_blank" title="Design Square">
+            Designs <span class="title-highlight">Square</span>
+        </a>
+        <p id='tagline' style="margin-left: 3px;margin-right: 3px;text-align: center">Inspiration Designs. Practical Widgets</p>
+    </div>
+    <ol id="documenter_nav">
+        <li><a class="current" href="#documenter_cover">Start</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#installation">Installation</a></li>
+        <li><a href="#blocks">Blocks</a></li>
+        <li><a href="#context">Contexts</a></li>
+        <li><a href="#fields">Fields</a></li>
+        <li><a href="#content_types">Content Types</a></li>
+        <li><a href="#layouts">Layouts</a></li>
+        <li><a href="#image_styles">Image Styles</a></li>
+        <li><a href="#views">Views</a></li>
+        <li><a href="#how_to">How To</a></li>
+        <li><a href="#template_api">Template API</a></li>
+        <li><a href="#artifacts">Artifacts</a></li>
+        <li><a href="#configurations">Configurations</a></li>
+        <li><a href="#drupal_depenencies">Drupal Dependencies</a></li>
+        <li><a href="#troubleshooting">Troubleshooting</a></li>
+        <li><a href="#releases">Release History</a></li>
+        <li><a href="#backlog">Future Releases</a></li>
+    </ol>
+    <div id="documenter_copyright">Copyright DesignsSquare.com 2015
+    </div>
+</div>
+<div id="documenter_content">
+<section id="documenter_cover">
+    <h1>DesignsSquare.com Gallery Widget Documentation</h1>
+
+    <h2>Another Widget For Drupal</h2>
+    <hr>
+    <ul>
+        <li>Last Updated: Jan 12, 2015</li>
+        <li>Developed By: DesignsSquare.com</li>
+        <li><a href="">
+        </a>
+        </li>
+        <li>Email: <a href="mailto:contact@designssquare.com">contact@designssquare.com</a></li>
+    </ul>
+    . <p>Thank you for purchasing our product. If you have any questions, please feel free to email us. We like to hear from you. </p>
+</section>
+<section id="about">
+    <h3>About</h3>
+    <hr>
+    <p>DesignsSquare.com Gallery Widget contains:</p>
+    <ul>
+        <li>Gallery Index: space for displaying all galleries</li>
+        <li>Gallery Display: display of a single gallery.</li>
+        <li>Gallery Teaser: displays multiple galleries via image thumbs in form of slider typically for the home page but can be assigned to any region in content area. Teaser is managed via views UI</li>
+        <li>Gallery Block: displays multiple galleries via image thumbs typically for regions such as sidebar, footer,etc. Block is configurable with views, context and blocks UI</li>
+        <li>Sample data such as sample galleries, index, block, teaser,etc for kickstart</li>
+        <li>Gallery items that can be images, videos, youtube and vimeo</li>
+        <li>At least two different layouts for Gallery block and Gallery index to choose from</li>
+    </ul>
+
+    <h4>Gallery</h4>
+    <p><b>Gallery Index</b> is space displaying multiple galleries. You can think of it as the entry point to the gallery widget.
+        There is a sample gallery index at url address - '/ds-gallery'. This gallery space finds the last node instance of 'Gallery Index' and displays it.
+        If you don't have gallery Index, you can create one by going 'admin/content/add" and select "DS Gallery Index"' or import data by enabling module "DesignsSquae.com: Gallery - Sample Data"</p>
+    <p>There is content type - "DS Gallery Index" that you would use if you would like to create a new gallery index. By default it is configured to have context - "gallery_index"</p>
+    <p>After creating gallery index, you need to tell what galleries to include in your gallery index. To do so, go to the Context UI(admin/structure/context) and edit context 'gallery_index'.
+        Here, you assign the view containing the galleries you like to be included to the region 'Content'. There is sample view  "DesignsSquare.com: Gallery: All" available for you to use and
+        alter as you like. If you like to create your own view, then</p>
+    <ul>
+        <li>it has to have a tag 'designssquare_gallery_index'</li>
+        <li>it has to reference a rendered instance of type 'DS Gallery' </li>
+    </ul>
+
+    <h4>Gallery Display</h4>
+    <p><b>Gallery Display</b> displays single gallery. Currently there is one layout that displays each gallery item with pop out effect. The items are organized by Gallery Item Tags</p>
+
+    <h4>Gallery Teaser</h4>
+    <p><b>Gallery Teaser</b> is a block that can be assigned to any region via Block/Context UI. This block is a slider with gallery thumbs intended for landing / home page.
+        he view - DesignsSquare.com: Gallery: Teaser is used for configuring title, galleries to include in the teaser </p>
+
+    <h4>Gallery Block</h4>
+    <p><b>Gallery Block</b> is a block that can be assigned to any region via Block/Contect UI. It is intended for regions such as sidebar, footer, etc.
+        The view - DesignsSquare.com: Gallery: Block is used to configure title as well the galleries to include</p>
+
+</section>
+<section id="installation">
+    <h3>Installation</h3>
+    <hr>
+    <p>Here are steps to install the Gallery widget either manually from UI or automatically via <a href="http://designssquare.com/workflow-docs" target="_blank">WorkFlow</a> tool</p>
+
+    <h4>Manual Install Via UI</h4>
+    <ol>
+        <li>Enable module "DesignsSquare.com Gallery Widget" that will also enable "DesignsSquare.com: Gallery : Structure and Configurations" & "DesignsSquare.com: Gallery : Gallery Items" module</li>
+        <li>Enable module "DesignsSquare.com: Gallery: Sample Data - Kickstart" for Sample Products(recommended) to import block configurations, galleries, taxonomies, views among other things all related to sample data</li>
+        <li>Revert Features - "DesignsSquare.com: Gallery : Structure and Configurations","DesignsSquare.com: gallery: Sample Data - Kickstart" and Clear All Cache</li>
+    </ol>
+
+    <h4>Automatic Install via <a href="http://designssquare.com/workflow-docs" target="_blank">WorkFlow</a> Tool</h4>
+    <ol>
+        <li><h6>Deploy the Asset [CODE DEPLOYMENT]</h6>
+            <code>
+                drush da @ALIAS --package=path/to/package.tar.gz --env=test<br>
+            </code>
+        </li><br>
+        <li><h6>Install & Configure [CODE & STRUCTURE DEPLOYMENT]</h6>
+            <code>
+                drush ca @ALIAS --package=path/to/package --tag=setup,video<br>
+            </code>
+        </li>
+
+        <li><h6>Install & Configure & Import Sample Data [CODE,STRUCTURE & SAMPLE DATA DEPLOYMENT]</h6>
+            <code>
+                drush ca @ALIAS --package=path/to/package --tag=gallery,video,kickstart<br>
+            </code>
+        </li>
+    </ol>
+    <h4>&nbsp; &nbsp; -- OR --</h4>
+    <p>Deploy & Configure with one command [CODE,STRUCTURE & SAMPLE DATA DEPLOYMENT]:
+        <code><br>
+            drush pa dependent-install @ALIAS --package=path/to/package --tag=kickstart,video --env=test<br>
+        </code>
+    </p>
+</section>
+<section id="blocks">
+    <h3>Blocks</h3>
+    <hr>
+    <p>The gallery widget comes with the following blocks all managed via Block UI or Context UI
+        <ul>
+            <li><b>DesignsSquare.com: Gallery: All</b> - this is a view that is assigned to Gallery Index that way specifying what include in particular Gallery Index </li>
+            <li><b>DesignsSquare.com: Gallery: Block</b> - displays multiple galleries used to assign regions in sidebar, footer and header. It comes with at least two different layouts one of them is in from of slider. See Admin UI for more info</li>
+            <li><b>DesignsSquare.com: Gallery: Teaser</b> - displays teaser of multiple galleries typically to be assigned to content region of home page. By default, the teaser is using slider layout</li>
+        </ul>
+    </p>
+<p>Important to note that in the Context UI, the blocks are categories under Views section</p>
+</section>
+<section id="context">
+    <h3>Contexts</h3>
+    <hr>
+    <p>The galley widget comes with the following contexts:
+    <ul>
+    <li><b>Gallery Index </b> - this context is triggered for content types opf "Gallery Index" </li>
+    <li><b>Gallery Single </b> - this context is triggered for content types of "Gallery"</li>
+    </ul>
+    </p>
+</section>
+<section id="fields">
+    <h3>Fields</h3>
+    <hr>
+    <h4>Gallery Display Fields</h4>
+    <p>Here are recommended fields for gallery display to have complete functionality</p>
+    <table border="1">
+        <thead><td>Field Name</td><td>Machine Name</td><td>Type</td><td>Purpose</td></thead>
+        <tr><td>Intro</td><td>field_ds_gallery_page_intro</td><td>Long Text</td><td>image used int the gallery teaser</td></tr>
+        <tr><td>Featured Photo</td><td>field_ds_gallery_featured_img</td><td>Image</td><td>image used int the gallery teaser</td></tr>
+        <tr><td>Summary</td><td>field_ds_gallery_summary</td><td>Long text</td><td>short intro about the gallery displayed in the gallery teaser</td></tr>
+        <tr><td>Body</td><td>body</td><td>Long text</td><td>content for the gallery</td></tr>
+        <tr><td>Items</td><td>field_ds_gallery_item</td><td>Gallery Item</td><td>all gallery items such as images, video, youtube and vimeo</td></tr>
+        <tr><td>Tags</td><td>field_ds_gallery_tags</td><td>Term Reference</td><td>this references Taxonomy - "Gallery Tags" to provide tags functionality to the gallery</td></tr>
+        <tr><td>Categories</td><td>field_ds_gallery_categories</td><td>Term Reference</td><td>this references Taxonomy - "Gallery Categories" to provide tags functionality to the gallery</td></tr>
+        <tr><td>Index Reference</td><td>field_ds_index_reference</td><td>Entity Reference</td><td>this references to view with all Gallery Indexes, so the application knows how to update breadcrumbs for Gallery </td></tr>
+    </table>
+
+    <h4>Gallery Index Fields</h4>
+    <p>Here are fields of the Gallery index</p>
+    <table border="1">
+        <thead><td>Field Name</td><td>Machine Name</td><td>Type</td><td>Purpose</td></thead>
+        <tr><td>Intro</td><td>field_ds_gallery_page_intro</td><td>Long text</td><td>many themes has sub title of the title and this field is for that purpose</td></tr>
+        <tr><td>Breadcrumb Category</td><td>field_breadcrumb_category</td><td>text</td><td>the name of how the index should be referenced in the breadcrumbs</td></tr>
+   </table>
+</section>
+<section id="content_types">
+    <h3>Content Types</h3>
+    <hr>
+    The Gallery widget comes with two new Content Types:
+    <ul>
+        <li><b>DS Gallery:</b> The layout for gallery Space that displays teaser of the each gallery</li>
+        <li><b>DS Gallery Index:</b> The layout for displaying galleries</li>
+    </ul>
+    <p>Please, see the Gallery Admin UI for switching layouts for each content type</p>
+</section>
+<section id="layouts">
+    <h3>Layouts</h3>
+    <hr>
+    <p>From the Gallery Admin UI, it is possible to change different layouts. Here is summary
+        of available layouts:
+    <table border="1">
+        <thead><td>Component</td><td>Layouts</td><td>Comments</td></thead>
+        <tr><td>Index</td><td>K2, Everest</td><td>K2 comes with filtering per category and pop out effect for all galleries</td></tr>
+        <tr><td>Block</td><td>McKinley, Everest</td><td>McKinley slides each gallery, Everest lists them in columns</td></tr>
+        <tr><td>Teaser</td><td>Everest</td><td>slider of galleries</td></tr>
+        <tr><td>Node</td><td>K2</td><td>This is only layout for node or gallery space. It adds filters per item tags and pop over effect for all items</td></tr>
+    </table>
+    </p>
+</section>
+<section id="image_styles">
+    <h3>Image Styles</h3>
+    <hr>
+    <p>In the following are custom styles from Gallery widget:</p>
+    <ul>
+        <li><b>DS Gallery Index Thumb(ds_gallery_index_thumb)</b>: to scale featured(promo) image of gallery in index page</li>
+        <li><b>DS Gallery Node Thumb (ds_gallery_node_thumb)</b>: to scale thumbs(promo) of items in gallery in node page</li>
+        <li><b>DS Gallery Block Thumb(ds_gallery_block_thumb)</b>: to scale featured(promo) thumb of gallery in block</li>
+        <li><b>DS Gallery Teaser Thumb(ds_gallery_teaser_thumb)</b>: to scale featured(promo) thumb of gallery in teaser</li>
+    </ul>
+    <p>Go to admin/config/media/image-styles to configure the styles per your needs</p>
+    <p>See also gallery Admin UI for other configurations at admin/designs-square/ds-widget-gallery</p>
+</section>
+<section id="views">
+    <h3>Views</h3>
+    <hr>
+    <p>In the following is overview of all views provided by the gallery widget:</p>
+    <table border="1">
+        <thead><td>View</td><td>Specifics</td><td>Purpose</td></thead>
+        <tr>
+            <td>DesignsSquare.com: Gallery: Index</td>
+            <td>
+                <ul>
+                    <li>Fields: Content: Rendered Node</li>
+                    <li>Add Filter Criteria to filter per content type 'DS gallery'</li>
+                    <li>Add tag 'designssquare_gallery_index' </li>
+                </ul>
+            </td>
+            <td>contains galleries to display in the gallery index</td>
+        </tr>
+
+        <tr>
+            <td>DesignsSquare.com: Gallery: Teaser</td>
+            <td>
+                <ul>
+                    <li>Fields: Content: Rendered Node</li>
+                    <li>Add Filter Criteria to filter per content type 'DS gallery'</li>
+                    <li>Add tag 'designssquare_gallery_teaser' </li>
+                </ul>
+            </td>
+            <td>contains galleries to display in the gallery teaser</td>
+        </tr>
+        <tr>
+            <td>DesignsSquare.com: Gallery: Block</td>
+            <td>
+                <ul>
+                    <li>Fields: Content: Rendered Node</li>
+                    <li>Add Filter Criteria to filter per content type 'DS gallery'</li>
+                    <li>Add tag 'designssquare_gallery_block' </li>
+                </ul>
+            </td>
+            <td>contains galleries to display in the block</td>
+        </tr>
+    </table>
+</section>
+<section id="how_to">
+    <h3>How To</h3>
+    <hr>
+    <h4>Scale Thumbnails</h4>
+    <p>By default, the thumbnails in block, index, teaser or node are scaled by the design styles with additional JavaScript functionality to set the heights equal to the longest
+    height. However, you may like to have complete control the size of Thumbnails, then
+    <ol>
+    <li>Enable Thumbnail scaling at Gallery Settings(admin/designs-square/ds-widget-gallery) under Scope(i.e. block, index, node or teaser)/"Thumbnails" of your interest</li>
+    <li>Once enabled, scale Thumbnails per your needs via Drupal Media Styles functionality(admin/config/media/image-styles). There should be a style for each scope("DS Gallery Block Thumbnails","DS Gallery Index Thumbnails","DS Gallery Node Thumbnails", "DS Gallery Teaser Thumbnails")</li>
+    </ol>
+
+    </p>
+<h4>Uninstall gallery</h4>
+ <p>The Gallery has a custom field installed as a separate module. This creates a lock prohibiting to uninstall gallery regular way. Instead,
+    follow the following steps to remove the lock, so you can uninstall the Gallery widget:
+     <ul>
+          <li>Install DesignsSquare.com: Widget: gallery: Remove Lock module</li>
+          <li>Uninstall DesignsSquare.com: Widget: gallery: Remove Lock module (Make sure
+              click on the 'uninstall' tab to complete uninstall).
+          </li>
+          <li>refresh the cache and run cron job. This should remove lock</li>
+          <li>Now, you should be able to uninstall DesignsSquare.com: Widget:
+              Gallery Item and, afterwards, rest of the gallery modules </li>
+     </ul>
+ </p>
+</section>
+<section id="template_api">
+    <h3>Template API</h3>
+    <hr>
+    There is common representation - the Template API(TAPI), so the layouts(template files) can be swapped out, customized and added new ones
+    <table>
+        <thead><th>Content Type</th><th>TAPI</th><th>Methods Implementing API</th><th>Scope</th></thead>
+        <tr>
+            <td>Gallery Teaser Entry</td>
+            <td>
+                $gallery_tapi['url']::[STRING];<br>
+                $gallery_tapi['title']::[STRING];<br>
+                $gallery_tapi['intro']::[STRING];<br>
+                $gallery_tapi['summary']::[STRING]<br>
+                $gallery_tapi['tags']::[ARRAY](tags from taxonomy field_ds_gallery_tags)<br>
+                $gallery_tapi['tags']['collection']::[ARRRAY](array of tag items)
+                $gallery_tapi['tags']['collection']['safe_nameXX]::ARRAY(tag collection index is 'safe_name' of tag)
+                $gallery_tapi['tags']['collection']['safe_nameXX][url]::[STRING]
+                $gallery_tapi['tags']['collection']['safe_nameXX][name]::[STRING]
+                $gallery_tapi['tags']['collection']['safe_nameXX]['name_safe']::[STRING](lower case tag name with '_' in place of space)
+                $gallery_tapi['tags']['collection']['safe_nameXX]['is_last']::[BOOLEAN]
+                $gallery_tapi['tags']['flattened_names']::[STRING](concatenated tag safe name with space between)
+                $gallery_tapi['tags']['all_names']::[ARRAY](array of all tag safe names)
+                $gallery_tapi['categories']::[ARRAY]<br>
+                $gallery_tapi['categories']::[ARRAY](categories from taxonomy field_ds_gallery_categories)<br>
+                $gallery_tapi['categories']['collection']::[ARRRAY](array of category items)
+                $gallery_tapi['categories']['collection']['safe_nameXX]::ARRAY(category collection index is 'safe_name' of category)
+                $gallery_tapi['categories']['collection']['safe_nameXX][url]::[STRING]
+                $gallery_tapi['categories']['collection']['safe_nameXX][name]::[STRING]
+                $gallery_tapi['categories']['collection']['safe_nameXX]['name_safe']::[STRING](lower case tag name with '_' in place of space)
+                $gallery_tapi['categories']['collection']['safe_nameXX]['is_last']::[BOOLEAN]
+                $gallery_tapi['categories']['flattened_names']::[STRING](concatenated category safe name with space between)
+                $gallery_tapi['categories']['all_names']::[ARRAY](array of all categories safe names)
+                $gallery_tapi['ds_contextual_links']::[RENDERABLE_ARRAY]<br>]
+                $gallery_tapi['styles']::[ARRAY](all from _gallery_styles_tapi()><Br>
+            <td>_gallery_teaser_tapi($node)</td>
+            <td>ds-gallery-index.tpl.php, ds-gallery-block.tpl.php,ds-gallery-teaser.tpl.php</td>
+        </tr>
+        <tr>
+            <td>Gallery Entry</td>
+            <td>
+                <b>...everything from "Gallery Teaser Entry"</b>(_gallery_teaser_tapi())
+                $gallery_tapi['content']::[STRING];<br>
+                $gallery_tapi['index']::[ARRAY];<br>
+                $gallery_tapi['index']['next']::[ARRAY];<br>
+                $gallery_tapi['index']['next']['url']::[STRING];<br>
+                $gallery_tapi['index']['next']['text']::[STRING];<br>
+                $gallery_tapi['index']['previous']::[ARRAY];<br>
+                $gallery_tapi['index']['previous']['text']::[STRING];<br>
+                $gallery_tapi['index']['previous']['url']::[STRING];<br>
+                $gallery_tapi['styles']::[ARRAY](all from _gallery_styles_tapi())<br>
+                 <td>_gallery_tapi($node)</td>
+            <td>ds-gallery-index-single.tpl.php, ds-gallery-block-single.tpl.php,ds-gallery-teaser-single.tpl.php</td>
+        </tr>
+        <tr>
+            <td>Gallery Node TAPI</td>
+            <td>
+                <b>...everything from "Gallery TAPI"</b>(_gallery_tapi())<br>
+                $gallery_tapi['items_tapi']::[ARRAY](all gallery items)<br>
+                $gallery_tapi['items_tapi']['N']['title']::[STRING];<br>
+                $gallery_tapi['items_tapi']['N']['has_picture']::[BOOLEAN];<br>
+                $gallery_tapi['items_tapi']['N']['picture']::[ARRAY];<br>
+                $gallery_tapi['items_tapi']['N']['picture']['url']::[STRING];<br>
+                $gallery_tapi['items_tapi']['N']['picture_dummy_url']::[STRING](default image placeholder url)<br>
+                $gallery_tapi['items_tapi']['N']['video']::[ARRAY];<br>
+                $gallery_tapi['items_tapi']['N']['video']['content']::[RENDERABLE_ARRAY](contnet of video)<br>
+                $gallery_tapi['items_tapi']['N']['video']['has_video']::[BOOLEAN];<br>
+                $gallery_tapi['items_tapi']['N']['video']['is_frame']::[BOOLEAN];<br>
+                $gallery_tapi['items_tapi']['N']['video']['is_ajax']::[BOOLEAN];<br>
+                $gallery_tapi['items_tapi']['N']['video']['url']::[STRING];<br>
+                $gallery_tapi['items_tapi']['N']['tags']::[ARRAY](tags for the item)<br>
+                $gallery_tapi['items_tapi']['N']['tags']['name']::[STRING](combined names of tags with ', ' between)<br>
+                $gallery_tapi['items_tapi']['N']['tags']['raw']::[ARRAY](array of tag names)<br>
+                $gallery_tapi['items_tapi']['N']['tags']['flatten_names']::[STRING](combined tags with space between)<br>
+                $gallery_tapi['items_tags']::[ARRAY](all item tags)<br>
+                $gallery_tapi['items_tags']['collection']::[ARRAY]<br>
+                $gallery_tapi['items_tags']['collection']['nameXX']::[ARRAY](array of each tag as index the name iteslf)<br>
+                $gallery_tapi['items_tags']['collection']['nameXX']['name']::[String]<br>
+                $gallery_tapi['items_tags']['collection']['nameXX']['safe_name']::[String]<br>
+                $gallery_tapi['items_tags']['flatten_safe_names']::[SRTRING](all tags combined into string with space between)<br>
+            <td>_gallery_node_tapi($node)(combined of _gallery_item_tapi, _gallery_tapi,_ds_gallery_retrieve_items_tags)</td>
+            <td>ds-gallery-index-single.tpl.php, ds-gallery-block-single.tpl.php,ds-gallery-teaser-single.tpl.php</td>
+        </tr>
+        <tr>
+            <td>Gallery Style TAPI</td>
+            <td>
+                $gallery_tapi['styles']::[ARRAY](all gallery thumbs styles)<br>
+                $gallery_tapi['styles']['block_thumb']::[ARRAY];(thumb styles in the block scope)<br>
+                $gallery_tapi['styles']['block_thumb']['height']::[STRING];(i.e. 300px)<br>
+                $gallery_tapi['styles']['block_thumb']['width']::[STRING];(i.e. 400px)<br>
+                $gallery_tapi['styles']['block_thumb']['style']::[STRING];(i.e. "style='width:300px;height:200px')<br>
+                $gallery_tapi['styles']['index_thumb']::[ARRAY];(thumb styles in the index scope)<br>
+                $gallery_tapi['styles']['index_thumb']['height']::[STRING];(i.e. 300px)<br>
+                $gallery_tapi['styles']['index_thumb']['width']::[STRING];(i.e. 400px)<br>
+                $gallery_tapi['styles']['index_thumb']['style']::[STRING];(i.e. "style='width:300px;height:200px')<br>
+                $gallery_tapi['styles']['teaser_thumb']::[ARRAY];(thumb styles in the teaser scope)<br>
+                $gallery_tapi['styles']['teaser_thumb']['height']::[STRING];(i.e. 300px)<br>
+                $gallery_tapi['styles']['teaser_thumb']['width']::[STRING];(i.e. 400px)<br>
+                $gallery_tapi['styles']['teaser_thumb']['style']::[STRING];(i.e. "style='width:300px;height:200px')<br>
+                $gallery_tapi['styles']['node_thumb']::[ARRAY];(thumb styles in the node scope)<br>
+                $gallery_tapi['styles']['node_thumb']['height']::[STRING];(i.e. 300px)<br>
+                $gallery_tapi['styles']['node_thumb']['width']::[STRING];(i.e. 400px)<br>
+                $gallery_tapi['styles']['node_thumb']['style']::[STRING];(i.e. "style='width:300px;height:200px')<br>
+            <td>_gallery_style_tapi()</td>
+            <td>none</td>
+
+        </tr>
+    </table>
+
+</section>
+<section id="artifacts">
+    <h3>Artifacts</h3>
+    <hr>
+    <p>Here are summary of all artifacts part of the Gallery widget:</p>
+    <table border="1">
+        <thead><td>Item</td><td>Content Type</td><td>Context</td><td>Templates</td><td>Views</td><td>Comments</td></thead>
+        <tr><td>Gallery Index</td><td>DS Gallery Index</td><td>gallery_index</td><td>ds-gallery-index.tpl.php</td><td>none</td><td>this is the layout of the gallery space. The view assigned to the content in the context - 'gallery_index', contains the galleries to display</td></tr>
+        <tr><td>Gallery Display</td><td>DS Gallery</td><td>gallery_single</td><td>ds-gallery-node.tpl.php</td><td>n/a</td><td>It displays the single gallery</td></tr>
+        <tr><td>Gallery Teaser</td><td>n/a</td><td>any</td><td>ds-gallery-teaser.tpl.php</td><td>DesignsSquare.com: Gallery: Teaser</td><td>The tag - designssquare_gallery_teaser of the view kicks in the mechanism for teaser and applies the appropriate template. This is good for featuring galleries in home / landing page but can be assigned to any region</td></tr>
+        <tr><td>Gallery Block</td><td>n/a</td><td>any</td><td>ds-gallery-block.tpl.php</td><td>DesignsSquare.com: Gallery: Block</td><td>The tag - designssquare_gallery_block of the view kicks in the mechanism for appropriate templates of the block. This is good for assigning to regions such as sidebar, footer, etc</td></tr>
+    </table>
+</section>
+<section id="configurations">
+    <h3>Configurations</h3>
+    <hr>
+    <p>Configurations are updated via the Gallery Admin UI at admin/designs-square/ds-widget-gallery. Please, see details at Admin space
+    </p>
+    <p>The Gallery settings are categorized into 5 categories. Besides the general category, all other settings are organized into appropriate scope(element of the widget) of the widget - index, teaser, block and node.
+    Futhermore, under each scope, there is setting for choosing layout, number of columns and settings for scaling thumbnails
+    </p>
+</section>
+<section id="drupal_depenencies">
+    <h3>Drupal Module Dependencies</h3>
+    <hr>
+    In the following are direct dependencies for the gallery widget:
+    <ul>
+        <li><b><a href="https://www.drupal.org/project/field_remove_item" target="_blank">field_remove_item</a></b> adding remove button</li>
+        <li><b><a href="https://www.drupal.org/project/eva" target="_blank">eva</a></b> for reference index form project</li>
+        <li><b><a href="https://www.drupal.org/project/entityreference" target="_blank">entityreference</a></b> for reference index form project</li>
+        <li><b><a href="https://www.drupal.org/project/contextual" target="_blank">context</a></b></li>
+        <li><b><a href="https://www.drupal.org/project/views_ui" target="_blank">views_ui</a></b> for Editing Views From UI</li>
+        <!--<li><b><a href="https://www.drupal.org/project/fapi_validation" target="_blank">fapi_validation</a></b></li>-->
+        <li><b><a href="https://www.drupal.org/project/videojs" target="_blank">videojs</a></b></li>
+    </ul>
+  <p>Please, see the widgets .info file for complete list of Drupal dependencies</p>
+</section>
+<section id="troubleshooting">
+    <h3>Troubleshooting</h3>
+    <hr>
+    <h5>0. Unable to generate the derived image located at public://... or ... Warning: filesize(): stat failed for</h5>
+    <p>This happens when importing products on Drupal instance running on server without library - libjpeg installed/configured. Solution compile the PHP with libjpeg library or just copy artifacts manually</p>
+
+    <h5>1. Displays Without Styles Applied or Messed up</h5>
+    <p>This may happen after updating Gallery Admin settings and without refreshing cache. The solution is to refresh cache</p>
+
+    <h5>2. Local Video not playing or isn't aligned</h5>
+    <p>Make sure the video(videojs,etc) is intalled and configured. Run the following
+    <code><br>
+        drush ca @ALIAS --tag=video<br>
+    </code>
+    </p>
+</section>
+<section id="releases">
+    <h3>Release History</h3>
+    <hr>
+    <h5>0.1</h5>
+
+    <ul>
+        <li>initial release</li>
+    </ul>
+    <h5>0.4</h5>
+
+    <ul>
+        <li>added admin support</li>
+        <li>added initial Mckinley and Everest</li>
+        <li>Add Category and Tags for Galleries</li>
+        <li>Added Breadcrumbs suppor for Indexes</li>
+    </ul>
+    <h5>0.5</h5>
+    <ul>
+        <li>added video(youtube,vimeo,local videos) support</li>
+        <li>K1 layouts for node added</li>
+        <li>Added pop out support in node</li>
+        <li>Added Gallery Item Tags</li>
+        <li>Rewrite Gallery photos into Gallery items by adding new module Gallery Items</li>
+        <li>Update documentation</li>
+        <li>redone both sample and structure export</li>
+    </ul>
+    <h5>0.6</h5>
+    <ul>
+        <li>generalize item tags</li>
+        <li>refactor items API into shared lib</li>
+    </ul>
+    <h5>0.6.1</h5>
+    <small>[CODE deployment]</small>
+    <ul>
+        <li>syntax fixes for PHP Ver 5.4 and below</li>
+        <li>added extra check to variables for foreach loops to avoid syntax error</li>
+    </ul>
+    <h5>0.6.2</h5>
+    <small>[CODE deployment]</small>
+    <ul>
+        <li>array index error fixed for tags</li>
+        <li>array index error fixed in function _default_val_content() for image FID</li>
+        <li>Make Gallery Item tags case sensitive</li>
+    </ul>
+    <h5>0.6.3</h5>
+    <small>[CODE, STRUCTURE deployment]</small>
+    <ul>
+        <li>fix error  "Can only flip STRING and INTEGER values! in DrupalDefaultEntityController->load()" </li>
+        <li>fix error "Undefined offset: 0 in designssquare_com_widget_gallery_item_submit() (line 572"</li>
+        <li>implement automatic cache refresh/cron run after every update of Gallery settings</li>
+        <li>added four Media Styles to give control of scaling thumbnails for Gallery Items in block, teaser, node and index</li>
+        <li>fix bug in Gallery Settings for saving default Gallery Index name</li>
+    </ul>
+</section>
+<section id="backlog">
+    <h3>Things For Future Release</h3>
+    <hr>
+    <p>Here is list of features and enhancements that will be included in future releases:</p>
+    <ul>
+        <li>perhaps, add block for single gallery with one of the layers to have scroller</li>
+        <li>It takes times to load teaser, so lets add progress bar or something to demonstrate loading process</li>
+    </ul>
+</section>
+</div>
+<!--end of documenter_content-->
+</body>
+</html>
+
+
+
+

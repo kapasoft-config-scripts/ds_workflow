@@ -1,0 +1,64 @@
+<?php
+
+
+function designssquare_com_theme_smartbox_ckeditor_js_scripts_alter(&$js_scripts, $vars){
+    $type = (isset($vars['node']) && isset($vars['node']->type)) ? $vars['node']->type : 'default';
+
+    module_load_include('inc', 'designssquare_com_theme_smartbox', 'includes/smartbox_imports');
+//    import_front_end('js', _default_smartbox_js($type));
+//    import_front_end('js', _page_smartbox_js($type));
+//        $path_to_theme = base_path() .drupal_get_path('theme', 'smartbox');
+//        $js_scripts = array();
+//        $js_scripts[] =   array('path' =>   '', 'options' => array('scope' => 'header', 'type' => 'external'));
+//        $js_scripts[] =   array('path' =>  $path_to_theme . '/smartbox/javascripts/PIE.js', 'options' => array('scope' => 'header', 'type' => 'file'));
+
+        $js_scripts = array_merge($js_scripts, _default_smartbox_js($type), _page_smartbox_js($type));
+
+}
+
+function designssquare_com_theme_smartbox_ckeditor_css_alter(&$css_scripts, $vars)
+{
+    $type = (isset($vars['node']) && isset($vars['node']->type)) ? $vars['node']->type : 'default';
+
+    module_load_include('inc', 'designssquare_com_theme_smartbox', 'includes/smartbox_imports');
+    module_load_include('inc', 'designssquare_lib', 'includes/ds_front_end');
+    $css_scripts = array_merge($css_scripts, retrieve_path_values(_default_smartbox_css($type)));
+}
+
+function designssquare_com_theme_smartbox_ckeditor_wrap_alter(&$content_wrap, $vars, $region){
+    $prefix = '';
+    $postfix = '';
+
+    switch ($region) {
+//        case 'header':
+//            $prefix = '<div class="page-header navbar navbar-fixed-top"><div class="page-header-inner"><div class="top-menu"><ul class="nav navbar-nav pull-right ckeditor-wrapper-end">';
+//            $postfix = '</ul></div></div></div>';
+//            break;
+        //other regions
+        case 'main': //main content
+            $prefix = '<div class="wrapper"><div id="content" role="main" class="ckeditor-wrapper-end">';
+            $postfix = '</div></div>';
+            break;
+    }
+    $content_wrap['prefix'] = $prefix;
+    $content_wrap['postfix'] = $postfix;
+}
+
+function designssquare_com_theme_smartbox_ckeditor_clean_elements_alter(&$desposable_elements, $vars){
+    //js script imports
+    $desposable_elements[] = array('id' => 'script', 'remove' => 'content');
+    $desposable_elements[] = array('id' => 'script', 'remove' => 'element');
+
+    //flexslider
+    $desposable_elements[] = array('id' => '.flex-viewport', 'remove' => 'element');
+    $desposable_elements[] = array('id' => '.slides', 'remove' => 'attr','attr' =>array('style'));
+    $desposable_elements[] = array('id' => '.slides li.clone', 'remove' => 'content');
+    $desposable_elements[] = array('id' => '.slides li.clone', 'remove' => 'element');
+    $desposable_elements[] = array('id' => '.slides li', 'remove' => 'attr','attr' =>array('style','class'));
+    $desposable_elements[] = array('id' => '.flex-control-nav', 'remove' => 'content');
+    $desposable_elements[] = array('id' => '.flex-control-nav', 'remove' => 'element');
+
+    //portfolio
+    $desposable_elements[] = array('id' => '.plus-icon', 'remove' => 'attr','attr' =>array('style'));
+
+}

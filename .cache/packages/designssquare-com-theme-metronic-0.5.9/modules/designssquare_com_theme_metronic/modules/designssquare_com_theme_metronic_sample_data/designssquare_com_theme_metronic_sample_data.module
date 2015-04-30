@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Designssquare.com: Theme: Metronic: Sample Data feature.
+ */
+
+include_once 'designssquare_com_theme_metronic_sample_data.features.inc';

@@ -1,0 +1,6 @@
+name = DesignsSquare.com SMARTBOX_THEME widget
+description = functionality for Drupal SMARTBOX_THEME widget
+core = 7.x
+version = v0.0.1
+project = designssquare_com_theme_smartbox
+package = designssquare.com.widget.smartbox

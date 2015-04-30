@@ -1,0 +1,46 @@
+name = Metronic
+description = Drupal Theme - METRONIC
+version = v0.1.6
+core = 7.x
+base theme = bootstrap
+
+;;;;;;;;;;;;;;;;;;;;;
+;; Regions
+;;;;;;;;;;;;;;;;;;;;;
+
+regions[navigation]     = 'Navigation'
+regions[header]         = 'Top Bar'
+regions[page_header]    = 'Page Top Bar'
+regions[highlighted]    = 'Highlighted'
+regions[help]           = 'Help'
+regions[content]        = 'Content'
+regions[sidebar_first]  = 'Primary'
+regions[sidebar_second] = 'Secondary'
+regions[footer]         = 'Footer'
+regions[page_top]       = 'Page top'
+regions[page_bottom]    = 'Page bottom'
+regions[breadcrumbs_sidebar]     = 'Breadcrumbs Sidebar'
+regions[theme_panel] = 'Theme Panel'
+regions[login_footer] = 'Login Footer'
+regions[quick_sidebar] = 'Quick Sidebar'
+
+;;;;;;;;;;;;;;;;;;;;;
+;; Stylesheets
+;;;;;;;;;;;;;;;;;;;;;
+
+stylesheets[all][] = css/style.css
+
+;;;;;;;;;;;;;;;;;;;;;
+;; Metronic Default Settings
+;;;;;;;;;;;;;;;;;;;;;
+
+settings[ds_theme_color] = default
+settings[ds_theme_layout] = fluid
+settings[ds_theme_header] = default
+settings[ds_theme_sidebar] = default
+settings[ds_theme_sidebar_pos] = left
+settings[ds_theme_footer] = left
+
+;;;;;;;;;;;;;;;;;;;;;
+;; DesignsSquare.com Template API Settings
+;;;;;;;;;;;;;;;;;;;;;

@@ -1,0 +1,29 @@
+.vjs-default-skin .vjs-big-play-button{
+    /*width:25%;*/
+    /*height:25%;*/
+    /*left:25%;*/
+    /*top:25%;*/
+    z-index:0;
+    border: solid thin white;
+    /*line-height:25%;*/
+    /*border-radius:0;*/
+    /*box-shadow:none;*/
+}
+
+/*.vjs-default-skin:hover .vjs-big-play-button, .vjs-default-skin .vjs-big-play-button:focus{*/
+    /*box-shadow: none;*/
+    /*-webkit-box-shadow:none;*/
+    /*-moz-box-shadow:none:*/
+/*}*/
+
+/*.vjs-default-skin .vjs-big-play-button:before{*/
+    /*position: relative;*/
+    /*vertical-align: middle;*/
+/*}*/
+/*.mix-inner iframe{*/
+    /*max-height: 100% !important;*/
+/*}*/
+
+/*.mix-inner{*/
+    /*max-height: 100% !important;*/
+/*}*/

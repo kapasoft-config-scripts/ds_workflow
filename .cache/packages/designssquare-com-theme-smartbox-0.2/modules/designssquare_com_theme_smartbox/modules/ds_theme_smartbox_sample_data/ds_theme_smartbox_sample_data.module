@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the DesignsSquare.com: Theme: SmartBox: Sample Data feature.
+ */
+
+include_once 'ds_theme_smartbox_sample_data.features.inc';

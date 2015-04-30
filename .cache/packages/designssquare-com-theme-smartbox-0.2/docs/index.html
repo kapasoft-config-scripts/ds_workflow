@@ -1,0 +1,545 @@
+<!doctype html>
+<!--[if IE 6 ]>
+<html lang="en-us" class="ie6"> <![endif]-->
+<!--[if IE 7 ]>
+<html lang="en-us" class="ie7"> <![endif]-->
+<!--[if IE 8 ]>
+<html lang="en-us" class="ie8"> <![endif]-->
+<!--[if (gt IE 7)|!(IE)]><!-->
+<html lang="en-us"><!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+
+    <title>SmartBox - HTML Responsive Theme</title>
+
+    <meta name="description"
+          content="Thank you for purchasing Drupal Theme. If you have any questions that are beyond the scope of this help file, please feel free to email us at any time. Thanks so much!">
+    <meta name="generator" content="Documenter v1.6 http://rxa.li/documenter">
+    <meta name="date" content="2012-03-27T00:00:00+02:00">
+    <link rel="stylesheet" href="css/documenter_style.css" media="all">
+    <script src="js/jquery.1.6.4.js"></script>
+    <script src="js/jquery.scrollTo-1.4.2-min.js"></script>
+    <script src="js/jquery.easing.js"></script>
+    <link rel="stylesheet" href="css/shDocumenter.css" media="screen">
+    <script src="js/shCore.js"></script>
+    <script src="js/shBrushCss.js"></script>
+    <script src="js/shBrushJScript.js"></script>
+    <script>SyntaxHighlighter.defaults['toolbar'] = false;
+    SyntaxHighlighter.all();</script>
+    <script>document.createElement('section');
+    var duration = 500, easing = 'swing';</script>
+    <script src="js/script.js"></script>
+    <style>
+        html {
+            background-color: #FFFFFF;
+            color: #383838;
+        }
+
+        ::-moz-selection {
+            background: #444444;
+            color: #DDDDDD;
+        }
+
+        ::selection {
+            background: #444444;
+            color: #DDDDDD;
+        }
+
+        hr {
+            border-top: 1px solid #E1B568;
+            border-bottom: 1px solid #FFFFFF;
+        }
+
+        #documenter_sidebar, #documenter_sidebar ol a {
+            background-color: #ffffff;
+            /*background-color: #E1B568;*/
+            /*color: #222222;*/
+            color: #373737;
+        }
+
+        #documenter_sidebar ol a {
+            -webkit-text-shadow: 1px 1px 0px #EEEEEE;
+            -moz-text-shadow: 1px 1px 0px #EEEEEE;
+            text-shadow: 1px 1px 0px #EEEEEE;
+        }
+
+        #documenter_sidebar ol {
+            border-top: 1px solid #E1A53C;
+        }
+
+        #documenter_sidebar ol a {
+            border-top: 1px solid #EEEEEE;
+            border-bottom: 1px solid #E1B568;
+            color: #444444;
+        }
+
+        #documenter_sidebar ol a:hover {
+            background: #cc9833;
+            color: #ffffff;
+            border-top: 1px solid #E1A53C;
+        }
+
+        #documenter_sidebar ol a.current {
+            background: #cc9833;
+            color: #ffffff;
+            border-top: 1px solid #E1A53C;
+        }
+
+        #documenter_copyright {
+            display: block !important;
+            visibility: visible !important;
+        }
+
+        #logo #textual span {
+            font-size: 20px;
+            font-family: 'Oswald', sans-serif;
+            color: #cc9833;
+            font-style: normal;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        #logo #textual {
+            font-size: 20px;
+            font-family: 'Oswald', sans-serif;
+            color: #373737;
+            font-style: normal;
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 40px;
+            margin-left: 10px;
+            /*margin-bottom: 12px;*/
+            line-height: 1em;
+            text-transform: uppercase;
+        }
+    </style>
+
+</head>
+<body>
+<div id="documenter_sidebar">
+    <div id="logo" class="group">
+        <a id="textual" href="http://designssquare.com" target="_blank" title="Design Square">
+            Designs <span class="title-highlight">Square</span>
+        </a>
+
+        <p id='tagline' style="margin-left: 3px;margin-right: 3px;text-align: center">Inspiration Designs. Practical
+            Widgets</p>
+    </div>
+    <ol id="documenter_nav">
+        <li><a class="current" href="#documenter_cover">Start</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#installation">Installation</a></li>
+        <li><a href="#menus">Menus</a></li>
+        <li><a href="#theme_settings">Theme Settings</a></li>
+        <li><a href="#types">Types or Layouts</a></li>
+        <li><a href="#pages">Sample Pages</a></li>
+        <li><a href="#blocks_boxes">Blocks & Boxes</a></li>
+        <li><a href="#context">Context</a></li>
+        <li><a href="#fields">Fields</a></li>
+        <li><a href="#regions">Regions</a></li>
+        <li><a href="#depenencies">Drupal Dependencies</a></li>
+        <li><a href="#troubleshooting">Troubleshooting</a></li>
+        <li><a href="#backlog">Future Releases</a></li>
+        <li><a href="#releases">Release History</a></li>
+    </ol>
+    <div id="documenter_copyright">Copyright DesignsSquare.com 2015
+    </div>
+</div>
+<div id="documenter_content">
+    <section id="documenter_cover">
+        <h1>SmartBox Drupal Corporate Theme Documentation</h1>
+
+        <h2>Corporate Responsive Drupal Corporate Theme</h2>
+        <hr>
+        <ul>
+            <li>Last Updated: Apr 27, 2015</li>
+            <li>Themed By: DesignsSquare.com</li>
+            <li><a href="">
+            </a>
+            </li>
+            <li>Email: <a href="mailto:contact@designssquare.com">contact@designssquare.com</a></li>
+        </ul>
+        . <p>Thank you for purchasing our theme. If you have any questions, please feel free to email us! </p>
+        <i>see also designer documentation <a href="design/docs/Smartbox.pdf" target="_blank">here</a></i>
+    </section>
+    <section id="about">
+        <h3>About</h3>
+        <hr>
+        <h4>Intro</h4>
+        <p>The Drupal Corporate Theme - SmartBox is the elegant and stylish design of SmartBox powered by Drupal for your personal or business needs. We have added
+            enhanced CKEditor editor for seamless editing to easy customize. Besides over 8 layouts, 25 sample pages and 10 blocks, each background of the page and header
+        are customizable to give flexibility convert Drupal Corporate Theme - SmartBox uniquely to your desires and wishes</p>
+
+        <h4>Highlights</h4>
+        <p>The unique and the most noted aspects of the Drupal Corporate Theme - SmartBox
+            <ul>
+                <li>Runs on Twitter Bootstrap to easy extend beyond whats provided</li>
+                <li>Over 8 different layouts(types) and 25 sample pages</li>
+                <li>Over 10 additional blocks for complete customization</li>
+                <li>Customizable background image of each page</li>
+                <li>Customizable header background image for most of the content types/pages</li>
+                <li>Supports enhanced CKEditor integration for seamless editing and 20 most popular free plugins</li>
+                <li>Easy & quick installation/configuration via Drush/<a href="http://designssquare.com/workflow-docs/"
+                                                                        target="_blank">Workflow</a></li>
+            </ul>
+        </p>
+
+
+        <h4>Included</h4>
+        <ul>
+            <li>Sample Date for kickstart</li>
+            <li>SmartBox Design v.1.1</li>
+            <li>Twitter Bootstrap 2.3.2</li>
+            <li>jQuery 1.9.1</li>
+            <li>Enhanced CKEditor integration and 20 most popular free CKEditor plugins (DesignsSquare CKEditor Widget, )</li>
+            <li>Support to deploy from sub directory of Web Server root directory (DesignsSquare.com VIRTUAL_HOSTY)</li>
+        </ul>
+
+    </section>
+    <section id="installation">
+        <h3>Installation</h3>
+        <h4>How To Install?</h4>
+
+        <p>In the following are the steps to install SmartBox Drupal Corporate Theme</p>
+        <ol>
+            <li>Copy all modules into sites/all/modules folder</li>
+            <li>Copy all themes into sites/all/themes folder</li>
+            <li>Enable theme 'bootstrap' and set theme 'smartbox' as default</li>
+            <li>Enable DesignsSquare.com Library, DesignsSquare.com Library: Sample Data, DesignsSquare.com TEMPLATE_API
+                widget, DesignsSquare.com Theme Blocks, DesignsSquare.com SMARTBOX_THEME widget
+            </li>
+            <li>Enable module - "DesignsSquare.com: Theme: SmartBox: Configurations & Structure Data"</li>
+            <li>Enable module Designssquare.com: Theme: SmartBox: Sample Data if you wish sample data(recommended).</li>
+            <li>To enable Enhanced CKEditor support for seamless editing, enable "DesignsSquare CKEditor Widget" and "DesignsSquare.com: Utils: CKEditor"</li>
+            <li>Revert any features in OVERRIDE state and clear all cache</li>
+        </ol>
+
+        <p>-- OR --</p>
+
+        <p>Only One command with Drush tool - <a href="http://designssquare.com/workflow-docs/"
+                                                 target="_blank">Workflow</a> as following:<br>
+            <br>
+            <code>drush pa new-install @ALIAS --package=path/to/package.tar.gz --env=test
+                --tag=kickstart,editor,tune_up</code><br>
+            <br>
+            This command will do it all. It will spin new Drupal instance, install and configure SmartBox theme. It will
+            also import sample data, install and configure ckeditor theme integration for seamless editing, and tune with some popular modules
+            such as Corporate_menu, module_fileter,etc.
+            If you don't like to have any of the extra - sample data import, CKeditor integration or tune up, then just
+            run without that tag name "--tag".
+            For more details, see workflow documentation section "Profile It ALL" <a
+                    href="http://designssquare.com/workflow-docs/#!/deployments" target="_blank"> here </a>
+        </p>
+    </section>
+    <section id="menus">
+        <h3>Menus</h3>
+        <hr>
+        <p>SmartBox Drupal Corporate Theme supports the following Menus out of box:
+        <ul>
+            <li>Main Menu</li>
+        </ul>
+
+        </p>
+
+    </section>
+    <section id="theme_settings">
+        <h3>[@ToDo]Theme Settings</h3>
+        <hr>
+        <p>The SmartBox theme settings allows the following styles to be configurable:</p>
+        <ul>
+            <li><b>@ToDo</b> future release</li>
+        </ul>
+    </section>
+    <section id="types">
+        <h3>Types</h3>
+        <hr>
+        <p>In the following are custom types supported in SmartBox Drupal Corporate Theme</p>
+        <h4>Supported Content Types</h4>
+
+        <p>The SmartBox Corporate theme supports following content types:
+        <ul>
+            <li><b>Home(home)</b> - home layout with promo area at the top for slider(home.tpl.php)</li>
+            <li><b>Basic(page)</b> - the basic page with no columns and "Node Bottom" region at the bottom for
+                slider and other blocks(page.tpl.php). It also has field to upload background image of the header
+            </li>
+            <li><b>Basic - Simple Header(basic_simple)</b> - the same as Basic Page except header is the simple version without
+                image(page--basic-simple.tpl.php)
+            </li>
+            <li><b>Basic - No Header(basic_no_header)</b> - the same as Basic Page except there is no any header section
+                (page--basic-header.tpl.php)
+            </li>
+        <li><b>Basic - Right Sidebar(basic_right_sidebar)</b> - the same as Basic Page except there is right sidebar - "Secondary" region to assign blocks
+            (page--right-sidebar.tpl.php)
+        </li>
+        <li><b>Basic - Left Sidebar(basic_left_sidebar)</b> - the same as Basic Page except there is left sidebar - "Primary" region to assign blocks
+            (page--left-sidebar.tpl.php)
+        </li>
+        <li><b>404(page_404)</b> - the layout for 404 page with extra field to upload background image of the header
+            (page--404.tpl.php)
+        </li>
+        <li><b>Contact(page_contact)</b> - the layout for contact page with embedded contact form, map and sidebar region with assigned "Contact Info" block by default
+            (page--contact.tpl.php)
+        </li>
+        </ul>
+        </p>
+    </section>
+    <section id="pages">
+        <h3>Sample Pages</h3>
+        <hr>
+        <p>In the following is a list of all sample pages for easy kickstart in SmartBox Drupal Corporate Theme</p>
+        <ul>
+            <li>Home</li>
+            <li>Services</li>
+            <li>Contact</li>
+            <li>404</li>
+            <li>Full Background</li>
+            <li>Left Sidebar</li>
+            <li>Right Sidebar</li>
+            <li>Timeline</li>
+            <li>Tables</li>
+            <li>Icons</li>
+            <li>Elements</li>
+            <li>Typography</li>
+            <li>Alternative</li>
+            <li>Testimonials</li>
+            <li>Docs</li>
+            <li>Pricing</li>
+            <li>FAQ</li>
+            <li>About Us</li>
+            <li>Portfolio 3 Columns</li>
+            <li>Portfolio 4 Columns</li>
+            <li>Portfolio Item</li>
+            <li>Squared Portfolio</li>
+            <li>Single Post</li>
+            <li>Fullwidth Blog</li>
+            <li>Normal Blog</li>
+        </ul>
+        </p>
+    </section>
+    <section id='blocks_boxes'>
+        <h3>About Blocks</h3>
+        <hr>
+
+        <p>In the following is list of blocks included in the SmartBox Drupal Corporate Theme:</p>
+        <ul>
+
+            <li><b>Main Menu block</b><br>
+                <p>The block of main menu assigned in the Top Bar region by default</p>
+            </li>
+            <li><b>Search Form</b><br>
+                <p>Drupal Search block assigned to the one of the sidebar regions</p>
+            </li>
+            <li><b>DesignsSquare Theme: Block: Flex Slider Full</b><br>
+                <p>Slider for displaying Clients assigned to the "Node Bottom" region by default</p>
+            </li>
+            <li><b>DesignsSquare Theme: Block: Copyrights</b><br>
+                <p>
+                    This block is assigned to Footer region by default. In the BASIC package, the block is editable via
+                    template at
+                    themes/smartbox/templates/designssquare-com-theme-blocks/basic/block--ds-copy-rights.tpl.php. In
+                    the PLUS package,
+                    the block is editable from the UI
+                </p>
+            </li>
+            <li><b>DesignsSquare Theme: Block: Contact Info</b><br>
+                <p>
+                    This block is assigned to Right Column region in Contact page by default. In the BASIC package, the block is editable via
+                    template at
+                    themes/smartbox/templates/designssquare-com-theme-blocks/basic/block--ds-contact-info.tpl.php. In
+                    the PLUS package,
+                    the block is editable from the UI
+                </p>
+            </li>
+            <li><b>DesignsSquare: Template API: Contact Form</b><br>
+                <p>
+                    This Contact Form block is rendered in Contact page by default. In the BASIC package, the block is editable via
+                    template at
+                    themes/smartbox/templates/template-api/contact.tpl.php.
+                </p>
+            </li>
+            <li><b>DesignsSquare: Template API: Contact Teaser Form</b><br>
+                <p>
+                    The Contact Teaser Form/Block is assigned to "Node Bottom" region in Contact page by default. In the BASIC package, the block is editable via
+                    template at
+                    themes/smartbox/templates/template-api/contact-teaser.tpl.php.
+                </p>
+            </li>
+            <li><b>DesignsSquare Theme: Block: Social</b><br>
+
+                <p>
+                    This block is assigned to footer by default. In the BASIC package, the block is editable via
+                    template at
+                    themes/smartbox/templates/designssquare-com-theme-blocks/basic/block--ds-social.tpl.php. In the PLUS
+                    package,
+                    the block is editable from the UI
+                </p>
+            </li>
+            <li><b>DesignsSquare Theme: Block: Blog Categories</b><br>
+
+                <p>
+                    This block displays Blog Categories. In the BASIC package, the block is editable via
+                    template at
+                    themes/smartbox/templates/designssquare-com-theme-blocks/basic/block--ds-blog-categories.tpl.php. In the PLUS
+                    package, the block is editable from the UI part of DesignsSquare Blog Widget
+                </p>
+            </li>
+            <li><b>DesignsSquare Theme: Block: Blog Tags</b><br>
+
+                <p>
+                    This block displays Blog Tags. In the BASIC package, the block is editable via
+                    template at
+                    themes/smartbox/templates/designssquare-com-theme-blocks/basic/block--ds-blog-tags.tpl.php. In the PLUS
+                    package, the block is editable from the UI part of DesignsSquare Blog Widget
+                </p>
+            </li>
+            <li><b>DesignsSquare Theme: Block: Blog Archive</b><br>
+
+                <p>
+                    This block displays Blog Archive. In the BASIC package, the block is editable via
+                    template at
+                    themes/smartbox/templates/designssquare-com-theme-blocks/basic/block--ds-blog-archive.tpl.php. In the PLUS
+                    package, the block is editable from the UI part of DesignsSquare Blog Widget
+                </p>
+            </li>
+            <li><b>DesignsSquare Theme: Block: Recent Posts - Sidebar</b><br>
+
+                <p>
+                    This block displays Blog resent posts assigned to sidebar. In the BASIC package, the block is editable via
+                    template at
+                    themes/smartbox/templates/designssquare-com-theme-blocks/basic/block--ds-recent-posts-sidebar.tpl.php. In the PLUS
+                    package, the block is editable from the UI part of DesignsSquare Blog Widget
+                </p>
+            </li>
+            <li><b>DesignsSquare Theme: Block: Recent Posts</b><br>
+                <p>
+                    This block displays Blog resent posts assigned to node area central part of page. In the BASIC package, the block is editable via
+                    template at
+                    themes/smartbox/templates/designssquare-com-theme-blocks/basic/block--ds-recent-posts-sidebar.tpl.php. In the PLUS
+                    package, the block is editable from the UI part of DesignsSquare Blog Widget
+                </p>
+            </li>
+            <li><b>DesignsSquare Theme: Block: Recent Tweets</b><br>
+                <p>
+                    This block displays latest tweets. In the BASIC package, the block is editable via
+                    template at
+                    themes/smartbox/templates/designssquare-com-theme-blocks/basic/block--ds-recent-tweets.tpl.php. In the PLUS
+                    package, the block is editable from the UI part of DesignsSquare Social Widget
+                </p>
+            </li>
+        </ul>
+    </section>
+    <section id='context'>
+        <h3>Context</h3>
+        <hr>
+        <p>Smartbox Drupal Corporate Theme utilizes <a href="https://www.drupal.org/project/context">context</a>
+            module to manage blocks. In the following is a list of contexts preconfigured in Drupal Corporate Theme Smartbox</p>
+        <ul>
+            <li><b>smartbox_statewide</b><br>
+
+                <p>
+                    This is the state wide context activates on all pages except those contexts excluding state wide context
+                </p>
+            </li>
+            <li><b>smartbox_right_sidebar</b><br>
+                <p>
+                    This context activates for sample page "Right Sidebar" with path "/right-sidebar"
+                </p>
+            </li>
+            <li><b>smartbox_left_sidebar</b><br>
+            <p>
+                This context activates for sample page "Left Sidebar" with path "/left-sidebar"
+            </p>
+        </li>
+            <li><b>smartbox_contact</b><br>
+                <p>
+                    This context activates for pages of type Contact.
+                </p>
+            </li>
+            <li><b>smartbox_blog</b><br>
+                <p>
+                    This context manages blocks in sidebars for Blog sample pages
+                </p>
+            </li>
+        </ul>
+    </section>
+    <section id='fields'>
+        <h3>Fields</h3>
+        <hr>
+        <p>In the following are additional custom fields used in SmartBox Drupal Corporate Theme</p>
+        <ul>
+            <li><b>Summary of Body field</b><br>
+                <p>The summary field of the body field is used for header text displayed at the top of each page in the
+                    promo area</p>
+            </li>
+            <li><b>Header Background(field_header_background)</b><br>
+                <p>Image field of Basic page to display header background for easy customization. The recommended size is 1250x300px</p>
+            </li>
+            <li><b>Page Background(field_page_background)</b><br>
+                <p>Image field of Basic page to display in Page background for easy customization. The recommended size is 2000x1200px</p>
+            </li>
+        </ul>
+    </section>
+    <section id='regions'>
+        <h3>About Regions</h3>
+        <hr>
+        <p>In the following is list of regions supported in SmartBox Drupal Corporate Theme:</p>
+        <ul>
+            <li><b>Footer(footer)</b><br>
+                The region on bottom of the page. By default, the block - Copyrights, Social is assigned to this region
+            </li>
+            <li><b>Top Bar(header)</b><br>
+                The region on top of the page. By default, the block - Main Menu is assigned to this region
+            </li>
+            <li><b>Node Bottom(node_bottom)</b><br>
+                The region at the bottom of each page within node scope. It is used for assign different
+                blocks such as "Clients We Love" slider, Related Posts block,etc
+            </li>
+            <li><b>Right & Left Sidebar(Primary and Secondary)</b><br>
+                The regions of sidebar on each side left and right
+            </li>
+        </ul>
+    </section>
+    <section id="depenencies">
+        <h3>Dependent Modules</h3>
+        <hr>
+        <p>In the following are the main Drupal module dependencies</p>
+        <ul>
+            <li>context : to manage blocks such as search block,etc</li>
+            <li>pathauto: for page path naming</li>
+            <li>features: for import/export Database settings/configurations as well ass sample data for kickstart</li>
+        </ul>
+        <p>For complete list, see the .make file provided in the package</p>
+    </section>
+    <section id="troubleshooting">
+        <h3>[Incomplete]Troubleshooting</h3>
+        <hr>
+
+        <p>@ToDo</p>
+    </section>
+    <section id="backlog">
+        <h3>Things In Progress</h3>
+        <hr>
+        <ul>
+            <li>Incorporate Design Settings - Theme Color & Theme Background managed from UI </li>
+        </ul>
+    </section>
+    <section id="releases">
+        <h3>[Incomplete]Release History</h3>
+        <hr>
+        <h5>Release 0.1</h5>
+        <small>[CODE, STRUCTURE deployment]</small>
+        <ul>
+            <li>All basic functionality</li>
+        </ul>
+        <h5>Release 0.2</h5>
+        <small>[CODE, STRUCTURE deployment]</small>
+        <ul>
+            <li>moved to organizing theme via DS Sample Data widget & Workflow</li>
+            <li>convert to DS Tamplate API</li>
+            <li>added enhanced DS CKEditor integration</li>
+        </ul>
+    </section>
+</div>
+<!--end of documenter_content-->
+</body>
+</html>

@@ -1,0 +1,1504 @@
+<?php
+
+/*
+ * disable wysiwyg editor for comments
+ *
+ * */
+function designssquare_lib_form_alter(&$form, &$form_state, $form_id)
+{
+    // comments
+    // http://api.drupal.org/api/drupal/modules--comment--comment.module/function/comment_form/6
+
+    if ($form['#id'] == 'comment-form') {
+        $form['comment_filter']['format'] = array(); // nuke wysiwyg from comments
+    }
+}
+
+/*********Functionality********/
+function designssquare_lib_js_alter(&$javascript)
+{
+    $is_base = false;
+    $base_checked = false;
+//    global $conf;
+    if (module_exists('jquery_update') && version_compare(variable_get('jquery_update_jquery_version', 0), 1.7, '>=')) {
+        //use jquery_updates ui libraries instead the drupal core
+        foreach ($javascript as $key => $js_path) {
+            _check_base($js_path['data'], $is_base);
+
+            $token_path = explode("/", $key);
+            $current_js_lib = $token_path[count($token_path) - 1];
+
+            //add legacy support for other modules still using Jquery legacy library
+            if ($current_js_lib == 'jquery.min.js' || $current_js_lib == 'jquery.js') {
+                $new_path = base_path() . drupal_get_path('module', 'designssquare_lib') . '/js/jquery/jquery-migrate.min.js';
+                $data = $js_path;
+                $data['version'] = "1.2.1";
+                $data['data'] = $new_path;
+                $data['weight'] = $js_path['weight'] + 0.01;
+                $javascript[$new_path] = $data;
+            }
+
+        }
+        $base_checked = true;
+    }
+
+    if (!$base_checked) {
+        foreach ($javascript as $key => $js_path) {
+            _check_base($js_path['data'], $is_base);
+        }
+    }
+
+    if (!$is_base) {
+        //add BASE_URL declaration
+        $javascript[] = array(
+            'scope' => "header",
+            'type' => "inline",
+            'weight' => "0.021",
+            'group' => "0",
+            'every_page' => false,
+            'defer' => false,
+            'preprocess' => true,
+            'version' => null,
+            'data' => 'window.BASE_URL="/";'
+        );
+    }
+
+}
+
+function _check_base($data, &$status)
+{
+    if (!is_array($data) && preg_match('/BASE_URL=/', $data)) {
+        //virtual hosty module is present
+        $status = true;
+    }
+}
+
+/**
+ * Replaces Drupal jquery with another jquery version
+ * @param $javascript
+ *      the list of all js scripts as passed through hook_js_alter
+ * @param $new_path
+ *      path to the new jquery lib
+ * @param $ver
+ *      version of the jquery
+ */
+function replace_jquery(&$javascript, $new_path, $ver)
+{
+
+    //use jquery_updates ui libraries instead the drupal core
+    foreach ($javascript as $key => $js_path) {
+        $token_path = explode("/", $key);
+        $current_js_lib = $token_path[count($token_path) - 1];
+        //add legacy support for other modules still using Jquery legacy library
+        if ($current_js_lib == 'jquery.min.js' || $current_js_lib == 'jquery.js') {
+//                $new_path = $new_path;
+            $data = $js_path;
+            $data['version'] = $ver;
+            $data['data'] = $new_path;
+//                $data['weight'] = $js_path['weight'] + 0.01;
+            $javascript[$new_path] = $data;
+            unset($javascript[$key]);
+        }
+    }
+}
+
+/**********API***********/
+function theme_include($theme, $path)
+{
+    static $themes = array();
+    if (!isset($themes[$theme])) {
+        $themes[$theme] = drupal_get_path('theme', $theme);
+    }
+    if ($themes[$theme] && ($file = DRUPAL_ROOT . '/' . $themes[$theme] . '/' . $path) && file_exists($file)) {
+        include_once $file;
+    }
+}
+
+
+function get_field_name_from_vocabulary($vocabulary_name, $entity_type = NULL)
+{
+    foreach (field_info_fields() as $field_name => $field) {
+        if ($field['type'] == "taxonomy_term_reference" && $field['settings']['allowed_values'][0]['vocabulary'] == $vocabulary_name) {
+            // Add this field to the return array if no entity type was specified or
+            // if the specified type exists in the field's bundles array.
+//            if (empty($entity_type) || in_array($entity_type, array_keys($field['bundles']))) {
+//                $fields[$field_name] = $field;
+//            }
+            return $field_name;
+        }
+    }
+
+}
+
+//returns all the bundles of entity instances that references a field instance with a given type
+function get_bundles_for_field_type($field_type)
+{
+    $field_map = field_info_field_map();
+    $bundles = array();
+    foreach ($field_map as $field_name => $item) {
+        if ($item['type'] == $field_type) {
+            foreach ($item['bundles'] as $bundle_list) {
+                foreach ($bundle_list as $bundle) {
+                    $bundles[] = $bundle;
+                }
+            }
+        }
+    }
+
+    return array_unique($bundles);
+}
+
+function get_referencing_product_display_id($product)
+{
+    global $language;
+
+    if (isset($product->display_id)) {
+        return $product->display_id;
+    } else {
+        // Iterate through fields which refer to products.
+        foreach (commerce_info_fields('commerce_product_reference') as $field) {
+            // Build query.
+            $query = new EntityFieldQuery;
+            $query->entityCondition('entity_type', 'node', '=')
+                ->fieldCondition($field['field_name'], 'product_id', $product->product_id, '=')
+//            ->propertyCondition('language', $language->language, '=')
+                ->range(0, 1);
+
+            if ($result = $query->execute()) {
+                // Return node id.
+                $node = $result['node'];
+                $node_keys = array_keys($node);
+                return array_shift($node_keys);
+            }
+        }
+    }
+
+    return false;
+}
+
+//includes blocks in current scope(i.e html, node,etc) and places them in $region['block_id'] variable
+function include_blocks(&$vars, $scope = 'page')
+{
+    $all_blocks = array();
+    $ctx_blocks = array();
+    $blocks = array();
+    //retrieve context plugin as alternative for managing blocks
+    $ctx_plugin = (module_exists('context')) ? context_get_plugin('reaction', 'block') : '';
+
+    foreach (system_region_list($GLOBALS['theme']) as $region_key => $region_name) {
+
+        $vars['region'][$region_key] = & drupal_static(__FUNCTION__ . $region_key);
+
+        if (!isset($vars['region'][$region_key])) {
+
+            if (block_get_blocks_by_region($region_key)) {
+                $blocks = block_get_blocks_by_region($region_key);
+            }
+
+            if (!empty($ctx_plugin) && ($region_key !== 'content')) {
+
+                //load blocks to cache them to avoid
+                $list = $ctx_plugin->block_list($region_key);
+                _block_render_blocks($list);
+
+                if ($scope == 'html') {
+                    //blocks not build in html scope, so we build it manually
+                    $region_blocks = $ctx_plugin->block_list($region_key);
+                    $ctx_blocks = _block_get_renderable_array(_block_render_blocks($region_blocks));
+                } else {
+                    $ctx_blocks = $ctx_plugin->block_get_blocks_by_region($region_key);
+                }
+            }
+
+            $all_blocks = array_merge($blocks, $ctx_blocks);
+
+            //sort the blocks merged
+            $all_blocks['#sorted'] = FALSE;
+
+            //maintain weights
+            foreach ($all_blocks as &$block) {
+                if (isset($block['#block']->weight)) {
+                    $block['#weight'] = $block['#block']->weight;
+                }
+            }
+
+            // add it to the $region variable
+            $vars['region'][$region_key] = (isset($all_blocks) && !empty($all_blocks)) ? $all_blocks : array();
+        }
+        //reset arrays
+        $all_blocks = array();
+        $blocks = array();
+        $ctx_blocks = array();
+    }
+}
+
+
+function include_blocks_from_region($region_key, &$vars)
+{
+//    $all_blocks = array();
+//    //making blocks available
+//    //retrieve context plugin as alternative for managing blocks
+//    $ctx_plugin = (module_exists('context')) ? context_get_plugin('reaction', 'block') : '';
+////    foreach (system_region_list($GLOBALS['theme']) as $region_key => $region_name) {
+//    if (block_get_blocks_by_region($region_key)) {
+//        $blocks = block_get_blocks_by_region($region_key);
+//    }
+//    if (!empty($ctx_plugin)) {
+//        //load blocks to cache them to avoid
+//        //Notice: Undefined property: stdClass::$content in _block_get_renderable_array() (line 337 of
+//        $list = $ctx_plugin->block_list($region_key);
+//        _block_render_blocks($list);
+//
+//        $ctx_blocks = $ctx_plugin->block_get_blocks_by_region($region_key);
+//    }
+//
+//
+//    if (isset($ctx_blocks) && isset($blocks)) {
+//        //there are blocks from the context as well from blocks module
+//        $all_blocks = array_merge($blocks, $ctx_blocks);
+//
+//        //sort the blocks merged
+//        $all_blocks['#sorted'] = FALSE;
+//
+//        //maintain weights
+//        foreach ($all_blocks as &$block) {
+//            if (isset($block['#block']->weight)) {
+//                $block['#weight'] = $block['#block']->weight;
+//            }
+//        }
+//
+//    } elseif (isset($ctx_blocks)) {
+//        $all_blocks = $ctx_blocks;
+//    } elseif (isset($blocks)) {
+//        $all_blocks = $blocks;
+//    }
+
+//    $all_blocks = get_blocks_from_region($region_key);
+    // Get the content for each region and add it to the $region variable
+    $vars['region'][$region_key] = get_blocks_from_region($region_key);
+//    }
+}
+
+/**retrieves all bocks also once managed by context_ui
+ * @param $region_key
+ *       id of the region
+ */
+function get_blocks_from_region($region_key)
+{
+    $all_blocks = array();
+    //making blocks available
+    //retrieve context plugin as alternative for managing blocks
+    $ctx_plugin = (module_exists('context')) ? context_get_plugin('reaction', 'block') : '';
+//    foreach (system_region_list($GLOBALS['theme']) as $region_key => $region_name) {
+    if (block_get_blocks_by_region($region_key)) {
+        $blocks = block_get_blocks_by_region($region_key);
+    }
+    if (!empty($ctx_plugin)) {
+        //load blocks to cache them to avoid
+        //Notice: Undefined property: stdClass::$content in _block_get_renderable_array() (line 337 of
+        $list = $ctx_plugin->block_list($region_key);
+        _block_render_blocks($list);
+
+        $ctx_blocks = $ctx_plugin->block_get_blocks_by_region($region_key);
+    }
+    if (isset($ctx_blocks) && isset($blocks)) {
+        //there are blocks from the context as well from blocks module
+        $all_blocks = array_merge($blocks, $ctx_blocks);
+
+        //sort the blocks merged
+        $all_blocks['#sorted'] = FALSE;
+
+        //maintain weights
+        foreach ($all_blocks as &$block) {
+            if (isset($block['#block']->weight)) {
+                $block['#weight'] = $block['#block']->weight;
+            }
+        }
+
+    } elseif (isset($ctx_blocks)) {
+        $all_blocks = $ctx_blocks;
+    } elseif (isset($blocks)) {
+        $all_blocks = $blocks;
+    }
+
+    //need to be sorted
+
+    return (isset($all_blocks) && !empty($all_blocks)) ? $all_blocks : array();
+}
+
+//determines if current taxonomy term is part of commerce_product
+function is_product_taxonomy()
+{
+    if (arg(0) == 'taxonomy') {
+        //taxonomy
+        $tid = arg(2);
+        $term = taxonomy_term_load($tid);
+        //retrieve all fields and filter for the particular taxonomy loaded
+        foreach (field_info_field_map() as $field_name => $field) {
+            if ($field['type'] == "taxonomy_term_reference" && $field_name == 'field_' . $term->vocabulary_machine_name && array_key_exists('commerce_product', $field['bundles'])) {
+                return true;
+            }
+        }
+    } else {
+        //not a taxonomy term
+        return false;
+    }
+}
+
+//determines if current taxonomy term is part of some node of the type provided
+function is_taxonomy($type)
+{
+    if (arg(0) == 'taxonomy') {
+        //taxonomy
+        $tid = arg(2);
+        $term = taxonomy_term_load($tid);
+        //retrieve all fields and filter for the particular taxonomy loaded
+        foreach (field_info_field_map() as $field_name => $field) {
+            if ($field['type'] == "taxonomy_term_reference" && $field_name == 'field_' . $term->vocabulary_machine_name && in_array($type, $field['bundles']['node'])) {
+                return true;
+            }
+        }
+    } else {
+        //not a taxonomy term
+        return false;
+    }
+}
+
+
+//returns appropriate template file. It first checks if there is one in the theme scope, then it looks in the modules
+function get_template_path($module_name, $template_name)
+{
+    $path_to_template = '';
+    $path_to_theme_templates = path_to_theme() . '/templates';
+    $path_to_widget_templates = drupal_get_path('module', $module_name) . '/templates';
+
+    if (file_exists($path_to_theme_templates . '/' . $template_name . '.tpl.php')) {
+        $path_to_template = $path_to_theme_templates;
+    } else {
+        $path_to_template = $path_to_widget_templates;
+    }
+
+
+    //substract the template file without relative path
+    $path_tokens = explode("/", $template_name);
+    $template_file_name = array_pop($path_tokens);
+    $hook_template_name = preg_replace('/-/', '_', $template_file_name);
+    //hook to let others modify template
+    drupal_alter($hook_template_name, $path_to_template);
+
+    return $path_to_template;
+}
+
+//moves blocks from one sidebar to another depending on the taxonomy specified to left, right or none
+function move_blocks_for_sidebars(&$context, $term_id_of_sidebar)
+{
+    $post_sidebar = taxonomy_term_load($term_id_of_sidebar);
+
+    if ((isset($post_sidebar->name)) && ($post_sidebar->name == 'right' || $post_sidebar->name == 'left')) {
+        $sidebar_pos = _get_sidebar_pos($post_sidebar->name);
+        foreach ($context->reactions['block']['blocks'] as $key => $block) {
+            if ($block['region'] == $sidebar_pos['from']) {
+                //move sidebar to another side
+                $context->reactions['block']['blocks'][$key]['region'] = $sidebar_pos['to'];
+            }
+        }
+    } elseif ((isset($post_sidebar->name)) && $post_sidebar->name == 'none') {
+        foreach ($context->reactions['block']['blocks'] as $key => $block) {
+            if ($block['region'] == 'sidebar_first' || $block['region'] == 'sidebar_second') {
+                //remove any sidebar content
+                unset($context->reactions['block']['blocks'][$key]);
+            }
+        }
+    }
+}
+
+//retrieve currently loaded node from content cache
+//@return stdClass of the Node or Null if no node set in the content cache
+function get_node_from_cache()
+{
+    $current_node = & drupal_static(__FUNCTION__);
+    if (!isset($current_node)) {
+        $node_raw = get_raw_node_from_cache();
+        $current_node = null;
+        if ($node_raw) {
+            $current_node = (isset($node_raw['#node'])) ? $node_raw['#node'] : NULL;
+        } else {
+            //cache not set, lets try to load from path
+            if ((arg(0) == 'node') && arg(1) && is_numeric(arg(1))) {
+                $current_node = node_load(arg(1));
+            }
+        }
+    }
+    return $current_node;
+}
+
+//retrieve currently loaded node in form of renderable array from content cache
+function get_raw_node_from_cache()
+{
+    $current_node = & drupal_static(__FUNCTION__);
+
+    if (!isset($current_node)) {
+        //get the current content from cache
+        $content = get_content_from_cache();
+
+        //retrieve current node being loaded
+//    $current_node = array_slice($content['system_main']['nodes'],0,1);
+        $current_node = null;
+        if ($content) {
+            //cache is set
+            $node_wrap = (isset($content['nodes'])) ? array_slice($content['nodes'], 0, 1) : null;
+            if (isset($node_wrap) && !empty($node_wrap)) {
+                $temp = array_values($node_wrap);
+                $current_node = $temp[0];
+            }
+        }
+    }
+    return $current_node;
+}
+
+function get_content_from_cache()
+{
+    $content = & drupal_static(__FUNCTION__);
+
+    if (!isset($content)) {
+        //get the current content from cache
+        $content = drupal_set_page_content();
+        //indicate that you are not adding content but just reading it by setting static variable 'system...added' to False
+        $system_main_content_added = & drupal_static('system_main_content_added');
+        $system_main_content_added = FALSE;
+    }
+    return $content;
+}
+
+//adding templates to the themes scope. It is assumed that all template files are stored in folder named "templates"
+function add_templates($module, &$theme_registry)
+{
+    //make local templates available
+    $path = drupal_get_path('module', $module) . '/templates';
+    $registry_entries = drupal_find_theme_templates($theme_registry, '.tpl.php', $path);
+    //to avoid error message adding 'type'
+    foreach ($registry_entries as $key => $entry) {
+        $registry_entries[$key]['type'] = 'module';
+        $registry_entries[$key]['theme path'] = $path;
+    }
+    $theme_registry += $registry_entries;
+}
+
+//retrieves path to an artifact relative to its module, so it can be copied in current Drupal instance
+function get_relative_artifact($uri, $file_name, $module)
+{
+    $source = drupal_get_path('module', $module) . '/imports/public/' . substr($uri, 9);
+
+    //handle file name versioning (_0_0...)
+    $name_without_ext = substr($file_name, 0, strrpos($file_name, '.'));
+    if ($file_name_end = strrpos($source, $name_without_ext)) {
+        //aftifact file name is versioned. lets get the root path
+        $source = substr($source, 0, $file_name_end) . $file_name;
+    }
+
+    //clean double backslashes
+    str_replace('/', '//', $source);
+
+    if (!file_exists($source)) {
+        watchdog(WATCHDOG_NOTICE, 'Import ' . $module . ': Image does not exists at ' . $source);
+    }
+
+    return $source;
+}
+
+//strips away versoning for uri
+function remove_uri_version($uri, $filename)
+{
+    $name_without_ext = substr($filename, 0, strrpos($filename, '.'));
+    if ($file_name_end = strrpos($uri, $name_without_ext)) {
+        return substr($uri, 0, $file_name_end) . $filename;
+    } else {
+        watchdog(WATCHDOG_NOTICE, 'File name ' . $filename . ' is not part of uri...see remove_uri_version()');
+        return $uri;
+    }
+}
+
+/********Menu********/
+function designssquare_lib_menu()
+{
+    $items['admin/designs-square'] = array(
+        'title' => 'DesignsSquare.com',
+        'description' => 'Menu system for DesignsSquare.com products.',
+        'page callback' => 'register_ds_page',
+        'access arguments' => array('access administration pages'),
+        'weight' => 50,
+    );
+
+    return $items;
+}
+
+function register_ds_page()
+{
+    $build = array(
+        'header_text' => array(
+            '#type' => 'markup',
+            '#markup' => '<p class="lead">' . t('DesginsSquare.com Products') . '</p>',
+        ),
+    );
+    return $build;
+}
+
+function _module_asset_dir($uri, $mod_name)
+{
+    $path_tokens = explode('/', $uri);
+    array_pop($path_tokens);
+    array_shift($path_tokens);
+    array_shift($path_tokens); //remove double forward slashes
+    $path_mod_relative = implode('/', $path_tokens);
+    return drupal_get_path('module', $mod_name) . '/assets/public' . '/' . $path_mod_relative;
+}
+
+function _module_asset_full_path($uri, $mod_name)
+{
+    return _module_asset_dir($uri, $mod_name) . '/' . _get_file_name($uri);
+}
+
+function _get_file_name($uri)
+{
+    $path_tokens = explode('/', $uri);
+    $filename = array_pop($path_tokens);
+    return $filename;
+}
+
+//for JQuery higher of 1.8 include legacy support to avoid errors such as 'msie' of undefined
+function include_jquery_legacy_support(&$javascript)
+{
+    $migrate_js = '';
+    if (module_exists('jquery_update') && version_compare(variable_get('jquery_update_jquery_version', 0), 1.7, '>=')) {
+        //use jquery_updates ui libraries instead the drupal core
+        foreach ($javascript as $key => $js_path) {
+            $token_path = explode("/", $key);
+            $current_js_lib = $token_path[count($token_path) - 1];
+
+            //add legacy support for other modules still using jQuery legacy library
+            if ($current_js_lib == 'jquery.min.js' || $current_js_lib == 'jquery.js') {
+                $new_path = 'http://code.jquery.com/jquery-migrate-1.2.1.min.js';
+                $migrate_js = $js_path;
+                $migrate_js['version'] = "1.2.1";
+                $migrate_js['data'] = $new_path;
+                $migrate_js['weight'] = $js_path['weight'] + 0.01;
+                $migrate_js['type'] = 'external';
+                $javascript[$new_path] = $migrate_js;
+            }
+        }
+    }
+
+}
+
+
+//find next node by id with the same content type
+function next_node($node)
+{
+    //Build query
+    $query = new EntityFieldQuery();
+
+    //Only show of specific content type
+    $query->entityCondition('bundle', $node->type);
+    $query->entityCondition('entity_type', 'node');
+
+    //only show with IDs larger than one
+    $query->propertyCondition('nid', $node->nid, '>', 'nid');
+    $query->propertyCondition('status', 1);
+    $query->propertyOrderBy('nid');
+
+    //Excecute query
+    $result = $query->execute();
+
+    $next_project = (isset($result['node'])) ? array_shift($result['node']) : null;
+    return (isset($next_project) && isset($next_project->nid)) ? $next_project->nid : null;
+}
+
+//find previous node by id with the same content type
+function previous_node($node)
+{
+    //Build query
+    $query = new EntityFieldQuery();
+
+    //Only show of specific content type
+    $query->entityCondition('bundle', $node->type);
+    $query->entityCondition('entity_type', 'node');
+
+    //only show with IDs larger than one
+    $query->propertyCondition('nid', $node->nid, '<', 'nid');
+    $query->propertyCondition('status', 1);
+    $query->propertyOrderBy('nid');
+
+    //Excecute query
+    $result = $query->execute();
+    $previous_node = (isset($result['node'])) ? array_pop($result['node']) : null;
+    return (isset($previous_node) && isset($previous_node->nid)) ? $previous_node->nid : null;
+}
+
+
+/*********CONTEXTUAL LINKS************/
+
+/* generates contextual link for the block
+ * @param: $module_name
+ *      name of the module implementing blocks
+ * @param: $amdin_menu_url
+ *      url as specified for editing blocks in the $module_name module
+ * @param: $block_id
+ *      the unique id of the block for the contextual links
+ *
+ * @return renderable array of the contextual links to render or empty string if user not authorized
+ * EXAMPLE: <?php print render(@return);?>
+ */
+
+function block_contextual_links($module_name, $admin_menu_url, $block_id)
+{
+    module_load_include('module', 'contextual');
+    $contextual_links = contextual_element_info();
+    $contextual_links['contextual_links']['#contextual_links'] = array(
+        $module_name => array($admin_menu_url, array($block_id)),
+    );
+
+    global $user;
+
+    return ($user->uid == 0) ? '' : $contextual_links['contextual_links'];
+}
+
+//generates contextual link for the node
+function node_contextual_links($node)
+{
+    $contextual_links = contextual_element_info();
+    $contextual_links['contextual_links']['#contextual_links'] = array(
+        'node' => array('node', array((isset($node->nid)) ? $node->nid : '')),
+    );
+
+    return $contextual_links['contextual_links'];
+}
+
+//generates contextual links for the view
+function view_contextual_links($view)
+{
+    //provide contextual links
+    $contextual_links = contextual_element_info();
+    $contextual_links['contextual_links']['#contextual_links'] = array(
+        'views' => array('admin/structure/views/view/' . $view->name, array($view->current_display)),
+    );
+
+    return $contextual_links['contextual_links'];
+}
+
+/**********Slider*************/
+//includes teh FlexSlider JS/CSS Libs and initiates slider with id provided in parameter $options
+/**
+ *
+ * @params: $vars
+ *   -array passed to the template eventually
+ *
+ * @params: $options
+ *   - slider settings
+ * $options['slider_id'] = the class value used to identify DOM element to attache the slider
+ * //navigations
+ * $options['nav_left_top'] = specifies location of left nav in distance from the top(i.e. '30%','100px')
+ * $options['nav_left_offset'] = specifies distance from the side of the slider to position nav control
+ * $options['nav_right_top'] = specifies location of right nav in distance from the top(i.e. '30%','100px')
+ * $options['nav_right_offset'] = specifies distance from the side of the slider to position nav control
+ *
+ * $options['num_items_slide'] = number of frames in one slide???
+ *
+ *
+ *
+ ******/
+
+function import_flex_slider($options = array())
+{
+    $slider_tapi = & drupal_static(__FUNCTION__);
+    if (!isset($slider_tapi)) {
+        //template specific
+        $slider_tapi = array();
+        $classes = array();
+        $classes[] = 'ds-flex-slider'; //for styling
+        $slider_tapi['slider_id'] = (isset($options['slider_id']) && !empty($options['slider_id'])) ? $options['slider_id'] : 'ds-flex-slider';
+        $classes[] = $slider_tapi['slider_id'];
+        $slider_tapi['class'] = implode(' ', $classes);
+
+        //nav controls
+        $slider_tapi['nav_left_top'] = (isset($options['nav_left_top']) && !empty($options['nav_left_top'])) ? $options['nav_left_top'] : '50%';
+        $slider_tapi['nav_left_offset'] = (isset($options['nav_left_offset']) && !empty($options['nav_left_offset'])) ? $options['nav_left_top'] : '0';
+        $slider_tapi['nav_right_top'] = (isset($options['nav_right_top']) && !empty($options['nav_right_top'])) ? $options['nav_right_top'] : '50%';
+        $slider_tapi['nav_right_offset'] = (isset($options['nav_right_offset']) && !empty($options['nav_right_offset'])) ? $options['nav_right_offset'] : '0';
+        $slider_tapi['num_items_slide'] = (isset($options['num_items_slide']) && !empty($options['num_items_slide'])) ? $options['num_items_slide'] : 4;
+
+
+        //flex slider specific
+        $namespace = (isset($options['namespace']) && !empty($options['namespace'])) ? $options['namespace'] : 'flex-'; //{NEW} String: Prefix string attached to the class of every element generated by the plugin
+        $selector = (isset($options['selector']) && !empty($options['selector'])) ? $options['selector'] : ".slides > li"; //{NEW} Selector: Must match a simple pattern. '{container} > {slide}' -- Ignore pattern at your own peril
+        $animation = (isset($options['animation']) && !empty($options['animation'])) ? $options['animation'] : "fade"; //String: Select your animation type, "fade" or "slide"
+        $easing = (isset($options['easing']) && !empty($options['easing'])) ? $options['easing'] : "swing"; //{NEW} String: Determines the easing method used in jQuery transitions. jQuery easing plugin is supported!
+        $direction = (isset($options['direction']) && !empty($options['direction'])) ? $options['direction'] : "horizontal"; //String: Select the sliding direction, "horizontal" or "vertical"
+        if (isset($options['reverse']) && !empty($options['reverse'])) {
+            $reverse = $options['reverse'];
+        } else {
+            $reverse = "false";
+        } //{NEW} Boolean: Reverse the animation direction
+        $animationLoop = (isset($options['animationLoop']) && !empty($options['animationLoop'])) ? $options['animationLoop'] : "true";
+        $startAt = (isset($options['startAt']) && !empty($options['startAt'])) ? $options['startAt'] : 0; //Integer: The slide that the slider should start on. Array notation (0 = first slide)
+        $slideshow = (isset($options['slideshow']) && !empty($options['slideshow'])) ? $options['slideshow'] : "true"; //Boolean: Animate slider automatically
+        $smoothHeight = (isset($options['smoothHeight']) && !empty($options['smoothHeight'])) ? $options['smoothHeight'] : "false"; //Integer: Set the speed of the slideshow cycling, in milliseconds
+        $animationSpeed = (isset($options['animationSpeed']) && !empty($options['animationSpeed'])) ? $options['animationSpeed'] : 600; //Integer: Set the speed of animations, in milliseconds
+        $initDelay = (isset($options['initDelay']) && !empty($options['initDelay'])) ? $options['initDelay'] : 0; //{NEW} Integer: Set an initialization delay, in milliseconds
+        $randomize = (isset($options['randomize']) && !empty($options['randomize'])) ? $options['randomize'] : "false"; //Boolean: Randomize slide order
+        $fadeFirstSlide = (isset($options['fadeFirstSlide']) && !empty($options['fadeFirstSlide'])) ? $options['fadeFirstSlide'] : "true";
+        $thumbCaptions = (isset($options['thumbCaptions']) && !empty($options['thumbCaptions'])) ? $options['thumbCaptions'] : "false";
+        $slideshowSpeed = (isset($options['slideshowSpeed']) && !empty($options['slideshowSpeed'])) ? $options['slideshowSpeed'] : 7000;
+
+        // Usability features
+        $pauseOnAction = (isset($options['pauseOnAction']) && !empty($options['pauseOnAction'])) ? $options['pauseOnAction'] : "true"; //Boolean: Pause the slideshow when interacting with control elements, highly recommended.
+        $pauseOnHover = (isset($options['pauseOnHover']) && !empty($options['pauseOnHover'])) ? $options['pauseOnHover'] : "false"; //Boolean: Pause the slideshow when interacting with control elements, highly recommended.
+        $pauseInvisible = (isset($options['pauseInvisible']) && !empty($options['pauseInvisible'])) ? $options['pauseInvisible'] : "true"; //{NEW} Boolean: Pause the slideshow when tab is invisible, resume when visible. Provides better UX, lower CPU usage.
+        $useCSS = (isset($options['useCSS']) && !empty($options['useCSS'])) ? $options['useCSS'] : "true"; //{NEW} Boolean: Slider will use CSS3 transitions if available
+        $touch = (isset($options['touch']) && !empty($options['touch'])) ? $options['touch'] : "true"; //{NEW} Boolean: Allow touch swipe navigation of the slider on touch-enabled devices
+        $video = (isset($options['video']) && !empty($options['video'])) ? $options['video'] : "false"; //{NEW} Boolean: If using video in the slider, will prevent CSS3 3D Transforms to avoid graphical glitches
+
+        // Primary Controls
+        $controlNav = (isset($options['controlNav']) && !empty($options['controlNav'])) ? $options['controlNav'] : "true"; //Boolean: Create navigation for paging control of each clide? Note: Leave true for manualControls usage
+        $directionNav = (isset($options['directionNav']) && !empty($options['directionNav'])) ? $options['directionNav'] : "true"; //Boolean: Create navigation for previous/next navigation? (true/false)
+        $prevText = (isset($options['prevText']) && !empty($options['prevText'])) ? $options['prevText'] : "Previous"; //String: Set the text for the "previous" directionNav item
+        $nextText = (isset($options['nextText']) && !empty($options['nextText'])) ? $options['nextText'] : "Next"; //String: Set the text for the "next" directionNav item
+
+        // Secondary Navigation
+        $keyboard = (isset($options['keyboard']) && !empty($options['keyboard'])) ? $options['keyboard'] : true; //Boolean: Allow slider navigating via keyboard left/right keys
+        $multipleKeyboard = (isset($options['multipleKeyboard']) && !empty($options['multipleKeyboard'])) ? $options['multipleKeyboard'] : "false"; //{NEW} Boolean: Allow keyboard navigation to affect multiple sliders. Default behavior cuts out keyboard navigation with more than one slider present.
+        $mousewheel = (isset($options['mousewheel']) && !empty($options['mousewheel'])) ? $options['mousewheel'] : "false"; //{UPDATED} Boolean: Requires jquery.mousewheel.js (https://github.com/brandonaaron/jquery-mousewheel) - Allows slider navigating via mousewheel
+        $pausePlay = (isset($options['pausePlay']) && !empty($options['pausePlay'])) ? $options['pausePlay'] : "false"; //Boolean: Create pause/play dynamic element
+        $pauseText = (isset($options['pauseText']) && !empty($options['pauseText'])) ? $options['pauseText'] : "Pause"; //String: Set the text for the "pause" pausePlay item
+        $playText = (isset($options['playText']) && !empty($options['playText'])) ? $options['playText'] : "Play"; //String: Set the text for the "play" pausePlay item
+
+        // Special properties
+        $controlsContainer = (isset($options['controlsContainer']) && !empty($options['controlsContainer'])) ? $options['controlsContainer'] : ""; //{UPDATED} jQuery Object/Selector: Declare which container the navigation elements should be appended too. Default container is the FlexSlider element. Example use would be $(".flexslider-container"). Property is ignored if given element is not found.
+        $manualControls = (isset($options['manualControls']) && !empty($options['manualControls'])) ? $options['manualControls'] : ""; //{UPDATED} jQuery Object/Selector: Declare custom control navigation. Examples would be $(".flex-control-nav li") or "#tabs-nav li img", etc. The number of elements in your controlNav should match the number of slides/tabs.
+        $sync = (isset($options['sync']) && !empty($options['sync'])) ? $options['sync'] : ""; //{NEW} Selector: Mirror the actions performed on this slider with another slider. Use with care.
+        $asNavFor = (isset($options['asNavFor']) && !empty($options['asNavFor'])) ? $options['asNavFor'] : ""; //{NEW} Selector: Internal property exposed for turning the slider into a thumbnail navigation for another slider
+
+        // Carousel Options
+        $itemWidth = (isset($options['itemWidth']) && !empty($options['itemWidth'])) ? $options['itemWidth'] : 0; //{NEW} Integer: Box-model width of individual carousel items, including horizontal borders and padding.
+        $itemMargin = (isset($options['itemMargin']) && !empty($options['itemMargin'])) ? $options['itemMargin'] : 1; //{NEW} Integer: Minimum number of carousel items that should be visible. Items will resize fluidly when below this.
+        $minItems = (isset($options['minItems']) && !empty($options['minItems'])) ? $options['minItems'] : 1; //{NEW} Integer: Minimum number of carousel items that should be visible. Items will resize fluidly when below this.
+        $maxItems = (isset($options['maxItems']) && !empty($options['maxItems'])) ? $options['maxItems'] : 0; //{NEW} Integer: Maxmimum number of carousel items that should be visible. Items will resize fluidly when above this limit.
+        $allowOneSlide = (isset($options['allowOneSlide']) && !empty($options['allowOneSlide'])) ? $options['allowOneSlide'] : "true"; //{NEW} Boolean: Whether or not to allow a slider comprised of a single slide
+        $move = (isset($options['num_items_slide']) && !empty($options['num_items_slide'])) ? $options['num_items_slide'] : 0;
+
+
+        drupal_add_css(drupal_get_path('module', 'designssquare_lib') . '/libs/FlexSlider/flexslider.css', array('group' => CSS_THEME + 3, 'type' => 'file'));
+//    drupal_add_css(drupal_get_path('module', 'designssquare_lib')  .'/libs/FlexSlider/flexslider-2.0.css', array('group' => CSS_THEME + 3,'type' => 'file'));
+        drupal_add_css(drupal_get_path('module', 'designssquare_lib') . '/libs/FlexSlider/flex-custom.css', array('group' => CSS_THEME + 4, 'type' => 'file'));
+//    drupal_add_js(drupal_get_path('module', 'designssquare_lib') . '/libs/FlexSlider/jquery.flexslider-2.0.js', array('scope' => 'header', 'type' => 'file', 'weight' => 4));
+        drupal_add_js(drupal_get_path('module', 'designssquare_lib') . '/libs/FlexSlider/jquery.flexslider.js', array('scope' => 'header', 'type' => 'file', 'weight' => 4));
+//    $inline_js = 'jQuery.noConflict()(function ($) {' . "\n";
+        $inline_js = 'jQuery(window).load(function() {' . "\n";
+        $inline_js .= '    $(\'.' . $options['slider_id'] . '\').flexslider({
+                                                        namespace: "' . $namespace . '",
+                                                        selector: "' . $selector . '",
+                                                        animation: "' . $animation . '",
+                                                        easing: "' . $easing . '",
+                                                        direction: "' . $direction . '",
+                                                        reverse: ' . $reverse . ',
+                                                        animationLoop: ' . $animationLoop . ',
+                                                        smoothHeight: ' . $smoothHeight . ',
+                                                        startAt: ' . $startAt . ',
+                                                        slideshow: ' . $slideshow . ',
+                                                        slideshowSpeed: ' . $slideshowSpeed . ',
+                                                        animationSpeed: ' . $animationSpeed . ',
+                                                        initDelay: ' . $initDelay . ',
+                                                        randomize: ' . $randomize . ',
+                                                        fadeFirstSlide: ' . $fadeFirstSlide . ',
+                                                        thumbCaptions: ' . $thumbCaptions . ',
+                                                        slideshowSpeed: ' . $slideshowSpeed . ',
+                                                        pauseOnAction: ' . $pauseOnAction . ',
+                                                        pauseOnHover: ' . $pauseOnHover . ',
+                                                        pauseInvisible: ' . $pauseInvisible . ',
+                                                        useCSS: ' . $useCSS . ',
+                                                        touch: ' . $touch . ',
+                                                        video: ' . $video . ',
+                                                        controlNav: ' . $controlNav . ',
+                                                        directionNav: ' . $directionNav . ',
+                                                        prevText: "' . $prevText . '",
+                                                        nextText: "' . $nextText . '",
+                                                        keyboard: ' . $keyboard . ',
+                                                        multipleKeyboard: ' . $multipleKeyboard . ',
+                                                        mousewheel: ' . $mousewheel . ',
+                                                        pausePlay: ' . $pausePlay . ',
+                                                        pauseText: "' . $pauseText . '",
+                                                        playText: "' . $playText . '",
+                                                        controlsContainer: "' . $controlsContainer . '",
+                                                        manualControls: "' . $manualControls . '",
+                                                        sync: "' . $sync . '",
+                                                        asNavFor: "' . $asNavFor . '",
+                                                        itemWidth: ' . $itemWidth . ',
+                                                        itemMargin: ' . $itemMargin . ',
+                                                        minItems: ' . $minItems . ',
+                                                        maxItems: ' . $maxItems . ',
+                                                        allowOneSlide: ' . $allowOneSlide . ',
+                                                        move: ' . $move . ',
+                                                        });' . "\n";
+        $inline_js .= '});' . "\n";
+//    $inline_js .= '});' . "\n";
+        drupal_add_js($inline_js, array('scope' => 'footer', 'type' => 'inline', 'weight' => 5));
+    }
+    return $slider_tapi;
+}
+
+/*******
+ *
+ *
+ *
+ * @param: options
+ *      'type': banner or full describes the format of slider
+ *          'float_direction': (only with banner type) for banner type there is direction to float the slider - left or right
+ *          'width': (only with banner type) the with of the slider with 'px' or '%' specified
+ *          'height': (only with banner type) the height of the slider with 'px' or '%' specified
+ *      'outer': class for outside container
+ *      'inner': class for inside container
+ *      slider specific:
+delay:9000,
+startheight:500,
+startwidth:960,
+fullScreenAlignForce:"off",
+autoHeight:"off",
+
+hideThumbs:200,
+
+thumbWidth:100,							// Thumb With and Height and Amount (only if navigation Tyope set to thumb !)
+thumbHeight:50,
+thumbAmount:3,
+
+navigationType:"bullet",				// bullet, thumb, none
+navigationArrows:"solo",			// nextto, solo, none, nexttobullets
+
+hideThumbsOnMobile:"off",
+hideBulletsOnMobile:"off",
+hideArrowsOnMobile:"off",
+hideThumbsUnderResoluition:0,
+
+navigationStyle:"round",				// round,square,navbar,round-old,square-old,navbar-old, or any from the list in the docu (choose between 50+ different item),
+
+navigationHAlign:"center",				// Vertical Align top,center,bottom
+navigationVAlign:"bottom",					// Horizontal Align left,center,right
+navigationHOffset:0,
+navigationVOffset:20,
+
+soloArrowLeftHalign:"left",
+soloArrowLeftValign:"center",
+soloArrowLeftHOffset:20,
+soloArrowLeftVOffset:0,
+
+soloArrowRightHalign:"right",
+soloArrowRightValign:"center",
+soloArrowRightHOffset:20,
+soloArrowRightVOffset:0,
+
+keyboardNavigation:"on",
+
+touchenabled:"on",						// Enable Swipe Function : on/off
+onHoverStop:"on",						// Stop Banner Timet at Hover on Slide on/off
+
+
+stopAtSlide:-1,							// Stop Timer if Slide "x" has been Reached. If stopAfterLoops set to 0, then it stops already in the first Loop at slide X which defined. -1 means do not stop at any slide. stopAfterLoops has no sinn in this case.
+stopAfterLoops:-1,						// Stop Timer if All slides has been played "x" times. IT will stop at THe slide which is defined via stopAtSlide:x, if set to -1 slide never stop automatic
+
+hideCaptionAtLimit:0,					// It Defines if a caption should be shown under a Screen Resolution ( Basod on The Width of Browser)
+hideAllCaptionAtLimit:0,				// Hide all The Captions if Width of Browser is less then this value
+hideSliderAtLimit:0,					// Hide the whole slider, and stop also functions if Width of Browser is less than this value
+
+shadow:0,								//0 = no Shadow, 1,2,3 = 3 Different Art of Shadows  (No Shadow in Fullwidth Version !)
+fullWidth:"off",						// Turns On or Off the Fullwidth Image Centering in FullWidth Modus
+fullScreen:"off",
+minFullScreenHeight:0,					// The Minimum FullScreen Height
+fullScreenOffsetContainer:"",
+dottedOverlay:"none",					//twoxtwo, threexthree, twoxtwowhite, threexthreewhite
+
+forceFullWidth:"off"						// Force The FullWidth
+ *
+ *
+ *
+ */
+function import_rev_slider($slider_id = 'banner', $options = array())
+{
+    $slider_tapi = array();
+    $slider_tapi['options'] = array();
+    $inner = array();
+    $outer = array();
+    $slider_tapi['style'] = '';
+    //set trigger for slider to power on
+    $inner[] = $slider_id;
+    $inner[] = (isset($options['inner']) && !empty($options['inner'])) ? $options['inner'] : '';
+
+
+    if (isset($options['type']) && $options['type'] == 'banner') {
+        $inner[] = 'fullwidthabanner';
+//        $inner[] = 'banner_container';
+//        $inner[] = 'rev_slider';
+        $outer[] = 'fullwidthbanner-container';
+//        $outer[] = 'banner_container';
+//        $outer[] = 'rev_slider_wrapper';
+        $slider_tapi['style'] .= (isset($options['float_direction']) && !empty($options['float_direction'])) ? 'float:' . $options['float_direction'] . ';' : 'float: left;';
+        $slider_tapi['style'] .= (isset($options['width']) && !empty($options['width'])) ? 'width:' . $options['width'] . ';' : '';
+        $slider_tapi['style'] .= (isset($options['height']) && !empty($options['height'])) ? 'height:' . $options['height'] . ';' : '';
+    } else {
+        $outer[] = 'fullscreen-container'; //full screen
+    }
+    $outer[] = (isset($options['outer']) && !empty($options['outer'])) ? $options['outer'] : '';
+    //slider configurations
+    $slider_tapi['options']['delay'] = (isset($options['delay']) && !empty($options['delay'])) ? $options['delay'] : '7000';
+    $slider_tapi['options']['startheight'] = (isset($options['startheight']) && !empty($options['startheight'])) ? $options['startheight'] : '490';
+    $slider_tapi['options']['startwidth'] = (isset($options['startwidth']) && !empty($options['startwidth'])) ? $options['startwidth'] : '890';
+    $slider_tapi['options']['fullScreenAlignForce'] = (isset($options['fullScreenAlignForce']) && !empty($options['fullScreenAlignForce'])) ? $options['fullScreenAlignForce'] : 'off';
+    $slider_tapi['options']['autoHeight'] = (isset($options['autoHeight']) && !empty($options['autoHeight'])) ? $options['autoHeight'] : 'off';
+    $slider_tapi['options']['hideThumbs'] = (isset($options['hideThumbs']) && !empty($options['hideThumbs'])) ? $options['hideThumbs'] : '200';
+    $slider_tapi['options']['thumbWidth'] = (isset($options['thumbWidth']) && !empty($options['thumbWidth'])) ? $options['thumbWidth'] : '100';
+    $slider_tapi['options']['thumbHeight'] = (isset($options['thumbHeight']) && !empty($options['thumbHeight'])) ? $options['thumbHeight'] : '50';
+    $slider_tapi['options']['thumbAmount'] = (isset($options['thumbAmount']) && !empty($options['thumbAmount'])) ? $options['thumbAmount'] : '2';
+
+    $slider_tapi['options']['navigationType'] = (isset($options['navigationType']) && !empty($options['navigationType'])) ? $options['navigationType'] : 'none';
+    $slider_tapi['options']['navigationArrows'] = (isset($options['navigationArrows']) && !empty($options['navigationArrows'])) ? $options['navigationArrows'] : 'nextto';
+    $slider_tapi['options']['navigationStyle'] = (isset($options['navigationStyle']) && !empty($options['navigationStyle'])) ? $options['navigationStyle'] : 'navbar';
+
+    $slider_tapi['options']['navigationHAlign'] = (isset($options['navigationHAlign']) && !empty($options['navigationHAlign'])) ? $options['navigationHAlign'] : 'left';
+    $slider_tapi['options']['navigationVAlign'] = (isset($options['navigationVAlign']) && !empty($options['navigationVAlign'])) ? $options['navigationVAlign'] : 'bottom';
+    $slider_tapi['options']['navigationHOffset'] = (isset($options['navigationHOffset']) && !empty($options['navigationHOffset'])) ? $options['navigationHOffset'] : '0';
+    $slider_tapi['options']['navigationVOffset'] = (isset($options['navigationVOffset']) && !empty($options['navigationVOffset'])) ? $options['navigationVOffset'] : '20';
+
+    $slider_tapi['options']['soloArrowLeftHalign'] = (isset($options['soloArrowLeftHalign']) && !empty($options['soloArrowLeftHalign'])) ? $options['soloArrowLeftHalign'] : 'left';
+    $slider_tapi['options']['soloArrowLeftValign'] = (isset($options['soloArrowLeftValign']) && !empty($options['soloArrowLeftValign'])) ? $options['soloArrowLeftValign'] : 'bottom';
+    $slider_tapi['options']['soloArrowLeftHOffset'] = (isset($options['soloArrowLeftHOffset']) && !empty($options['soloArrowLeftHOffset'])) ? $options['soloArrowLeftHOffset'] : '0';
+    $slider_tapi['options']['soloArrowLeftVOffset'] = (isset($options['soloArrowLeftVOffset']) && !empty($options['soloArrowLeftVOffset'])) ? $options['soloArrowLeftVOffset'] : '0';
+
+    $slider_tapi['options']['soloArrowRightHalign'] = (isset($options['soloArrowRightHalign']) && !empty($options['soloArrowRightHalign'])) ? $options['soloArrowRightHalign'] : 'right';
+    $slider_tapi['options']['soloArrowRightValign'] = (isset($options['soloArrowRightValign']) && !empty($options['soloArrowRightValign'])) ? $options['soloArrowRightValign'] : 'bottom';
+    $slider_tapi['options']['soloArrowRightHOffset'] = (isset($options['soloArrowRightHOffset']) && !empty($options['soloArrowRightHOffset'])) ? $options['soloArrowRightHOffset'] : '0';
+    $slider_tapi['options']['soloArrowRightVOffset'] = (isset($options['soloArrowRightVOffset']) && !empty($options['soloArrowRightVOffset'])) ? $options['soloArrowRightVOffset'] : '0';
+
+    $slider_tapi['options']['touchenabled'] = (isset($options['touchenabled']) && !empty($options['touchenabled'])) ? $options['touchenabled'] : 'on';
+    $slider_tapi['options']['onHoverStop'] = (isset($options['onHoverStop']) && !empty($options['onHoverStop'])) ? $options['onHoverStop'] : 'on';
+
+    $slider_tapi['options']['shadow'] = (isset($options['shadow']) && !empty($options['shadow'])) ? $options['shadow'] : '1';
+    $slider_tapi['options']['fullWidth'] = (isset($options['fullWidth']) && !empty($options['fullWidth'])) ? $options['fullWidth'] : 'off';
+
+
+    //process class values
+    $slider_tapi['outer'] = implode(' ', $outer);
+    $slider_tapi['inner'] = implode(' ', $inner);
+    $slider_tapi['type'] = 'rev-slider';
+    drupal_alter('slider_tapi', $slider_tapi);
+
+
+    drupal_add_css(drupal_get_path('module', 'designssquare_lib') . '/libs/rev_slider/css/rev_slider_settings.css', array('group' => CSS_THEME + 3, 'type' => 'file'));
+    drupal_add_css(drupal_get_path('module', 'designssquare_lib') . '/libs/rev_slider/css/dynamic-captions.css', array('group' => CSS_THEME + 4, 'type' => 'file'));
+    drupal_add_css(drupal_get_path('module', 'designssquare_lib') . '/libs/rev_slider/css/static-captions.css', array('group' => CSS_THEME + 4, 'type' => 'file'));
+    drupal_add_css(drupal_get_path('module', 'designssquare_lib') . '/libs/rev_slider/css/rev_slider-custom.css', array('group' => CSS_THEME + 4, 'type' => 'file'));
+    drupal_add_js(drupal_get_path('module', 'designssquare_lib') . '/libs/rev_slider/js/jquery.themepunch.plugins.min.js', array('scope' => 'header', 'type' => 'file', 'weight' => 4));
+    drupal_add_js(drupal_get_path('module', 'designssquare_lib') . '/libs/rev_slider/js/jquery.themepunch.revolution.min.js', array('scope' => 'header', 'type' => 'file', 'weight' => 5));
+//    drupal_add_js(drupal_get_path('module', 'designssquare_lib') . '/libs/rev_slider/js/fix.rev.slider.js', array('scope' => 'footer', 'type' => 'file', 'weight' => 5));
+
+    $inline_js = ' var tpj=jQuery; ' . "\n";
+    $inline_js .= 'tpj.noConflict();' . "\n";
+    $inline_js .= '    if (tpj.fn.cssOriginal!=undefined){' . "\n";
+    $inline_js .= '       tpj.fn.css = tpj.fn.cssOriginal;}' . "\n";
+    $inline_js .= '    tpj(\'.' . $slider_id . '\').revolution({' . "\n";
+    $inline_js .= '         delay:' . $slider_tapi['options']['delay'] . ',' . "\n";
+    $inline_js .= '         startheight:' . $slider_tapi['options']['startheight'] . ',' . "\n";
+    $inline_js .= '         startwidth:' . $slider_tapi['options']['startwidth'] . ',' . "\n";
+    $inline_js .= '         fullScreenAlignForce:"' . $slider_tapi['options']['fullScreenAlignForce'] . '",' . "\n";
+    $inline_js .= '         autoHeight:"' . $slider_tapi['options']['autoHeight'] . '",' . "\n";
+    $inline_js .= '         hideThumbs:' . $slider_tapi['options']['hideThumbs'] . ',' . "\n";
+    $inline_js .= '         thumbWidth:' . $slider_tapi['options']['thumbWidth'] . ',' . "\n";
+    $inline_js .= '         thumbHeight:' . $slider_tapi['options']['thumbHeight'] . ',' . "\n";
+    $inline_js .= '         thumbAmount:' . $slider_tapi['options']['thumbAmount'] . ',' . "\n";
+    $inline_js .= '         navigationType:"' . $slider_tapi['options']['navigationType'] . '",' . "\n";
+    $inline_js .= '         navigationArrows:"' . $slider_tapi['options']['navigationArrows'] . '",' . "\n";
+    $inline_js .= '         navigationStyle:"' . $slider_tapi['options']['navigationStyle'] . '",' . "\n";
+    $inline_js .= '         touchenabled:"' . $slider_tapi['options']['touchenabled'] . '",' . "\n";
+    $inline_js .= '         onHoverStop:"' . $slider_tapi['options']['onHoverStop'] . '",' . "\n";
+    $inline_js .= '         navigationHAlign:"' . $slider_tapi['options']['navigationHAlign'] . '",' . "\n";
+    $inline_js .= '         navigationVAlign:"' . $slider_tapi['options']['navigationVAlign'] . '",' . "\n";
+    $inline_js .= '         navigationHOffset:"' . $slider_tapi['options']['navigationHOffset'] . '",' . "\n";
+    $inline_js .= '         navigationVOffset:"' . $slider_tapi['options']['navigationVOffset'] . '",' . "\n";
+
+    $inline_js .= '         soloArrowLeftHalign:"' . $slider_tapi['options']['soloArrowLeftHalign'] . '",' . "\n";
+    $inline_js .= '         soloArrowLeftValign:"' . $slider_tapi['options']['soloArrowLeftValign'] . '",' . "\n";
+    $inline_js .= '         soloArrowLeftHOffset:"' . $slider_tapi['options']['soloArrowLeftHOffset'] . '",' . "\n";
+    $inline_js .= '         soloArrowLeftVOffset:"' . $slider_tapi['options']['soloArrowLeftVOffset'] . '",' . "\n";
+
+    $inline_js .= '         soloArrowRightHalign:"' . $slider_tapi['options']['soloArrowRightHalign'] . '",' . "\n";
+    $inline_js .= '         soloArrowRightValign:"' . $slider_tapi['options']['soloArrowRightValign'] . '",' . "\n";
+    $inline_js .= '         soloArrowRightHOffset:"' . $slider_tapi['options']['soloArrowRightHOffset'] . '",' . "\n";
+    $inline_js .= '         soloArrowRightVOffset:"' . $slider_tapi['options']['soloArrowRightVOffset'] . '",' . "\n";
+
+    $inline_js .= '         shadow:' . $slider_tapi['options']['shadow'] . ',' . "\n";
+    $inline_js .= '         fullWidth:"' . $slider_tapi['options']['fullWidth'] . '"' . "\n";
+    $inline_js .= '});' . "\n";
+    drupal_add_js($inline_js, array('scope' => 'footer', 'type' => 'inline', 'weight' => 6));
+
+    return $slider_tapi;
+}
+
+
+//Transfer assets
+function export_asset($asset, $mod_name)
+{
+    $dest_dir = _module_asset_dir($asset['uri'], $mod_name);
+    $dest_full_path = _module_asset_full_path($asset['uri'], $mod_name);
+    if (!file_exists($dest_full_path)) {
+        file_prepare_directory($dest_dir, FILE_CREATE_DIRECTORY);
+        file_unmanaged_copy($asset['uri'], $dest_full_path, FILE_EXISTS_REPLACE);
+    }
+}
+
+//transfers file and adds entry in database if not already present
+function transfer_asset($asset, $mod_name, $type)
+{
+    $source = _module_asset_full_path($asset['uri'], $mod_name);
+    $uri = $asset['uri'];
+
+    if (!file_exists($source)) {
+        watchdog('designssquare_lib_feature_assets', 'file ' . $source . ' to be imported does not exist in ');
+    }
+
+    if (!file_exists($uri)) {
+        //ensure dir is present
+        $directory = drupal_dirname($uri);
+        file_prepare_directory($directory, FILE_CREATE_DIRECTORY);
+        file_unmanaged_copy($source, $uri);
+    }
+
+    /*****Save File*****/
+    $fid_file = db_select('file_managed', 'n')
+        ->fields('n', array('fid', 'uri'))
+        ->condition('n.uri', $uri)
+        ->execute()
+        ->fetchCol();
+    if (empty($fid_file)) {
+        //no asset with the 'uri' is present
+        unset($asset['fid']);
+        unset($asset['timestamp']);
+        $file_to_save = (object)$asset;
+        // Change status to permanent.
+        $file_to_save->status = FILE_STATUS_PERMANENT;
+        $file_to_save->uri = $uri;
+
+        $final_file = file_save($file_to_save);
+        //all permanent files needs an entry in the 'file_usage' table
+        file_usage_add($final_file, $mod_name, $type, 1);
+        return $final_file->fid;
+    } else {
+        //file already exist in database
+        return $fid_file[0];
+    }
+}
+
+/*creates hook for other modules to pass in variables
+ *
+ *@param: id of the block
+ *
+ *@return: array of altered content
+*/
+function get_block_context($block_id)
+{
+    $context = array();
+
+    //defaults
+    $context['classes'] = ''; //final list of classes
+    $context['classes_array'] = array(); //array of each class before combined into one string
+    $context['classes_array'][] = 'contextual-links-region';
+
+    drupal_alter('ds_block_context', $context, $block_id);
+
+    //preprocess
+    $context['classes'] = implode(' ', $context['classes_array']);
+    return $context;
+}
+
+/**
+ * retrieves list of functions with hook provided
+ *
+ * @param $hook
+ *   hook name (i.e. preprocess_page, preprocess_block)
+ * @return
+ *   list of hook functions in format of module_hook
+ */
+function module_preprocessors($hook)
+{
+    $preprocessors = array();
+
+    //retrieve all modules with the hook - preprocess_page
+    $modules = module_list();
+    foreach ($modules as $module) {
+        if (module_hook($module, $hook)) {
+            $preprocessors[] = $module . '_' . $hook;
+        }
+    }
+
+    return $preprocessors;
+}
+
+/***
+ * builds list of default theme and all modules page preprocessors including one custom specific to the theme function
+ * This is intended for building single point entry for widgets as described in blog post
+ * http://margotskapacs.com/2014/02/rendering-page-programmatically-to-create-permanent-urls-like-shop-gallery
+ * @param $theme_func_name
+ *      the name of theme function the list of hooks are assigned
+ * @param $module_name
+ *      the module name implementing theme function
+ * @return array
+ *      return an array of all theme hooks in an order of execution consistent with Drupal order
+ */
+function build_page_preprocessors($theme_func_name, $module_name)
+{
+    $current_theme = $GLOBALS['theme'];
+
+    $prefix_processors = array(
+        'template_preprocess',
+        'template_preprocess_page',
+    );
+    if (isset($theme_func_name)) {
+        $prefix_processors[] = $module_name . '_preprocess_' . $theme_func_name;
+    }
+    $post_processors = array(
+        $module_name . '_preprocess_page',
+        $current_theme . '_preprocess_page',
+    );
+    $other_module_preprocessors = module_preprocessors('preprocess_page');
+    $combined_processors = array_merge($prefix_processors, $other_module_preprocessors, $post_processors);
+
+    return $combined_processors;
+}
+
+/***
+ * Prepares node content for rendering including set in cache, enable context,etc
+ * This is intended for building single point entry for widgets as described in blog post
+ * http://margotskapacs.com/2014/02/rendering-page-programmatically-to-create-permanent-urls-like-shop-gallery
+ * @param $node_id
+ *      the id of node
+ * @param string $context_id
+ *      the id of context ot activate
+ */
+function init_content($node_id, $context_id = 'state_wide')
+{
+    //load node
+    $node_to_render = node_load($node_id);
+    $type = $node_to_render->type;
+    $content = node_view($node_to_render, 'full');
+
+    //this seems to be standard Drupal content setup, so to be consistent
+    $nodes = array(
+        'nodes' => array(
+            $node_to_render->nid => $content,
+            '#sorted' => true,
+        )
+    );
+
+    //set content in cache so its available for others
+    drupal_set_page_content($nodes);
+
+    //load context after content cache is set, so hook_context_load_alter receives the content
+    if (module_exists('context')) {
+        //activate contacts
+        $map = context_condition_map();
+        foreach ($map['node'][$type] as $key => $context_name) {
+            $context = context_load($context_name); //load certain context
+            if (isset($context) && empty($context->disabled)) {
+                context_condition_met($context, 'node');
+            }
+        }
+//        context_init();
+//        $context_name = $map['node']['type'][0];
+        //retrieve active contexts
+//        $all_active_contexts  = context_active_contexts();
+//        $all_active_contexts = context_load(NULL, TRUE);
+//        $all_active_contexts = context_enabled_contexts();
+//        foreach($all_active_contexts as $key => $context){
+//            context_set('context', $context->name, $context);
+//        }
+        context_flush_caches();
+    } else {
+        watchdog(WATCHDOG_NOTICE, 'The module - context is not present. Unable set context ');
+    }
+}
+
+
+function designssquare_lib_init()
+{
+    //load for processing file_managed on Ajax calls(i.e. upload, remove)
+    module_load_include('inc', 'designssquare_lib', 'inc/file_managed_alter');
+}
+
+/**
+ * retrieve menu links for particular menu and wrap into path alias before returning
+ * @param: menu_name
+ *     name of the menu (i.e. main-menu)
+ *
+ * return: Array
+ *      list of menu links
+ *          'title'
+ *          'url'
+ */
+function get_menu_links($name)
+{
+    $mainMenuArray = menu_load_links($name);
+    $finalMainMenu = array();
+    foreach ($mainMenuArray as $key => $menuItem) {
+        $finalMainMenu[$key]['active'] = false;
+        $linkPath = $menuItem['link_path'];
+        $linkPathAlias = drupal_get_path_alias($linkPath);
+        $current_path = $_GET['q'];
+//        $currentId = $vars['node']->nid;
+//        if(drupal_get_path_alias("node/$currentId") == $linkPathAlias)$finalMainMenu[$key]['active'] = true;
+        if (drupal_get_path_alias($current_path) == $linkPathAlias) {
+            $finalMainMenu[$key]['active'] = true;
+        }
+        $finalMainMenu[$key]['url'] = $linkPathAlias;
+        $finalMainMenu[$key]['title'] = $menuItem['link_title'];
+    }
+    return $finalMainMenu;
+}
+
+/****
+ * builds menu links as renderable array via theme function
+ * @input $menu_name
+ *      the id of menu to build(i.e. main-menu, user-menu)
+ * @return
+ *      renderable array for menu
+ */
+function ds_build_menu($menu_id)
+{
+    $menu_tree = menu_tree($menu_id);
+    $param = array(
+        'element' => $menu_tree,
+//        'tree' => array('#children' => array())    //@ToDo temp fix to avoid undefined $variables['tree']['#children'] in template_preprocess_menu_tree
+    );
+    return (isset($menu_tree) && !empty($menu_tree)) ? theme('menu_tree', $param) : '';
+}
+
+
+/**
+ * retrieves all blocks into array with key of block delta and value the StdObject of the block
+ */
+function get_all_blocks()
+{
+    $final = & drupal_static(__FUNCTION__);
+
+    if (!isset($final)) {
+        $default_theme = variable_get('theme_default', $GLOBALS['theme']);
+        //retrieve context plugin as alternative for managing blocks
+        $all_blocks = array();
+        $blocks = array();
+
+        $ctx_plugin = (module_exists('context')) ? context_get_plugin('reaction', 'block') : '';
+        if (!empty($ctx_plugin)) {
+            $contexts = context_active_contexts();
+            foreach ($contexts as $context) {
+                $options = $ctx_plugin->fetch_from_context($context);
+                if (!empty($options['blocks'])) {
+                    $all_blocks = array_merge($all_blocks, $options['blocks']);
+                }
+            }
+        }
+
+        //get all blocks
+        $query = db_select('block', 'b');
+        $result = $query
+            ->fields('b')
+            ->condition('b.theme', $default_theme)
+            ->condition('b.status', 1)
+            ->orderBy('b.region')
+            ->orderBy('b.weight')
+            ->orderBy('b.module')
+            ->addTag('block_load')
+            ->addTag('translatable')
+            ->execute();
+        $blocks = $result->fetchAllAssoc('bid');
+        $all_blocks = array_merge($all_blocks, $blocks);
+
+        //add blocks not assigned to no region
+        $final = _format_block_list($all_blocks);
+    }
+    return $final;
+}
+
+function _format_block_list($blocks)
+{
+    $final_list = array();
+    foreach ($blocks as $block) {
+        if (is_array($block)) {
+            if (!isset($block['#block'])) {
+                $block_obj = block_load($block['module'], $block['delta']);
+                $block_obj->region = $block['region'];
+                $final_list[$block['delta']] = $block_obj;
+            } else {
+                $final_list[$block['#block']->delta] = $block['#block'];
+            }
+        } else {
+            $final_list[$block->delta] = $block;
+        }
+    }
+    return $final_list;
+}
+
+/**
+ * decodes to html characters and removes all the tags
+ * @string:
+ *      string containing html tags
+ * @return
+ *      string without tags
+ */
+function removes_tags($string)
+{
+    return strip_tags(html_entity_decode($string));
+}
+
+/**This function rebuidls the active menu trail that is used for display breadcrumbs with an additional element as specified by $options array
+ * @param $active_trail
+ *          Drupal active trail that is passed to hook_menu_breadcrumb_alter
+ * @param $item
+ *          Drupal menu item that is passed to hook_menu_breadcrumb_alter
+ * @param $options
+ *          An array with setting of new element to incorporate in breadcrumbs active trail
+ *              - 'title'
+ *              - 'href'
+ *              - 'type' //type of node that the new index should be attached
+ *              - 'localized_options' //menu options part of the Drupal breadcrumb structure
+ * @return array
+ *      the new active trails array
+ */
+
+function rebuild_breadcrumbs($active_trail, $item, $options)
+{
+    $end = end($active_trail);
+    if ($item['href'] == $end['href']) {
+        //the last element is of the current page
+        //save the last temporarely
+        $last = array_pop($active_trail);
+        $active_trail[] = array(
+            'title' => $options['title'],
+            'href' => $options['href'],
+            'localized_options' => $options['localized_options'],
+        );
+        //put back tha last one
+        $active_trail[] = $last;
+    } else {
+        $active_trail[] = array(
+            'title' => $options['title'],
+            'href' => $options['href'],
+            'localized_options' => $options['localized_options'],
+        );
+    }
+    return $active_trail;
+}
+
+/**builds options array for rebuild_breadcrumbs function
+ * @param $node
+ * @param $category_field_reference
+ *      name of the field referencing category taxonomy
+ * @return array
+ *      array with breadcrumb element ready to be passed into rebuild_breadcrumbs
+ */
+function get_breadcrumb_category_options($node, $category_field_reference)
+{
+    $breadcrumb_element_ins = field_get_items('node', $node, $category_field_reference);
+    $temp_view = field_view_value('node', $node, $category_field_reference, $breadcrumb_element_ins[0]);
+    $breadcrumb_element_value = render($temp_view);
+    $options = array(
+        'title' => $breadcrumb_element_value,
+        'href' => drupal_get_path_alias('node/' . $node->nid),
+        'localized_options' => array(),
+    );
+    return $options;
+}
+
+
+/**
+ * Builds index output structure to be replaced by $page['content']
+ * @input:$parent
+ *      'theme_func' -  theme function for the parent index page
+ *      'tapi_name' - tapi name to pass on theme_func
+ *      'tapi_func' - function that produces tapi
+ *
+ * @input:$child
+ *      'theme_func' -  theme function for each child nodes
+ *      'tapi_name' - tapi name to pass on theme_func
+ *      'tapi_func' - function that produces tapi for each child
+ * @input:$nodes - array of Drupal Node objects
+ *
+ */
+function construct_index_output($parent, $child, $nodes)
+{
+    $rows = array();
+    $child_tapi_func = $child['tapi_func'];
+    $child_tapi_key = '#' . $child['tapi_name'];
+    foreach ($nodes as $key => $node) {
+        if (isset($node) && !empty($node)) {
+            $rows[] = array(
+                '#theme' => $child['theme_func'],
+                $child_tapi_key => $child_tapi_func($node),
+            );
+        }
+    }
+
+    $parent_tapi_func = $parent['tapi_func'];
+    $parent_tapi_key = '#' . $parent['tapi_name'];
+    return array(
+        '#theme' => $parent['theme_func'],
+        $parent_tapi_key => $parent_tapi_func($nodes),
+        '#rows' => $rows,
+    );
+}
+
+/**
+ * @param $vars Drupal Variable array
+ *
+ * returns array of all nodes at $vars['page']['content']['system_main']['nodes']['N']['#nodes']
+ */
+function extract_all_nodes($vars)
+{
+    $nodes = & drupal_static(__FUNCTION__);
+    if (!isset($nodes)) {
+        $nodes = array();
+        foreach ($vars['page']['content']['system_main']['nodes'] as $key => $node) {
+            if (isset($node['#node'])) {
+                $nodes[] = $node['#node'];
+            }
+        }
+    }
+    return $nodes;
+}
+
+/**Flushes the all cache if specific values in admin UI settings form is changed
+ * @param $form
+ * @param $form_state
+ */
+function ds_theme_rebuild($form, $form_state)
+{
+    if (_is_registry_rebuild($form, $form_state)) {
+        //@ToDo fix to clear cache for permanent links such as ds-gallery as well
+        drupal_flush_all_caches();
+        system_cron();
+        drupal_flush_all_caches();
+//        admin_menu_flush_caches();
+    }
+}
+
+/**checks to see if specific values was changed
+ * @param $form
+ * @param $form_state
+ * @return bool
+ */
+
+function _is_registry_rebuild($form, $form_state)
+{
+    $status = FALSE;
+    foreach ($form['#old_values'] as $key => $setting) {
+        if ($setting != $form_state['input'][$key]) {
+            $status = TRUE;
+            break;
+        }
+    }
+    return $status;
+}
+

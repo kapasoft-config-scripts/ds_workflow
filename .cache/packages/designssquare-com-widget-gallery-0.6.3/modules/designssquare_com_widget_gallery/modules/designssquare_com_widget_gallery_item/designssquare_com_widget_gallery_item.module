@@ -1,0 +1,862 @@
+<?php
+
+define('GALLERY_ITEM_DEST', 'public://designssquare_com_widget_gallery/gallery-items');
+define('MAX_SIZE_LIMIT_DS_GALLERY', (int)(ini_get('upload_max_filesize')));
+
+
+function designssquare_com_widget_gallery_item_menu()
+{
+    // path with autocomplete function for cities
+    $items['taxonomy/autocomplete/gallery_item_tags'] = array(
+        'title' => 'Autocomplete for Gallery item tags',
+        'page callback' => 'gallery_item_tags',
+        'access arguments' => array('use autocomplete'),
+        'type' => MENU_CALLBACK
+    );
+    return $items;
+}
+
+function designssquare_com_widget_gallery_item_field_info()
+{
+    return array(
+        'designssquare_com_widget_gallery_item' => array(
+            'label' => t('Gallery Item'),
+            'description' => t('field containing info about one of the items of Gallery'),
+            'settings' => array('max_length' => 255),
+            'instance_settings' => array(
+                'text_processing' => 0,
+            ),
+//            'default_widget' => 'designssquare_com_widget_gallery_item_widget',
+            'default_widget' => 'designssquare_com_widget_gallery_item',
+            'default_formatter' => 'designssquare_com_widget_gallery_item_formatter',
+        ),
+    );
+}
+
+/**
+ * Implements hook_field_widget_info().
+ * Expose Field API widget types.
+ */
+function designssquare_com_widget_gallery_item_field_widget_info()
+{
+    return array(
+        'designssquare_com_widget_gallery_item' => array(
+            'label' => t('Gallery Item'),
+            'field types' => array('designssquare_com_widget_gallery_item'),
+        ),
+    );
+}
+
+/**
+ * Implements hook_field_widget_form().
+ * Return the form for a single field widget.
+ */
+function designssquare_com_widget_gallery_item_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element)
+{
+    $element += array(
+        '#type' => $instance['widget']['type'],
+        '#default_value' => isset($items[$delta]) ? $items[$delta] : '',
+    );
+    return $element;
+}
+
+/**
+ * Implements hook_element_info().
+ * Declare the field Form API element types and specify their default values.
+ * @see field_chuck_field_process().
+ */
+function designssquare_com_widget_gallery_item_element_info()
+{
+    $elements = array();
+    $elements['designssquare_com_widget_gallery_item'] = array(
+        '#input' => TRUE,
+        '#process' => array('designssquare_com_widget_gallery_item_field_process'),
+//        '#submit' =>
+    );
+    return $elements;
+}
+
+function designssquare_com_widget_gallery_item_field_process($element, $form_state, $complete_form)
+{
+//    $final_element = $element;
+//    $element = array();
+//    $values = $element['#value'][$element['#field_name']][$element['#language']][$element['#delta']];
+    $values = $element['#value'];
+    $gallery_item_form = array();
+    $gallery_item_form['layer_header'] = array(
+        'layer_header' => array(
+            '#type' => 'markup',
+            '#weight' => 0,
+            '#markup' => '<p>' . t('Gallery Item ' . ($element['#delta'] + 1)) . '</p>',
+        ),
+    );
+
+    $gallery_item_form['title'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Title'),
+        '#description' => '(title of the gallery item)',
+        '#default_value' => isset($values['title']) ? $values['title'] : '',
+        '#maxlength' => 50,
+        '#size' => 50,
+        '#weight' => 1,
+    );
+
+//    $tag_intance = array();
+//    $element['ds_gallery_item_tag'] =  taxonomy_field_widget_form(
+//        $form,
+//        $form_state,
+//        array('field_name' => 'ds_gallery_item_tag'),
+//        $tag_intance,
+//        'EN',
+//        array(),
+//        '',
+//        $element
+//    );
+//    $temp = $values['ds_item_tag'];
+    $gallery_item_form['ds_item_tag'] = array(
+        '#title' => t('Tags'),
+        '#suffix' => '<span>' . t('(have a space and comma ", " between tags)') . '</span>',
+        '#type' => 'textfield',
+        '#default_value' => isset($values['ds_item_tag']) ? $values['ds_item_tag'] : '' ,
+//        '#default_value' => isset($values['ds_item_tag']) ? taxonomy_implode_tags($values['ds_item_tag']) : '',
+        '#autocomplete_path' => 'taxonomy/autocomplete/gallery_item_tags',
+        '#size' => '60',
+        '#maxlength' => 50,
+//        '#element_validate' => array('taxonomy_autocomplete_validate'),
+        '#size' => 50,
+        '#weight' => 49,
+    );
+
+    module_load_include('inc', 'designssquare_lib', 'includes/template_api');
+    $gallery_item_form["content_choice[" . $element['#delta'] . "]"] = array(
+        '#title' => t('What type of item?'),
+        '#type' => 'radios',
+        '#weight' => 7,
+        '#attributes' => array(
+            'name' => "content_choice[" . $element['#delta'] . "]",
+        ),
+        '#options' => array(
+            'image' => t('Image'),
+            'vimeo' => t('Vimeo Video'),
+            'youtube' => t('Youtube Video'),
+            'local_video' => t('Upload Video')
+        ),
+        '#default_value' => _default_val_content($form_state['input'], $element['#delta'], $values),
+
+    );
+
+    $gallery_item_form['image'] = array(
+        '#title' => t('Image'),
+        '#type' => 'managed_file',
+        '#weight' => 8,
+        '#description' => t('Upload a file, allowed extensions: jpg, jpeg, png, gif'),
+        '#default_value' => isset($values['image']) ? $values['image'] : '',
+        '#upload_location' => GALLERY_ITEM_DEST . '/img',
+        '#states' => array(
+            'visible' => array(
+                'input[name="content_choice[' . $element['#delta'] . ']"]' => array('value' => 'image'),
+            ),
+        ),
+        '#upload_validators' => array(
+            'file_validate_extensions' => array('jpg jpeg png gif'),
+            // Pass the maximum file size in bytes
+            'file_validate_size' => array(MAX_SIZE_LIMIT_DS_GALLERY * 1024 * 1024),
+        ),
+
+    );
+
+    $gallery_item_form['video'] = array(
+        '#type' => 'managed_file',
+        '#title' => t('Video'),
+        '#weight' => 9,
+        '#description' => t('Upload a file, allowed extensions: mp4, mov, flv'),
+        '#upload_location' => GALLERY_ITEM_DEST . '/video',
+        '#states' => array(
+            'visible' => array(
+                'input[name="content_choice[' . $element['#delta'] . ']"]' => array('value' => 'local_video'),
+            ),
+        ),
+        '#upload_validators' => array(
+            'file_validate_extensions' => array('mp4 mov flv'),
+            // Pass the maximum file size in bytes
+            'file_validate_size' => array(MAX_SIZE_LIMIT_DS_GALLERY * 1024 * 1024),
+        ),
+    );
+
+//    $element['video_frame_width'] = array(
+//        '#type' => 'textfield',
+//        '#weight' => 10,
+//        '#title' => t('Video Frame Width'),
+//        '#default_value' => isset($element['#value']['video_frame_width']) ? $element['#value']['video_frame_width'] : 0,
+//        '#maxlength' => 100,
+//        '#size' => 40,
+//        '#rules' => array(
+//            'numeric',
+//        ),
+//        '#states' => array(
+//            'visible' => array(
+//                'input[name="content_choice[' . $element['#delta'] . ']"]' => array('value' => 'local_video'),
+//            ),
+//        ),
+//    );
+
+//    $element['video_frame_height'] = array(
+//        '#type' => 'textfield',
+//        '#title' => t('Video Frame Height'),
+//        '#default_value' => isset($element['#value']['video_frame_height']) ? $element['#value']['video_frame_height'] : 0,
+//        '#maxlength' => 100,
+//        '#weight' => 11,
+//        '#size' => 40,
+//        '#rules' => array(
+//            'numeric',
+//        ),
+//        '#states' => array(
+//            'visible' => array(
+//                'input[name="content_choice[' . $element['#delta'] . ']"]' => array('value' => 'local_video'),
+//            ),
+//        ),
+//    );
+
+//    $element['text'] = array(
+//        '#type' => 'textfield',
+//        '#title' => t('Text'),
+//        '#default_value' => isset($element['#value']['text']) ? $element['#value']['text'] : '',
+//        '#maxlength' => 2048,
+//        '#size' => 100,
+//        '#weight' => 12,
+//        '#states' => array(
+//            'visible' => array(
+//                'input[name="content_choice[' . $element['#delta'] . ']"]' => array('value' => 'text'),
+//
+//            ),
+//        ),
+//    );
+
+    $gallery_item_form['vimeo_id'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Vimeo ID'),
+        '#default_value' => isset($values['vimeo_id']) ? $values['vimeo_id'] : '',
+        '#maxlength' => 100,
+        '#weight' => 13,
+        '#description' => t('(i.e."45052672")'),
+        '#size' => 40,
+        '#rules' => array(
+            'numeric',
+        ),
+        '#states' => array(
+            'visible' => array(
+                'input[name="content_choice[' . $element['#delta'] . ']"]' => array('value' => 'vimeo'),
+            ),
+        ),
+    );
+
+//    $element['vimeo_frame_width'] = array(
+//        '#type' => 'textfield',
+//        '#title' => t('Vimeo Frame Width'),
+//        '#default_value' => isset($element['#value']['vimeo_frame_width']) ? $element['#value']['vimeo_frame_width'] : 0,
+//        '#maxlength' => 100,
+//        '#size' => 40,
+//        '#weight' => 14,
+//        '#rules' => array(
+//            'numeric',
+//        ),
+//        '#states' => array(
+//            'visible' => array(
+//                'input[name="content_choice[' . $element['#delta'] . ']"]' => array('value' => 'vimeo'),
+////                ':id[name="content_choice[' . $element['#delta'] . ']"]' => array('value' => 'vimeo'),
+//            ),
+//        ),
+//    );
+
+//    $element['vimeo_frame_height'] = array(
+//        '#type' => 'textfield',
+//        '#title' => t('Vimeo Frame Height'),
+//        '#default_value' => isset($element['#value']['vimeo_frame_height']) ? $element['#value']['vimeo_frame_height'] : 0,
+//        '#maxlength' => 100,
+//        '#size' => 40,
+//        '#weight' => 15,
+//        '#rules' => array(
+//            'numeric',
+//        ),
+//        '#states' => array(
+//            'visible' => array(
+//                'input[name="content_choice[' . $element['#delta'] . ']"]' => array('value' => 'vimeo'),
+//            ),
+//        ),
+//    );
+
+    $gallery_item_form['youtube_url'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Youtube ID'),
+        '#default_value' => isset($values['youtube_url']) ? $values['youtube_url'] : '',
+        '#maxlength' => 100,
+        '#size' => 40,
+        '#weight' => 16,
+        '#description' => t('(the number after "v=" of youtube url)'),
+        '#states' => array(
+            'visible' => array(
+//                ':input[title="content_choice_'.$element['#delta'].'"]' => array('value' => 'youtube'),
+                'input[name="content_choice[' . $element['#delta'] . ']"]' => array('value' => 'youtube'),
+            ),
+        ),
+    );
+
+//    $element['youtube_frame_width'] = array(
+//        '#type' => 'textfield',
+//        '#title' => t('Youtube Frame Width'),
+//        '#default_value' => isset($element['#value']['youtube_frame_width']) ? $element['#value']['youtube_frame_width'] : 0,
+//        '#maxlength' => 100,
+//        '#size' => 40,
+//        '#weight' => 17,
+//        '#rules' => array(
+//            'numeric',
+//        ),
+//        '#states' => array(
+//            'visible' => array(
+//                'input[name="content_choice[' . $element['#delta'] . ']"]' => array('value' => 'youtube'),
+//
+////                ':input[name="content_choice['.$element['#delta'].']"]' => array(
+////                //@ToDo Fix so height and Width is hidden and only come up for the follow values
+////                    array('value' => 'vimeo'),
+////                    array('value' => 'youtube'),
+////                    array('value' => 'local_video'),
+////                ),
+////                ':input[name="content_choice['.$element['#delta'].']"]' => array('value' => 'local_video'),
+////                ':input[name="field_ds_gallery_item[und]['.$element['#delta'].'][vimeo_id]"]' => array('filled' => TRUE),
+////                ':input[name="field_ds_gallery_item[und]['.$element['#delta'].'][youtube_url]"]' => array('filled' => TRUE),
+//            ),
+//            'invisible' => array( //                ':input[name="field_ds_gallery_item[und]['.$element['#delta'].'][image][fid]"]' => array('value' => 0),
+////                ':input[name="field_ds_gallery_item[und]['.$element['#delta'].'][video][fid]"]' => array('value' => 0),
+//            ),
+//        ),
+//    );
+
+//    $element['youtube_frame_height'] = array(
+//        '#type' => 'textfield',
+//        '#title' => t('Youtube Frame Height'),
+//        '#default_value' => isset($element['#value']['youtube_frame_height']) ? $element['#value']['youtube_frame_height'] : 0,
+//        '#maxlength' => 100,
+//        '#size' => 40,
+//        '#weight' => 18,
+//        '#rules' => array(
+//            'numeric',
+//        ),
+//        '#states' => array(
+//            'visible' => array(
+//                'input[name="content_choice[' . $element['#delta'] . ']"]' => array('value' => 'youtube'),
+//                //@ToDo Fix so height and Width is hidden and only come up for the follow values
+////                ':input[name="content_choice['.$element['#delta'].']"]' => array(
+////                    array('value' => 'vimeo'),
+////                    array('value' => 'youtube'),
+////                    array('value' => 'local_video'),
+////                ),
+////                ':input[name="content_choice['.$element['#delta'].']"]' => array('value' => 'local_video'),
+////                ':input[name="field_ds_gallery_item[und]['.$element['#delta'].'][vimeo_id]"]' => array('filled' => TRUE),
+////                ':input[name="field_ds_gallery_item[und]['.$element['#delta'].'][youtube_url]"]' => array('filled' => TRUE),
+//            ),
+//            'invisible' => array( //                ':input[name="field_ds_gallery_item[und]['.$element['#delta'].'][image][fid]"]' => array('value' => 0),
+////                ':input[name="field_ds_gallery_item[und]['.$element['#delta'].'][video][fid]"]' => array('value' => 0),
+//            ),
+//        ),
+//    );
+    // To prevent an extra required indicator, disable the required flag on the
+    // base element since all the sub-fields are already required if desired.
+    $gallery_item_form['#required'] = FALSE;
+
+//    $element[$element['#field_name']][$element['#language']][$element['#delta']] = $gallery_item_form;
+    $element = array_merge($gallery_item_form, $element);
+    return $element;
+}
+
+/**
+ * Implements hook_field_validate().
+ *
+ * This hook gives us a chance to validate content that's in our
+ * field. We're really only interested in the $items parameter, since
+ * it holds arrays representing content in the field we've defined.
+ * We want to verify that the items only contain RGB hex values like
+ * this: #RRGGBB. If the item validates, we do nothing. If it doesn't
+ * validate, we add our own error notification to the $errors parameter.
+ *
+ * @see field_example_field_widget_error()
+ */
+function designssquare_com_widget_gallery_item_field_validate($entity_type, $entity, $field, $instance, $langcode, $items, &$errors)
+{
+    //remove artifacts  on 'remove item' bottom
+//    if (isset($entity)) {
+//        foreach ($items as $key => $item) {
+//            //see if any of the layers is selected to be deleted
+////            if ($item['field_remove_item']) {
+//            if (isset($_POST['_triggering_element_value']) && $_POST['_triggering_element_value'] == 'Remove') {
+//
+//                //remove artifacts ...we assume the validation is success given the item is being deleted
+//                //remove image
+//
+//                $file = file_load($item['image']);
+//                if ($file) {
+//                    file_delete($file);
+//                    file_usage_delete($file, 'designssquare_com_widget_gallery_item');
+//                }
+//
+//                //remove video
+//                $file = file_load($item['video']);
+//                if ($file) {
+//                    file_delete($file);
+//                    file_usage_delete($file, 'designssquare_com_widget_gallery_item');
+//                }
+//            }
+//        }
+//    }
+
+}
+
+function designssquare_com_widget_gallery_item_field_is_empty($item, $field)
+{
+    return !isset($item);
+}
+
+function designssquare_com_widget_gallery_item_extract_form_values($entity_type, $entity, $field, $instance, $langcode, &$items, $form, &$form_state)
+{
+    $path = array_merge($form['#parents'], array($field['field_name'], $langcode));
+    $key_exists = NULL;
+    $values = drupal_array_get_nested_value($form_state['values'], $path, $key_exists);
+//    return $values;
+}
+
+function designssquare_com_widget_gallery_item_form_alter(&$form, &$form_state, $form_id)
+{
+    switch ($form_id) {
+        case 'ds_gallery_node_form':
+            $ln = $form['language']['#value'];
+
+            //remove last empty element
+            $nr_of_layers = $form['field_ds_gallery_item'][$ln]['#max_delta'];
+            if (empty($form['field_ds_gallery_item'][$ln][$nr_of_layers]['default_value'])) {
+                unset($form['field_ds_gallery_item'][$ln][$nr_of_layers]);
+            }
+
+            //retrieve only values with numeric keys
+            $filtered_keys = array_filter(array_keys($form['field_ds_gallery_item'][$ln]), 'is_numeric');
+            $flipped_keys = array_flip($filtered_keys);
+            $numeric_keys = array_intersect_key($filtered_keys, $flipped_keys);
+
+            //set remove button so it is at the bottom of all layer form elements
+            //set tags to be before remove bottom
+            if (isset($numeric_keys) && is_array($numeric_keys)) {
+
+
+                foreach ($numeric_keys as $key) {
+//                if (isset($item['ds_item_tag'])) {
+//                    $form['field_ds_gallery_item'][$ln][$key]['ds_item_tag']['#weight'] = 49;
+//                }
+                    $item = $form['field_ds_gallery_item'][$ln][$key];
+                    if (isset($item['field_remove_item'])) {
+                        $form['field_ds_gallery_item'][$ln][$key]['field_remove_item']['#weight'] = 50;
+                        $form['field_ds_gallery_item'][$ln][$key]['field_remove_item']['#prefix'] = "<br>";
+                        //fix error
+                        $form['field_ds_gallery_item'][$ln][$key]['field_remove_item']['#file'] = FALSE;
+                    }
+
+                }
+            }
+            //fix error
+//            if(isset($form['field_ds_gallery_item']['und']['add_more'])){
+//               $form['field_ds_gallery_item']['und']['add_more']['#file'] = FALSE;
+//            }
+            //remove tags for items as it is part of gallery item form
+//            unset($form['field_ds_item_tags']);
+
+            //assign validation
+            $form['#validate'][] = 'designssquare_com_widget_gallery_item_validate';
+            //assign submition
+            $form['#submit'][] = 'designssquare_com_widget_gallery_item_submit';
+
+            break;
+    }
+
+}
+
+//node form validator with rev gallery_item field
+function designssquare_com_widget_gallery_item_validate($form, &$form_state)
+{
+    if (isset($form_state['clicked_button']) && $form_state['clicked_button']['#value'] !== "Delete") {
+        $field_instance = $form_state['values']['field_ds_gallery_item']['und'];
+        //retrieve only values with numeric keys
+        $filtered_keys = array_filter(array_keys($field_instance), 'is_numeric');
+        $flipped_keys = array_flip($filtered_keys);
+        $numeric_keys = array_intersect_key($filtered_keys, $flipped_keys);
+
+        if (isset($numeric_keys) && is_array($numeric_keys)) {
+            //finding if any of the elements is being deleted
+            foreach ($numeric_keys as $key) {
+                $item = $field_instance[$key];
+//            if ($item['field_remove_item'] == 0) {
+                if ((isset($_POST['_triggering_element_value'])) && ($_POST['_triggering_element_value'] != "Remove")) {
+                    //the item is not being removed...apply validation
+                    //@ToDo validate for the vimeo url to not include http:// in the url
+                    //@ToDo there is bug causing error message on 'upload' - https://drupal.org/node/1067470
+                    //@ToDo make the form_set_error to work for our layer elements
+                    $layer = $key + 1;
+
+                    $input = $item;
+                    if (empty($input['content_choice[' . $key . ']'])) {
+                        form_set_error('content_choice[' . $key . ']', t('Please, specify artifact(i.e. image, video,etc) being added to the gallery item #' . $layer));
+                    }
+
+                    switch ($input['content_choice[' . $key . ']']) {
+                        case 'local_video':
+                            if (!isset($input['image']) || !is_numeric($input['video'])) {
+                                form_set_error('field_ds_gallery_item[und][' . $key . '][video]', t('Please select an video to upload.'));
+                            }
+//                        if ($item['video_frame_width'] == 0) {
+//                            form_set_error('field_ds_gallery_item[und][' . $key . '][video_frame_width]', t('Video frame width is required for layer #' . $layer));
+//                        }
+//                        if ($item['video_frame_height'] == 0) {
+//                            form_set_error('field_ds_gallery_item[und][' . $key . '][video_frame_height]', t('Video frame height is required for layer #' . $layer));
+//                        }
+                            break;
+//                    case 'text':
+//                        if (empty($item['text'])) {
+//                            form_set_error('field_ds_gallery_item[und][' . $key . '][text]', t('Please select an text for layer #' . $layer));
+//                        }
+//                        break;
+                        case 'image':
+                            //not removed
+                            if (!isset($input['image']) || !is_numeric($input['image'])) {
+                                form_set_error('field_ds_gallery_item[und][' . $key . '][image]', t('Please select an image to upload for gallery item #' . $layer));
+                            }
+                            break;
+                        case 'youtube':
+                            if (!isset($input['youtube_url']) || empty($input['youtube_url'])) {
+                                form_set_error('field_ds_gallery_item[und][' . $key . '][youtube_url]', t('YouTube url is required for gallery item #' . $layer));
+                            }
+//                        if ($item['youtube_frame_width'] == 0) {
+//                            form_set_error('field_ds_gallery_item[und][' . $key . '][youtube_frame_width]', t('YouTube frame width is required for layer #' . $layer));
+//                        }
+//                        if ($item['youtube_frame_height'] == 0) {
+//                            form_set_error('field_ds_gallery_item[und][' . $key . '][youtube_frame_height]', t('YouTube frame height is required for layer #' . $layer));
+//                        }
+                            break;
+                        case 'vimeo':
+                            if (empty($input['vimeo_id'])) {
+                                form_set_error('field_ds_gallery_item[und][' . $key . '][vimeo_id]', t('Vimeo ID is required for gallery item #' . $layer));
+                            }
+//                        if ($item['vimeo_frame_width'] == 0) {
+//                            form_set_error('field_ds_gallery_item[und][' . $key . '][vimeo_frame_width]', t('Vimeo frame width is required for layer #' . $layer));
+//                        }
+//                        if ($item['vimeo_frame_height'] == 0) {
+//                            form_set_error('field_ds_gallery_item[und][' . $key . '][vimeo_frame_height]', t('Vimeo frame height is required for layer #' . $layer));
+//                        }
+                            break;
+                        default:
+                            form_set_error('content_choice[' . $key . ']', t('Please, specify artifact(i.e. image, video,etc) being added to the gallery item #' . $layer));
+                            break;
+                    }
+                }
+            }
+        }
+    }
+}
+
+//node form processor with gallery_item field
+function designssquare_com_widget_gallery_item_submit($form, &$form_state)
+{
+    $field_instance = $form_state['values']['field_ds_gallery_item']['und'];
+    //retrieve only values with numeric keys
+    $filtered_keys = array_filter(array_keys($field_instance), 'is_numeric');
+//    $flipped_keys = array_flip($filtered_keys);
+//    $numeric_keys = array_intersect_key($filtered_keys, $flipped_keys);
+    $numeric_keys = array_flip($filtered_keys);
+    if (isset($numeric_keys) && is_array($numeric_keys)) {
+        foreach ($numeric_keys as $key) {
+            $instance = (isset($field_instance[$key]) && !empty($field_instance[$key])) ? $field_instance[$key] : null;
+//        if ((isset($form_state['clicked_button']) && $form_state['clicked_button']['#value'] == "Delete")) {
+//            //slide needs to be deleted
+//            //remove image
+//            $file = file_load($instance['image']);
+//            if ($file) {
+//                file_delete($file);
+//                file_usage_delete($file, 'designssquare_com_widget_gallery_item');
+//            }
+//
+//            //remove video
+//            $file = file_load($instance['video']);
+//            if ($file) {
+//                file_delete($file);
+//                file_usage_delete($file, 'designssquare_com_widget_gallery_item');
+//            }
+//        } else {
+            //slide needs to be added
+            //make permanent image file
+            $file = (isset($instance) && isset($instance['image']) && is_numeric($instance['image'])) ? file_load($instance['image']) : '';
+            if ($file && $file->status != FILE_STATUS_PERMANENT) {
+                // Change status to permanent.
+                $file->status = FILE_STATUS_PERMANENT;
+                //all permanent files needs an entry in the 'file_usage' table
+                $id = (isset($form_state['node']->nid)) ? $form_state['node']->nid : 0;
+                file_usage_add($file, 'designssquare_com_widget_gallery_item', $form_state['node']->type, $id);
+                // Save.
+                file_save($file);
+            }
+            //make permanent video
+            $file = (isset($instance) && isset($instance['video']) && is_numeric($instance['video'])) ? file_load($instance['video']) : '';
+            if ($file && $file->status != FILE_STATUS_PERMANENT) {
+                // Change status to permanent.
+                $file->status = FILE_STATUS_PERMANENT;
+                //all permanent files needs an entry in the 'file_usage' table
+                file_usage_add($file, 'designssquare_com_widget_gallery_item', $form_state['node']->type, $form_state['node']->vid);
+                // Save.
+                file_save($file);
+//            }
+            }
+        }
+    }
+}
+
+//clean file_manage database on field instance delete
+function designssquare_com_widget_gallery_item_node_delete($node)
+{
+    if ($node->type == 'ds_gallery') {
+        //removes images from file_manage/file_usage tables
+        $field_instance = field_get_items('node', $node, 'field_ds_gallery_item');
+        if (isset($field_instance) && is_array($field_instance)) {
+            foreach ($field_instance as $key => $instance) {
+                if (isset($instance['image']) && $instance['image']) {
+                    $file = file_load($instance['image']);
+                    if ($file) {
+                        file_delete($file);
+                        file_usage_delete($file, 'designssquare_com_widget_gallery_item');
+                    }
+                }
+
+                if (isset($instance['video']) && $instance['video']) {
+                    $file = file_load($instance['video']);
+                    if ($file) {
+                        file_delete($file);
+                        file_usage_delete($file, 'designssquare_com_widget_gallery_item');
+                    }
+                }
+            }
+        } else {
+            watchdog('designssquare_com_widget_gallery', 'Gallery items not present or not assigned to node field field_ds_gallery_item');
+        }
+    }
+}
+
+
+function designssquare_com_widget_gallery_item_node_form_submit($form, &$form_state)
+{
+    $field_instance = field_get_items('node', $form_state['node'], 'field_ds_gallery_item');
+    if (isset($field_instance) && is_array($field_instance)) {
+        foreach ($field_instance as $key => $instance) {
+            if ($form_state['#field_remove_item']['field_ds_gallery_item']['und'][$key] == $key) {
+                //item needs to be deleted
+                //remove image
+                $file = file_load($instance['image']);
+                if ($file) {
+                    file_delete($file);
+                    file_usage_delete($file, 'designssquare_com_widget_gallery_item');
+                }
+
+                //remove thumb_image
+                $file = file_load($instance['video']);
+                if ($file) {
+                    file_delete($file);
+                    file_usage_delete($file, 'designssquare_com_widget_gallery_item');
+                }
+            } else {
+                //slide needs to be added
+                //make permanent image file
+                $file = file_load($instance['image']);
+                if ($file) {
+                    // Change status to permanent.
+                    $file->status = FILE_STATUS_PERMANENT;
+                    //all permanent files needs an entry in the 'file_usage' table
+                    file_usage_add($file, 'designssquare_com_widget_gallery_item', $form_state['node']->type, $form_state['node']->vid);
+                    // Save.
+                    file_save($file);
+                }
+
+                //make permanent video
+                $file = file_load($instance['video']);
+                if ($file) {
+                    // Change status to permanent.
+                    $file->status = FILE_STATUS_PERMANENT;
+                    //all permanent files needs an entry in the 'file_usage' table
+                    file_usage_add($file, 'designssquare_com_widget_gallery_item', $form_state['node']->type, $form_state['node']->vid);
+                    // Save.
+                    file_save($file);
+                }
+            }
+        }
+    } else {
+        watchdog('designssquare_com_widget_gallery', 'Gallery items not present or not assigned to node field field_ds_gallery_item');
+    }
+}
+
+//function _content_choice_default($form_val)
+//{
+//    $default_val = '';
+//    ((isset($form_val['image']) && is_numeric($form_val['image']) && $form_val['image']) ||
+//        (isset($form_val['image']['fid']) && is_numeric($form_val['image']['fid']) && $form_val['image']['fid'])) ? $default_val = 'image' : '';
+//    ((isset($form_val['video']) && is_numeric($form_val['video']) && $form_val['video']) ||
+//        (isset($form_val['video']['fid']) && is_numeric($form_val['video']['fid']) && $form_val['video']['fid'])) ? $default_val = 'local_video' : '';
+//    (isset($form_val['text']) && !empty($form_val['text'])) ? $default_val = 'text' : '';
+//    (isset($form_val['youtube_url']) && !empty($form_val['youtube_url'])) ? $default_val = 'youtube' : '';
+//    (isset($form_val['vimeo_id']) && !empty($form_val['vimeo_id'])) ? $default_val = 'vimeo' : '';
+//    return $default_val;
+//}
+
+//for feature exports
+//function designssquare_com_widget_gallery_item_uuid_node_features_rebuild_alter(&$node, $module)
+//{
+//    if ($module == 'designssquare_com_gallery_item_revolution_sample_data') {
+//        $field_instance = field_get_items('node', $node, 'field_ds_gallery_item');
+//        uuid_features_load_module_includes();
+//        module_load_include('module', 'designssquare_lib');
+//
+//        foreach ($field_instance as $key => $instance) {
+//            if (isset($instance['image']['fid'])) {
+//
+//                /******Transfer File *******/
+//                //transfers file
+//                $source = get_relative_artifact($instance['image']['uri'], $instance['image']['filename'], 'designssquare_com_slider');
+//
+//                //ensure dir is present
+//                $directory = drupal_dirname($instance['image']['uri']);
+//                file_prepare_directory($directory, FILE_CREATE_DIRECTORY);
+//                file_unmanaged_copy($source, $instance['image']['uri']);
+//
+//                /*****Save File******/
+//                //for image
+//                unset($instance['image']['fid']);
+//                unset($instance['image']['timestamp']);
+//                $file_to_save = (object)$instance['image'];
+//                // Change status to permanent.
+//                $file_to_save->status = FILE_STATUS_PERMANENT;
+//                //remove versioning
+//                $file_to_save->uri = remove_uri_version($file_to_save->uri, $file_to_save->filename);
+//
+//                $final_file = file_save($file_to_save);
+//                //all permanent files needs an entry in the 'file_usage' table
+////                file_usage_add($final_file, 'designssquare_com_widget_gallery_item', $node->type, 1);
+//                file_usage_list($final_file);
+//
+//                $node->field_ds_gallery_item['und'][$key]['image'] = $final_file->fid;
+//            }
+//
+//            if (isset($instance['video']['fid'])) {
+//                //for video
+//                unset($instance['video']['fid']);
+//                unset($instance['video']['timestamp']);
+//                $file_to_save = (object)$instance['video'];
+//                // Change status to permanent.
+//                $file_to_save->status = FILE_STATUS_PERMANENT;
+//                //remove versioning
+//                $file_to_save->uri = remove_uri_version($file_to_save->uri, $file_to_save->filename);
+//
+//                $final_file = file_save($file_to_save);
+//                $node->field_ds_gallery_item['und'][$key]['video'] = $final_file->fid;
+//                //transfers file
+//                $source = get_relative_artifact($final_file->uri, $final_file->filename, 'designssquare_com_slider');
+//
+//                //ensure dir is present
+//                $directory = drupal_dirname($final_file->uri);
+//                file_prepare_directory($directory, FILE_CREATE_DIRECTORY);
+//                //copy files
+//                file_unmanaged_copy($source, $final_file->uri);
+//            }
+//        }
+//    }
+//}
+
+//function designssquare_com_widget_gallery_item_uuid_node_features_export_render_alter(&$export, $node, $module)
+//{
+////making files exportable
+//    if ($module == 'designssquare_com_gallery_item_revolution_sample_data') {
+//        //setting main-image source location so it imports accordingly
+//        $field_instance = field_get_items('node', $node, 'field_main_image');
+//        $export->field_main_image['und'][0]['uuid_features_file_path'] = drupal_get_path('module', 'designssquare_com_slider') . '/imports/public/gallery_item/revolution/main-img/' . $field_instance[0]['filename'];
+//
+//        //making field_ds_gallery_item files exportable
+//        $field_instance = field_get_items('node', $node, 'field_ds_gallery_item');
+//        foreach ($field_instance as $key => $instance) {
+//            if ($instance['image'] && is_numeric($instance['image'])) {
+//                $file = file_load($instance['image']);
+//                $export->field_ds_gallery_item['und'][$key]['image'] = (array)$file;
+//            }
+//
+//            if ($instance['video'] && is_numeric($instance['video'])) {
+//                $file = file_load($instance['video']);
+//                $export->field_ds_gallery_item['und'][$key]['video'] = (array)$file;
+//            }
+//        }
+//
+//    }
+//}
+
+//function _default_val_content($choice, $key, $form_val)
+//{
+//    if (!isset($choice['content_choice']) || !isset($choice['content_choice'][$key])) {
+//        //see if the value already entered for the content_choice
+//        $default_val = '';
+//        ((isset($form_val['image']) && is_numeric($form_val['image']) && $form_val['image']) ||
+//            (isset($form_val['image']['fid']) && is_numeric($form_val['image']['fid']) && $form_val['image']['fid'])) ? $default_val = 'image' : '';
+//        ((isset($form_val['video']) && is_numeric($form_val['video']) && $form_val['video']) ||
+//            (isset($form_val['video']['fid']) && is_numeric($form_val['video']['fid']) && $form_val['video']['fid'])) ? $default_val = 'local_video' : '';
+//        (isset($form_val['text']) && !empty($form_val['text'])) ? $default_val = 'text' : '';
+//        (isset($form_val['youtube_url']) && !empty($form_val['youtube_url'])) ? $default_val = 'youtube' : '';
+//        (isset($form_val['vimeo_id']) && !empty($form_val['vimeo_id'])) ? $default_val = 'vimeo' : '';
+//        return $default_val;
+//    } else {
+//        return $choice['content_choice'][$key];
+//    }
+//}
+
+
+function gallery_item_tags($tags_typed = '')
+{
+    $args = func_get_args();
+    // Shift off the $field_name argument.
+    array_shift($args);
+    $tags_typed = (!isset($tags_typed)) ? implode('/', $args) : $tags_typed;
+
+// The user enters a comma-separated list of tags. We only autocomplete the last tag.
+    $tags_typed = drupal_explode_tags($tags_typed);
+    $tag_last = drupal_strtolower(array_pop($tags_typed));
+
+    $term_matches = array();
+    if ($tag_last != '') {
+
+        $vocabulary = taxonomy_vocabulary_machine_name_load('ds_gallery_items_tags');
+
+        $query = db_select('taxonomy_term_data', 't');
+        $query->addTag('translatable');
+        $query->addTag('term_access');
+
+        // Select rows that match by term name.
+        $tags_return = $query
+            ->fields('t', array('tid', 'name'))
+            ->condition('t.vid', $vocabulary->vid)
+            ->condition('t.name', '%' . db_like($tag_last) . '%', 'LIKE')
+            ->range(0, 10)
+            ->execute()
+            ->fetchAllKeyed();
+        $prefix = count($tags_typed) ? drupal_implode_tags($tags_typed) . ', ' : '';
+        if (isset($tags_return) && is_array($tags_return)) {
+            foreach ($tags_return as $tid => $name) {
+                $n = $name;
+                // Term names containing commas or quotes must be wrapped in quotes.
+                if (strpos($name, ',') !== FALSE || strpos($name, '"') !== FALSE) {
+                    $n = '"' . str_replace('"', '""', $name) . '"';
+                }
+                $term_matches[$prefix . $n] = check_plain($name);
+//            $term_matches[$n] = check_plain($name);
+            }
+        }else{
+            watchdog('designssquare_com_widget_gallery','No tags present with Taxonomy id ds_gallery_items_tags');
+        }
+    }
+
+    drupal_json_output($term_matches);
+}

@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the DesignsSquare.com: Widget: Photo Gallery: Sample Data for Kickstart feature.
+ */
+
+include_once 'designssquare_com_widget_photo_gallery_sample_data_for_kickstart.features.inc';

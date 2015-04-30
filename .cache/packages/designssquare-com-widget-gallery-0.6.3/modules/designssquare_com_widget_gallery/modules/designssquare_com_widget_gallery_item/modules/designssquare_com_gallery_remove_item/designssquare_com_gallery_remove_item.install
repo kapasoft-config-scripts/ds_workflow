@@ -1,0 +1,31 @@
+ <?php
+
+/**
+ * Implements hook_uninstall().
+ */
+function designssquare_com_gallery_remove_item_uninstall()
+{
+
+   if ($instance = field_info_instance('node', 'field_ds_gallery_item', 'ds_gallery')) {
+       field_delete_instance($instance);
+   }
+
+    //remove fields from content types
+    module_load_include('module', 'designssquare_lib');
+    foreach(get_bundles_for_field_type('designssquare_com_widget_gallery_item') as $bundle){
+        field_attach_delete_bundle('node', $bundle);
+        drupal_set_message('uninstalled field: designssquare_com_widget_gallery_item for bundle:'.$bundle);
+    }
+
+    //remove tables
+    drupal_uninstall_schema('designssquare_com_widget_gallery_item');
+
+    // remove variables
+    db_query("DELETE FROM {variable} WHERE name LIKE 'designssquare_com_widget_gallery_item_%'");
+
+    // Remove assets.
+//    file_unmanaged_delete_recursive(file_default_scheme() . '://slider');
+
+    // Clear the cache.
+    field_info_cache_clear();
+}

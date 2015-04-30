@@ -1,0 +1,16 @@
+<?php
+
+function designssquare_com_theme_blocks_install(){
+//copy images into public directory
+$srcDir=realpath(dirname(__FILE__)).'/assets'.DIRECTORY_SEPARATOR.'ds_theme_blocks';
+$dstDir=$_SERVER['DOCUMENT_ROOT'].'sites'.DIRECTORY_SEPARATOR.'files'.DIRECTORY_SEPARATOR.'ds_theme_blocks';
+if(!file_exists($dstDir)){
+mkdir(dirname($dstDir), 0777, true);
+copy($srcDir, $dstDir);
+}
+}
+
+function designssquare_com_theme_blocks_uninstall(){
+//clean on unstall
+}
+

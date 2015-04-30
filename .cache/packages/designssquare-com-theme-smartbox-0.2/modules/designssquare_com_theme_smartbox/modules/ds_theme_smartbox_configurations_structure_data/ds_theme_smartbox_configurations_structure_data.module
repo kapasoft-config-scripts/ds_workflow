@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the DesignsSquare.com: Theme: SmartBox: Configurations & Structure Data feature.
+ */
+
+include_once 'ds_theme_smartbox_configurations_structure_data.features.inc';

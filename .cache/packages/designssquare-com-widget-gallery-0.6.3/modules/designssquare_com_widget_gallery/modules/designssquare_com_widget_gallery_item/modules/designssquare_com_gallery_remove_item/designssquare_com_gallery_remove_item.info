@@ -1,0 +1,8 @@
+name = DesignsSquare.com: Widget: Gallery: Remove Lock
+description = remove the lock so you can uninstall the Gallery
+core = 7.x
+version = 7.x-1.0
+project = designssquare_com_gallery_remove_item
+package = DesignsSquare.com.widget.gallery
+files[] = designssquare_com_gallery_remove_item.module
+

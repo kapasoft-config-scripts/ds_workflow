@@ -1,0 +1,25 @@
+name = DesignsSquare.com Gallery Widget
+description = easy way to present your previous work and projects
+core = 7.x
+version = v0.1.16
+project = designssquare_com_widget_gallery
+package = DesignsSquare.com.widget.gallery
+files[] = designssquare_com_widget_gallery.module
+
+;;Module dependencies
+dependencies[] = designssquare_com_widget_photo_gallery_configurations_structure_data
+dependencies[] = designssquare_com_widget_gallery_item
+dependencies[] = context
+dependencies[] = entityreference
+dependencies[] = entity
+dependencies[] = eva
+dependencies[] = views
+dependencies[] = fapi_validation
+version = 1.3
+version = 2.3
+dependencies[] = features
+dependencies[] = features_extra
+dependencies[] = strongarm
+dependencies[] = pathauto
+version = 1.3
+version = 1.3

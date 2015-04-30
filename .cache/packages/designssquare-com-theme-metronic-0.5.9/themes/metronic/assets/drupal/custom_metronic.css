@@ -1,0 +1,151 @@
+.page-header.navbar.navbar-fixed-top {
+    z-index: 100;
+}
+
+.page-header.navbar .page-logo {
+    width: 400px;
+}
+
+.page-sidebar-closed.page-sidebar-fixed .page-sidebar:hover .sidebar-search .input-group .form-control, .page-sidebar .sidebar-search .input-group .form-control {
+    background-color: #3d3d3d;
+    color: #616161;
+}
+
+element.style {
+    overflow: hidden;
+    width: auto;
+    height: 401px;
+}
+
+/**for other items than menu in the side**/
+.page-sidebar .page-sidebar-item,
+.page-sidebar-closed.page-sidebar-fixed .page-sidebar:hover .page-sidebar-item {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    /* 1st level links */
+    /* all links */
+}
+
+/****Poll Module*****/
+.no-metronic-specific .poll input{
+    margin-left: 0px;
+}
+
+.no-metronic-specific .form-item{
+    margin-top: 15px;
+}
+
+/****WebForm Fixes***/
+.no-metronic-specific th.checkbox,
+.no-metronic-specific td.checkbox,
+.no-metronic-specific th.radio,
+.no-metronic-specific td.radio {
+    display: table-cell
+}
+
+.no-metronic-specific .radio input[type=radio],
+.no-metronic-specific .radio-inline input[type=radio],
+.no-metronic-specific .checkbox input[type=checkbox],
+.no-metronic-specific .checkbox-inline input[type=checkbox] {
+     margin-left:0px
+}
+
+.no-metronic-specific .webform-client-form button{
+    margin-top: 20px;
+}
+
+/*** Panel Heading***/
+/*.no-metronic-specific .panel-heading{*/
+   /*position: relative;*/
+   /*top: 25px;*/
+/*}*/
+
+/*.no-metronic-specific .panel-default{*/
+    /*border: solid thin #ddd;*/
+    /*border-radius: 0px;*/
+/*}*/
+
+.no-metronic-specific .panel-default {
+    border-color: #ddd;
+}
+
+.no-metronic-specific .panel {
+    margin-bottom: 20px;
+    background-color: #fff;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+
+    -webkit-box-shadow: rgba(0, 0, 0, 0.0470588) 0px 1px 1px 0px;
+    border-bottom-color: rgb(221, 221, 221);
+    border-left-color: rgb(221, 221, 221);
+    border-right-color: rgb(221, 221, 221);
+    border-top-color: rgb(221, 221, 221);
+    box-shadow: rgba(0, 0, 0, 0.0470588) 0px 1px 1px 0px;
+    color: rgb(51, 51, 51);
+    min-width: min-content;
+}
+
+.no-metronic-specific fieldset {
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+.no-metronic-specific fieldset legend.panel-heading {
+    float: left;
+    line-height: 1em;
+    margin: 0;
+}
+
+.no-metronic-specific .panel-heading {
+    display: block;
+    padding: 10px 15px;
+    /*border-bottom: 1px solid transparent;*/
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
+}
+
+.no-metronic-specific legend {
+    display: block;
+    -webkit-padding-start: 2px;
+    -webkit-padding-end: 2px;
+    border: none;
+    border-image-source: initial;
+    border-image-slice: initial;
+    border-image-width: initial;
+    border-image-outset: initial;
+    border-image-repeat: initial;
+    width: 100%;
+    padding: 0;
+    margin-bottom: 20px;
+    font-size: 21px;
+    line-height: inherit;
+    color: #333;
+    border-bottom: 1px solid #e5e5e5;
+    border-bottom-color: rgb(221, 221, 221);
+}
+
+.no-metronic-specific .collapse {
+    /*display: none;*/
+}
+.no-metronic-specific .fade {
+    -webkit-transition: opacity .15s linear;
+    transition: opacity .15s linear;
+}
+
+/**** Views Exposed Filter Fix******/
+/*.no-metronic-specific .views-exposed-form .form-submit {*/
+.no-metronic-specific .views-exposed-form .views-exposed-widget button {
+    margin-top: 2.8em;
+}
+
+.no-metronic-specific .view-content{
+    margin-top: 1.5em;
+}
+
+/*****Register, Login, Pasword Reset*****/
+.login .content .register-form, .login .content .forget-form{
+    display: block;
+}

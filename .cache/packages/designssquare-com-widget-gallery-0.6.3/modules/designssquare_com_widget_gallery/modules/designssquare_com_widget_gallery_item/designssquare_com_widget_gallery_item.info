@@ -1,0 +1,12 @@
+name = DesignsSquare.com: Widget: Gallery Item
+description = item such as image,video,etc of Gallery
+core = 7.x
+version = 7.x-1.0
+project = designssquare_com_widget_gallery_item
+package = DesignsSquare.com.widget.gallery
+files[] = designssquare_com_widget_gallery_item.module
+
+;;Module dependencies
+dependencies[] = field_ui
+dependencies[] = fapi_validation
+dependencies[] = field_remove_item (1.x)

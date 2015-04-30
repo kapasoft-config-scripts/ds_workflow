@@ -1,0 +1,104 @@
+ <?php
+function designssquare_com_widget_gallery_item_field_schema($field)
+{
+    $schema = array();
+//    if ($field['type'] == 'designssquare_com_widget_gallery_item') {
+        $schema['columns']['title'] = array(
+            'type' => 'varchar',
+            'length' => 50,
+            'not null' => FALSE
+        );
+        $schema['columns']['ds_item_tag'] = array(
+                    'type' => 'varchar',
+                    'length' => 256,
+                    'not null' => FALSE
+                );
+
+        $schema['columns']['image'] = array(
+            'description' => 'The {file_managed}.fid being referenced in this field.',
+            'type' => 'int',
+            'not null' => FALSE,
+            'unsigned' => TRUE,
+        );
+
+        $schema['columns']['video'] = array(
+            'description' => 'The {file_managed}.fid being referenced in this field.',
+            'type' => 'int',
+            'not null' => FALSE,
+            'unsigned' => TRUE,
+        );
+       // $schema['columns']['video_frame_width'] = array(
+       //     'type' => 'int',
+       //     'unsigned' => TRUE,
+       //     'not null' => FALSE
+       // );
+
+       // $schema['columns']['video_frame_height'] = array(
+       //     'type' => 'int',
+       //     'unsigned' => TRUE,
+       //     'not null' => FALSE
+       // );
+
+        $schema['columns']['vimeo_id'] = array(
+            'type' => 'varchar',
+            'length' => 200,
+            'not null' => FALSE,
+        );
+
+        //$schema['columns']['vimeo_frame_width'] = array(
+        //    'type' => 'int',
+        //    'not null' => FALSE,
+        //    'unsigned' => TRUE,
+        //);
+
+        //$schema['columns']['vimeo_frame_height'] = array(
+        //    'type' => 'int',
+        //    'not null' => FALSE,
+        //    'unsigned' => TRUE,
+        //);
+
+        $schema['columns']['youtube_url'] = array(
+            'type' => 'varchar',
+            'length' => 200,
+            'not null' => FALSE
+        );
+
+        //$schema['columns']['youtube_frame_width'] = array(
+        //    'type' => 'int',
+        //    'unsigned' => TRUE,
+        //    'not null' => FALSE
+        //);
+
+        //$schema['columns']['youtube_frame_height'] = array(
+        //    'type' => 'int',
+        //    'unsigned' => TRUE,
+        //    'not null' => FALSE
+        //);
+
+        $schema['indexes']['image'] = array('image');
+        $schema['indexes']['video'] = array('video');
+        $schema['foreign keys'] = array(
+            'image_fid' => array(
+                'table' => 'file_managed',
+                'columns' => array('image' => 'fid'),
+            ),
+            'video_fid' => array(
+                'table' => 'file_managed',
+                'columns' => array('video' => 'fid'),
+            ),
+        );
+//    }
+
+    return $schema;
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function designssquare_com_widget_gallery_item_uninstall()
+{
+       // remove variables
+//    db_query("DELETE FROM {variable} WHERE name LIKE 'designssquare_com_widget_gallery_item_%'");
+    // Remove the video directory and generated images.
+//    file_unmanaged_delete_recursive(file_default_scheme() . '://videos');
+}
