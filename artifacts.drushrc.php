@@ -49,14 +49,6 @@ $artifacts['theme_blocks_plus'] = array(
     'work_dir_name' => 'designssquare_com_theme_blocks_plus',
 );
 
-$artifacts['blog'] = array(
-   'name' => 'blog',
-    'module_name' => 'designssquare_com_blog',
-    'final_name' => 'designssquare_com_widget_blog',
-    'repo' => $repo_list['module'],
-   'repo_name' => 'blog',
-    'work_dir_name' => 'blog',
-);
 $artifacts['utils_ckeditor'] = array(
     'name' => 'utils_ckeditor',
     'module_name' => 'designssquare_com_ckeditor',
@@ -65,13 +57,14 @@ $artifacts['utils_ckeditor'] = array(
     'repo_name' => 'designssquare-utils-ckeditor',
     'work_dir_name' => 'designssquare_utils_ckeditor'
 );
-$artifacts['portfolio'] = array(
-    'name' => 'portfolio',
-    'module_name' => 'designssquare_com_widget_portfolio',
-    'final_name' => 'designssquare_com_widget_portfolio',
-    'repo' => $repo_list['module'],
-    'repo_name' => 'portfolio',
-    'work_dir_name' => 'portfolio',
+
+$artifacts['virtual_hosty'] = array(
+    'name' => 'virtual_hosty',
+    'module_name' => 'designssquare_utils_virtual_hosty',
+    'final_name' => 'designssquare_com_virtual_hosty',
+    'repo' => $repo_list['utils'],
+    'repo_name' => 'virtual_hosty',
+    'work_dir_name' => 'designssquare_utils_virtual_hosty',
 );
 
 $artifacts['espresso_theme'] = array(
@@ -99,13 +92,44 @@ $artifacts['metronic_theme'] = array(
     'repo_name' => 'metronic',
     'work_dir_name' => 'metronic_theme',
 );
-$artifacts['virtual_hosty'] = array(
-    'name' => 'virtual_hosty',
-    'module_name' => 'designssquare_utils_virtual_hosty',
-    'final_name' => 'designssquare_com_virtual_hosty',
-    'repo' => $repo_list['utils'],
-    'repo_name' => 'virtual_hosty',
-    'work_dir_name' => 'designssquare_utils_virtual_hosty',
+
+$artifacts['smartbox_theme'] = array(
+    'name' => 'smartbox_theme',
+    'module_name' => 'designssquare_com_theme_smartbox',
+    'final_name' => 'designssquare_com_theme_smartbox',
+    'repo' => $repo_list['module'],
+    'repo_name' => 'smartbox',
+    'work_dir_name' => 'smartbox_theme',
+);
+
+
+/****WIDGETS******/
+
+$artifacts['blog'] = array(
+   'name' => 'blog',
+    'module_name' => 'designssquare_com_blog',
+    'final_name' => 'designssquare_com_widget_blog',
+    'repo' => $repo_list['module'],
+   'repo_name' => 'blog',
+    'work_dir_name' => 'blog',
+);
+
+$artifacts['portfolio'] = array(
+    'name' => 'portfolio',
+    'module_name' => 'designssquare_com_widget_portfolio',
+    'final_name' => 'designssquare_com_widget_portfolio',
+    'repo' => $repo_list['module'],
+    'repo_name' => 'portfolio',
+    'work_dir_name' => 'portfolio',
+);
+
+$artifacts['gallery'] = array(
+    'name' => 'gallery',
+    'module_name' => 'designssquare_com_widget_gallery',
+    'final_name' => 'designssquare_com_widget_gallery',
+    'repo' => $repo_list['module'],
+    'repo_name' => 'gallery',
+    'work_dir_name' => 'gallery',
 );
 
 
@@ -118,6 +142,16 @@ $artifacts['bootstrap'] = array(
     'final_name' => 'bootstrap',
     'work_dir_name' => 'bootstrap',
 );
+
+$artifacts['bootstrap2'] = array(
+    'name' => 'bootstrap2',
+    'type' => 'theme',
+    'repo' => $repo_list['theme'],
+    'repo_name' => 'bootstrap2',
+    'final_name' => 'bootstrap',
+    'work_dir_name' => 'bootstrap2',
+);
+
 $artifacts['metronic'] = array(
     'name' => 'metronic',
     'type' => 'theme',
@@ -126,6 +160,16 @@ $artifacts['metronic'] = array(
     'final_name' => 'metronic',
     'work_dir_name' => 'metronic',
 );
+
+$artifacts['smartbox'] = array(
+    'name' => 'smartbox',
+    'type' => 'theme',
+    'repo' => $repo_list['theme'],
+    'repo_name' => 'smartbox',
+    'final_name' => 'smartbox',
+    'work_dir_name' => 'smartbox',
+);
+
 $artifacts['espresso'] = array(
     'name' => 'espresso',
     'type' => 'theme',

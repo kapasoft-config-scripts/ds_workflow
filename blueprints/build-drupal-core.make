@@ -17,14 +17,10 @@ action[config_depend][name]=configure_all_dependencies
 action[config_depend][order]=5
 action[config_depend][tag]=config
 
-action[permit_public_dir][name]=permit_public_dir
+action[permit_public_dir][name]=permit_dir
 action[permit_public_dir][order]=4
-action[permit_public_dir][tag]=config
+action[permit_public_dir][tag]=config,tune_up
 
-
-action[clear_all][name]=clear_all
-action[clear_all][order]=100
-action[clear_all][tag]=clear,revert
 
 ;;EDITOR
 action[enable_editor][name]=enable_artifact
@@ -36,6 +32,7 @@ action[config_editor][name]=configure_editor
 action[config_editor][order]=7
 action[config_editor][tag]=editor
 action[config_editor][param][]=designssquare_com_ckeditor
+
 
 ;;AUDIO
 action[configure_audio][name]=configure_audio
@@ -64,13 +61,73 @@ action[fe_block][order]=1
 action[fe_block][tag]=config,block_bug
 action[fe_block][param][]=fe_block
 
+
 ;;DEV related
+action[dd_dev][name]=download_module
+action[dd_dev][order]=10
+action[dd_dev][tag]=dev
+action[dd_dev][param][]=simplehtmldom-7.x-1.12
+action[dd_dev][param][]=devel_themer
+
 action[en_dev][name]=enable_artifact
 action[en_dev][order]=11
 action[en_dev][tag]=dev
-action[en_dev][param][]=admin_menu
-action[en_dev][param][]=module_filter
-action[en_dev][param][]=coffee
+action[en_dev][param][]=simplehtmldom
+action[en_dev][param][]=devel_themer
+
+action[jquery_no_min][name]=set
+action[jquery_no_min][order]=12
+action[jquery_no_min][tag]=dev
+action[jquery_no_min][param][]=jquery_update_compression_type
+action[jquery_no_min][param][]="none"
+
+action[create_tmp_dir][name]=create_dir
+action[create_tmp_dir][order]=13
+action[create_tmp_dir][tag]=dev
+action[create_tmp_dir][param][]="sites/default/files/tmp"
+
+action[permissions_tmp_dir][name]=permit_dir
+action[permissions_tmp_dir][order]=13
+action[permissions_tmp_dir][tag]=dev
+action[permissions_tmp_dir][param][]="777"
+action[permissions_tmp_dir][param][]="sites/default/files/tmp"
+
+action[set_tmp_dir][name]=set
+action[set_tmp_dir][order]=14
+action[set_tmp_dir][tag]=dev
+action[set_tmp_dir][param][]=file_temporary_path
+action[set_tmp_dir][param][]="sites/default/files/tmp"
+
+action[set_private_dir][name]=set
+action[set_private_dir][order]=14
+action[set_private_dir][tag]=dev
+action[set_private_dir][param][]=file_private_path
+action[set_private_dir][param][]="sites/default/files/tmp"
+
+
+;;TUNE UP
+action[tune_drupal][name]=enable_artifact
+action[tune_drupal][order]=12
+action[tune_drupal][tag]=tune_up
+action[tune_drupal][param][]=admin_menu
+action[tune_drupal][param][]=module_filter
+action[tune_drupal][param][]=coffee
+
+
+action[tune_up][name]=tune_up
+action[tune_up][order]=12
+action[tune_up][tag]=tune_up
+
+;;Handle Virtual Directories
+action[config_hosty][name]=enable_artifact
+action[config_hosty][order]=13
+action[config_hosty][tag]=hosty
+action[config_hosty][param][]=designssquare_com_virtual_hosty
+
+;;SHARED
+action[clear_all][name]=clear_all
+action[clear_all][order]=100
+action[clear_all][tag]=clear,revert,dev
 
 
 ;WF_END

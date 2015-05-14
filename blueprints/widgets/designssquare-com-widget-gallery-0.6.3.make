@@ -16,7 +16,7 @@ widget[sample_data][ver]=v.0.3
 
 widget[gallery][name]=gallery
 widget[gallery][order]=1
-widget[gallery][ver]=v0.1.16
+widget[gallery][ver]=v0.1.17
 
 ;;action[get_widget_make][name]=get_widget_make
 ;;action[get_widget_make][order]=0

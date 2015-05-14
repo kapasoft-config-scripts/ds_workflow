@@ -8,82 +8,75 @@ projects[drupal][version] = 7.26
 ;;custom modules
 widget[lib][name]=lib
 widget[lib][order]=1
-widget[lib][ver]=v0.3.15
+widget[lib][ver]=v0.3.14
 widget[sample_data][name]=sample_data
 widget[sample_data][order]=2
 widget[sample_data][ver]=v.0.3
+widget[metronic_theme][name]=metronic_theme
+widget[metronic_theme][order]=4
+widget[metronic_theme][ver]=v0.0.17
 widget[utils_ckeditor][name]=utils_ckeditor
 widget[utils_ckeditor][order]=5
-widget[utils_ckeditor][ver]=v0.1.12
+widget[utils_ckeditor][ver]=v0.1.11
 widget[template_api][name]=template_api
 widget[template_api][order]=6
-widget[template_api][ver]=v0.1.12
+widget[template_api][ver]=v0.1.11
 widget[virtual_hosty][name]=virtual_hosty
-widget[virtual_hosty][order]=8
+widget[virtual_hosty][order]=7
 widget[virtual_hosty][ver]=v0.0.3
-widget[theme_blocks][name]=theme_blocks
-widget[theme_blocks][order]=7
-widget[theme_blocks][ver]=v0.0.7
-widget[smartbox_theme][name]=smartbox_theme
-widget[smartbox_theme][order]=8
-widget[smartbox_theme][ver]=v0.0.5
 
 ;;themes
-theme[bootstrap][name]=bootstrap2
+theme[bootstrap][name]=bootstrap
 theme[bootstrap][order]=1
-theme[bootstrap][ver]=v0.4
-theme[smartbox][name]=smartbox
-theme[smartbox][order]=2
-theme[smartbox][ver]=v0.0.2
-
+theme[bootstrap][ver]=v0.1
+theme[metronic][name]=metronic
+theme[metronic][order]=2
+theme[metronic][ver]=v0.1.7
 
 ;;actions
-action[enable-smartbox][name]=enable_artifact
-action[enable-smartbox][order]=6
-action[enable-smartbox][tag]=smartbox,init
-action[enable-smartbox][param][]=search
-action[enable-smartbox][param][]=contact
-action[enable-smartbox][param][]=designssquare_lib
-action[enable-smartbox][param][]=designssquare_lib_template_api
-action[enable-smartbox][param][]=designssquare_lib_sample_data
-action[enable-smartbox][param][]=designssquare_com_theme_smartbox
-action[enable-smartbox][param][]=bootstrap
-action[enable-smartbox][param][]=smartbox
-action[enable-smartbox][param][]=context_ui
+action[enable][name]=enable_artifact
+action[enable][order]=6
+action[enable][tag]=metronic,init
+action[enable][param][]=designssquare_lib
+action[enable][param][]=designssquare_lib_template_api
+action[enable][param][]=designssquare_lib_sample_data
+action[enable][param][]=designssquare_com_theme_metronic
+action[enable][param][]=bootstrap
+action[enable][param][]=metronic
 
 action[jquery][name]=config_jquery
 action[jquery][order]=6
-action[jquery][tag]=smartbox,init
+action[jquery][tag]=metronic,init
 action[jquery][param][]=1.10
 
 action[default_theme][name]=set_default_theme
 action[default_theme][order]=8
-action[default_theme][tag]=smartbox,init
-action[default_theme][param][]=smartbox
+action[default_theme][tag]=metronic,init
+action[default_theme][param][]=metronic
 
 action[sample][name]=enable_artifact
 action[sample][order]=9
-action[sample][tag]=smartbox,kickstart
-action[sample][param][]=ds_theme_smartbox_sample_data
+action[sample][tag]=metronic,kickstart
+action[sample][param][]=designssquare_com_theme_metronic_sample_data
 
-action[revert_smartbox][name]=revert_feature
-action[revert_smartbox][order]=10
-action[revert_smartbox][tag]=smartbox,revert
-action[revert_smartbox][param][]=ds_theme_smartbox_configurations_structure_data
-action[revert_smartbox][param][]=ds_theme_smartbox_sample_data
+action[revert_metronic][name]=revert_feature
+action[revert_metronic][order]=10
+action[revert_metronic][tag]=metronic,revert
+action[revert_metronic][param][]=designssquare_com_theme_metronic_configurations_structure_data
+action[revert_metronic][param][]=designssquare_com_theme_metronic_sample_data
 
-action[revert_smartbox_update][name]=revert_feature
-action[revert_smartbox_update][order]=11
-action[revert_smartbox_update][tag]=update,update_ds
-action[revert_smartbox_update][param][]=ds_theme_smartbox_configurations_structure_data
+action[revert_metronic_update][name]=revert_feature
+action[revert_metronic_update][order]=11
+action[revert_metronic_update][tag]=update,update_ds
+action[revert_metronic_update][param][]=designssquare_com_theme_metronic_configurations_structure_data
 
-action[smartbox_copy_docs][name]=link
-action[smartbox_copy_docs][order]=12
-action[smartbox_copy_docs][tag]=update_ds
-action[smartbox_copy_docs][param][]=src_dir
-action[smartbox_copy_docs][param][]=dest_dir
+action[metronic_copy_docs][name]=link
+action[metronic_copy_docs][order]=12
+action[metronic_copy_docs][tag]=update_ds
+action[metronic_copy_docs][param][]=src_dir
+action[metronic_copy_docs][param][]=dest_dir
 
-;;Theme related
+;;theme related
 projects[jquery_update][version] = 2.x-dev
 projects[] = token
 projects[] = context
@@ -91,19 +84,16 @@ projects[] = ctools
 projects[] = features
 ;;projects[] = libraries
 projects[] = strongarm
-;projects[] = features_extra
+projects[] = features_extra
 projects[] = views
 projects[] = entity
+;;projects[] = entityreference
 ;;projects[] = image_url_formatter
 projects[] = pathauto
 ;;projects[] = feeds_tamper
 projects[uuid][version] = 1.x-dev
 projects[uuid_features][version] = 1.x-dev
 
-;;Widget related
-projects[] = eva
-projects[] = entityreference
-projects[field_remove_item][version] = 1.x-dev
 ;WF_START
 
 ;;CONFIGURATIONS
@@ -120,6 +110,10 @@ action[permit_public_dir][order]=4
 action[permit_public_dir][tag]=config,tune_up
 
 
+action[clear_all][name]=clear_all
+action[clear_all][order]=100
+action[clear_all][tag]=clear,revert,dev
+
 ;;EDITOR
 action[enable_editor][name]=enable_artifact
 action[enable_editor][order]=7
@@ -130,7 +124,6 @@ action[config_editor][name]=configure_editor
 action[config_editor][order]=7
 action[config_editor][tag]=editor
 action[config_editor][param][]=designssquare_com_ckeditor
-
 
 ;;AUDIO
 action[configure_audio][name]=configure_audio
@@ -210,7 +203,10 @@ action[tune_drupal][tag]=tune_up
 action[tune_drupal][param][]=admin_menu
 action[tune_drupal][param][]=module_filter
 action[tune_drupal][param][]=coffee
-
+action[tune_drupal][param][]=context
+action[tune_drupal][param][]=context_ui
+action[tune_drupal][param][]=view
+action[tune_drupal][param][]=view_ui
 
 action[tune_up][name]=tune_up
 action[tune_up][order]=12
@@ -221,10 +217,5 @@ action[config_hosty][name]=enable_artifact
 action[config_hosty][order]=13
 action[config_hosty][tag]=hosty
 action[config_hosty][param][]=designssquare_com_virtual_hosty
-
-;;SHARED
-action[clear_all][name]=clear_all
-action[clear_all][order]=100
-action[clear_all][tag]=clear,revert,dev
 
 ;WF_END
